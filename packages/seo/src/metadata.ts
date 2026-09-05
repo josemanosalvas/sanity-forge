@@ -1,3 +1,4 @@
+import { openGraphLocales } from "@repo/internationalization/locales";
 import type { Metadata } from "next";
 
 import { canonicalOrigin, canonicalUrl, languageAlternates } from "./route";
@@ -21,12 +22,6 @@ export interface CreateMetadataOptions {
   readonly type?: "website" | "article";
   readonly icons?: Metadata["icons"];
 }
-
-const LOCALE_TAGS: Record<string, string> = {
-  de: "de_DE",
-  en: "en_US",
-  fr: "fr_FR",
-};
 
 /**
  * Next.js metadata for one site × locale × route: canonical on the site's
@@ -84,7 +79,7 @@ export const createMetadata = ({
     openGraph: {
       description: socialDescription,
       images,
-      locale: LOCALE_TAGS[route.locale] ?? route.locale,
+      locale: openGraphLocales[route.locale],
       siteName,
       title: socialTitle,
       type,

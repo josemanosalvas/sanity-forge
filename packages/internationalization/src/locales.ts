@@ -13,5 +13,12 @@ export const localeLabels: Record<Locale, string> = {
   fr: "Français",
 };
 
+/** `og:locale` values (`language_TERRITORY`) for Open Graph metadata. */
+export const openGraphLocales: Record<Locale, string> = {
+  de: "de_DE",
+  en: "en_US",
+  fr: "fr_FR",
+};
+
 export const isLocale = (value: unknown): value is Locale =>
   typeof value === "string" && (locales as readonly string[]).includes(value);
