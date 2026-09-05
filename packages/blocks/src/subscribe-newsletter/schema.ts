@@ -9,7 +9,8 @@ import {
 export const subscribeNewsletterSchema = defineType({
   fields: [
     defineField({
-      description: "The main heading shown above the sign-up form",
+      description:
+        "The main heading of the newsletter section. The sign-up form itself appears once the site connects a subscription handler.",
       name: "title",
       title: "Title",
       type: "string",
@@ -22,13 +23,13 @@ export const subscribeNewsletterSchema = defineType({
     }),
     definePortableTextField(["block"], {
       description:
-        "The small print under the form, for example how often you send emails or a link to your privacy policy",
+        "The small print under the form, for example how often you send emails or a link to your privacy policy. Shown only together with the form.",
       name: "helperText",
       title: "Helper Text",
     }),
     defineField({
       description:
-        "An optional customer testimonial shown in a panel beside the newsletter form. Leave every field empty to hide the panel entirely.",
+        "An optional customer testimonial shown in a panel beside the newsletter copy. Leave every field empty to hide the panel entirely.",
       fields: [
         defineField({
           description:

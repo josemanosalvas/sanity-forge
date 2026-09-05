@@ -108,7 +108,8 @@ describe(pageBuilderToMarkdown, () => {
 
     expect(md).toContain("## Stay in the loop");
     expect(md).toContain("Subscribe for updates.");
-    expect(md).toContain("No spam.");
+    // The form's small print is omitted, like the rendered block without a handler.
+    expect(md).not.toContain("No spam.");
     expect(md).not.toMatch(/<(?:form|input|button)/iu);
   });
 

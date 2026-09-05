@@ -143,30 +143,32 @@ export const SubscribeNewsletter = ({
                 />
               )}
             </div>
-            <div className="flex w-full flex-col items-start gap-3">
-              <form
-                action={action}
-                className="bg-muted flex w-full items-center gap-1.5 py-1.5 pr-1.5 pl-4 has-[input:focus-visible]:[outline:2px_dotted_var(--foreground)] has-[input:focus-visible]:outline-offset-2"
-                method={method ?? "post"}
-                onSubmit={onSubmit}
-              >
-                <input
-                  aria-label="Email address"
-                  className="text-foreground placeholder:text-muted-foreground w-full min-w-0 flex-1 bg-transparent py-1.5 text-base outline-none [--autofill-bg:var(--muted)] focus-visible:ring-0 focus-visible:ring-offset-0"
-                  name="email"
-                  placeholder="Enter your email address"
-                  required
-                  type="email"
-                />
-                <SubscribeNewsletterButton />
-              </form>
-              {helperText && (
-                <RichText
-                  className="text-muted-foreground [&_a]:text-foreground text-sm leading-5 [&_a]:rounded-none [&_a]:font-medium [&_a]:underline [&_a]:decoration-solid"
-                  richText={helperText}
-                />
-              )}
-            </div>
+            {(action || onSubmit) && (
+              <div className="flex w-full flex-col items-start gap-3">
+                <form
+                  action={action}
+                  className="bg-muted flex w-full items-center gap-1.5 py-1.5 pr-1.5 pl-4 has-[input:focus-visible]:[outline:2px_dotted_var(--foreground)] has-[input:focus-visible]:outline-offset-2"
+                  method={method ?? "post"}
+                  onSubmit={onSubmit}
+                >
+                  <input
+                    aria-label="Email address"
+                    className="text-foreground placeholder:text-muted-foreground w-full min-w-0 flex-1 bg-transparent py-1.5 text-base outline-none [--autofill-bg:var(--muted)] focus-visible:ring-0 focus-visible:ring-offset-0"
+                    name="email"
+                    placeholder="Enter your email address"
+                    required
+                    type="email"
+                  />
+                  <SubscribeNewsletterButton />
+                </form>
+                {helperText && (
+                  <RichText
+                    className="text-muted-foreground [&_a]:text-foreground text-sm leading-5 [&_a]:rounded-none [&_a]:font-medium [&_a]:underline [&_a]:decoration-solid"
+                    richText={helperText}
+                  />
+                )}
+              </div>
+            )}
           </div>
           {hasTestimonialContent && testimonial && (
             <TestimonialPanel testimonial={testimonial} />
