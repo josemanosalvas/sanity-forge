@@ -16,13 +16,7 @@ import { isMuxPath, mediaTypeOf } from "./media-type";
 export type { HeroMediaType } from "./media-type";
 export { isMuxPath, mediaTypeOf } from "./media-type";
 
-/**
- * Loaded on demand: a static import would ship hls.js and mux-embed
- * (194 KB gzip, measured) to every route through the client-side page builder,
- * video or no video. Nothing renders before mount, so skipping SSR costs no
- * markup. It also means a hero set to `sanity` never pays for the player —
- * which is what makes the two delivery paths comparable on the same site.
- */
+// Keep the HLS player out of file-backed and MP4 backgrounds.
 const MuxVideo = dynamic(() => import("@mux/mux-video-react"), { ssr: false });
 
 export interface HeroVideoVariant {
@@ -177,18 +171,7 @@ const MuxBackground = ({ className, onReady, variant }: BackgroundProps) => {
   );
 };
 
-/**
- * Mux, delivered as one progressive MP4 instead of an adaptive ladder.
- *
- * The point of this path is what it does *not* load: no hls.js, no mux-embed,
- * no master and rendition manifests. It is a bare `<video>` pointed at Mux's
- * origin, so the browser starts fetching the moment the element mounts, the
- * same way the Sanity path does.
- *
- * The trade is that the rendition is chosen here rather than by ABR, so a slow
- * link gets no step-down — it just buffers. Resolution follows the viewport,
- * matching what the hand-encoded set does across the same breakpoint.
- */
+// Progressive MP4 uses native playback; resolution is selected at mount.
 const MuxMp4Background = ({ className, onReady, variant }: BackgroundProps) => {
   const rung = deliveryRung();
   const playbackId = muxPlaybackId(variant.mux);

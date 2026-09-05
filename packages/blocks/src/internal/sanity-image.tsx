@@ -50,12 +50,7 @@ export const svgUrlFromAssetId = (id: string | null): string | null => {
   return `${SANITY_BASE_URL}${filename}`;
 };
 
-// Normalize a Sanity image ref to its canonical asset id, or null when it's
-// missing/malformed. Selecting an asset via the media library can prepend a
-// stray `drafts.` prefix (assets have no draft/published split); strip it and
-// reject anything that still isn't a full `image-…` ref so a malformed value
-// degrades to nothing instead of throwing "Could not parse image ID". Exported
-// so callers gate on the exact same validity as SanityImage.
+// Reject malformed refs before the image library tries to parse them.
 export const resolveAssetId = (
   image?: SanityImageData | null
 ): string | null => {
@@ -66,11 +61,7 @@ export const resolveAssetId = (
   return SANITY_ASSET_ID.test(id) ? id : null;
 };
 
-// Extract the pixel dimensions Sanity encodes in an asset id
-// (`image-<hash>-<width>x<height>-<format>`). Returns null when the id is
-// missing/malformed. Used to normalize logo sizing by aspect ratio so a wide
-// wordmark and a square icon read as the same visual weight (the "logo soup"
-// problem) without any extra CMS fields.
+// Asset IDs include dimensions; logo sizing needs no additional query.
 export const getImageDimensions = (
   image: SanityImageData | null | undefined
 ): { width: number; height: number; aspectRatio: number } | null => {
@@ -112,11 +103,7 @@ export const SanityImage = ({ image, ...props }: SanityImageProps) => {
     return null;
   }
 
-  // SVG fast-path: render the untransformed vector directly so it stays crisp
-  // at any display size. No `data-lqip`, so the global
-  // `img[data-lqip]{image-rendering:pixelated}` rule can't touch it, and
-  // `object-contain` keeps the logo from being cropped by the global
-  // `img{object-fit:cover}`.
+  // Serve SVGs untouched, without raster transforms or LQIP styling.
   const svgUrl = svgUrlFromAssetId(id);
   if (svgUrl) {
     return (

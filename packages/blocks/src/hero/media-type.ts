@@ -23,18 +23,7 @@ export interface HeroMediaSelection {
   mux?: MuxVideoData | null;
 }
 
-/**
- * The selected path, inferred when unset.
- *
- * `mediaType` arrived after the documents did, so a missing value is the
- * common case rather than the broken one: read what the variant actually
- * carries instead of defaulting, or every hero authored before the toggle
- * would go blank.
- *
- * Deliberately kept out of `hero-video`, which is a client module that pulls
- * in the Mux player graph — the Markdown route needs this answer too, and must
- * not pay for hls.js to get it.
- */
+// Infer the delivery path for documents without an explicit selection.
 const PATHS = new Set<HeroMediaType>(["mux", "mux-mp4", "sanity"]);
 
 export const mediaTypeOf = (
