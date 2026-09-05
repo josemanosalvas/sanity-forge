@@ -10,7 +10,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-} from "@repo/design-system/components/ui/navigation-menu";
+} from "@repo/design-system/components/navigation-menu";
 import { useMounted } from "@repo/design-system/hooks/use-mounted";
 import { useTranslations } from "next-intl";
 import Link from "next/link";

@@ -1,4 +1,4 @@
-import { Button } from "@repo/design-system/components/ui/button";
+import { Button } from "@repo/design-system/components/button";
 import { Link } from "@repo/internationalization/navigation";
 import { getTranslations } from "next-intl/server";
 

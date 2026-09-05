@@ -1,6 +1,6 @@
 import "@/app/globals.css";
 import { AnalyticsProvider } from "@repo/analytics/provider";
-import { DesignSystemProvider } from "@repo/design-system";
+import { DesignSystemProvider } from "@repo/design-system/provider";
 import { SiteProvider } from "@repo/internationalization/navigation";
 import { siteList } from "@repo/internationalization/sites";
 import {

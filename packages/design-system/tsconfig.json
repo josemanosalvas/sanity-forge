@@ -2,9 +2,9 @@
   "extends": "@repo/typescript-config/react-library.json",
   "compilerOptions": {
     "paths": {
-      "@repo/design-system/*": ["./*"]
+      "@repo/design-system/*": ["./src/*"]
     }
   },
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": ["src"],
   "exclude": ["node_modules"]
 }

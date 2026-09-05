@@ -1,12 +1,12 @@
 "use client";
 
-import { Button } from "@repo/design-system/components/ui/button";
+import { Button } from "@repo/design-system/components/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@repo/design-system/components/ui/dropdown-menu";
+} from "@repo/design-system/components/dropdown-menu";
 import { localeLabels } from "@repo/internationalization/locales";
 import {
   Link,

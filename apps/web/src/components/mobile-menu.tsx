@@ -6,15 +6,15 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@repo/design-system/components/ui/accordion";
-import { Button } from "@repo/design-system/components/ui/button";
+} from "@repo/design-system/components/accordion";
+import { Button } from "@repo/design-system/components/button";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@repo/design-system/components/ui/sheet";
+} from "@repo/design-system/components/sheet";
 import { Menu } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";

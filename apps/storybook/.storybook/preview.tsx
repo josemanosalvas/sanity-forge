@@ -1,4 +1,4 @@
-import { DesignSystemProvider } from "@repo/design-system";
+import { DesignSystemProvider } from "@repo/design-system/provider";
 import { withThemeByClassName } from "@storybook/addon-themes";
 import type { Preview } from "@storybook/nextjs-vite";
 

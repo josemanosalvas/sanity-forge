@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@repo/design-system/components/ui/button";
+import { Button } from "@repo/design-system/components/button";
 import { captureException } from "@repo/observability/error";
 import { useEffect } from "react";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@repo/design-system/components/ui/button";
+import { Button } from "@repo/design-system/components/button";
 import { cn } from "cn";
 import { LoaderCircle } from "lucide-react";
 import type { ComponentProps } from "react";

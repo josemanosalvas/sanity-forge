@@ -5,13 +5,12 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./index.tsx",
-    "./styles/globals.css": "./styles/globals.css",
-    "./components/*": "./components/*.tsx",
-    "./components/ui/*": "./components/ui/*.tsx",
-    "./providers/*": "./providers/*.tsx",
-    "./hooks/*": "./hooks/*.ts",
-    "./lib/*": "./lib/*.ts"
+    "./provider": "./src/provider.tsx",
+    "./styles/globals.css": "./src/styles/globals.css",
+    "./components/*": "./src/components/*.tsx",
+    "./providers/*": "./src/providers/*.tsx",
+    "./hooks/*": "./src/hooks/*.ts",
+    "./lib/*": "./src/lib/*.ts"
   },
   "scripts": {
     "clean": "git clean -xdf .cache .turbo node_modules",
