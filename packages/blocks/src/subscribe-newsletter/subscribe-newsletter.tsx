@@ -6,11 +6,11 @@ import { LoaderCircle } from "lucide-react";
 import type { ComponentProps } from "react";
 import { useFormStatus } from "react-dom";
 
-import { BlockEyebrow } from "../internal/block-eyebrow";
-import type { RichTextValue } from "../internal/rich-text";
-import { RichText } from "../internal/rich-text";
-import type { SanityImageData } from "../internal/sanity-image";
-import { SanityImage } from "../internal/sanity-image";
+import { BlockEyebrow } from "../components/block-eyebrow";
+import type { RichTextValue } from "../components/rich-text";
+import { RichText } from "../components/rich-text";
+import type { SanityImageData } from "../components/sanity-image";
+import { SanityImage } from "../components/sanity-image";
 
 export interface NewsletterTestimonial {
   authorImage?: SanityImageData | null;

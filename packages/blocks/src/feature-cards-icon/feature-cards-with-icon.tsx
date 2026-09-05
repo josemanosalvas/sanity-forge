@@ -1,7 +1,7 @@
-import { BlockHeader } from "../internal/block-header";
-import type { RichTextValue } from "../internal/rich-text";
-import { RichText } from "../internal/rich-text";
-import { SanityIcon } from "../internal/sanity-icon";
+import { BlockHeader } from "../components/block-header";
+import type { RichTextValue } from "../components/rich-text";
+import { RichText } from "../components/rich-text";
+import { SanityIcon } from "../components/sanity-icon";
 
 export interface FeatureCard {
   _key?: string | null;

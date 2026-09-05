@@ -1,7 +1,7 @@
 import { Text } from "lucide-react";
 import { defineField, defineType } from "sanity";
 
-import { definePortableTextField } from "../internal/schema-fields";
+import { definePortableTextField } from "../lib/schema-fields";
 
 export const richTextBlockSchema = defineType({
   fields: [

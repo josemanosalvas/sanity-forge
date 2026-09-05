@@ -4,7 +4,7 @@ import type { ElementType } from "react";
 import { SanityImage as BaseSanityImage } from "sanity-image";
 import type { WrapperProps } from "sanity-image";
 
-import { keys } from "../../keys";
+import { keys } from "../keys";
 
 const env = keys();
 

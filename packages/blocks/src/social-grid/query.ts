@@ -1,4 +1,4 @@
-import { imageFields, urlFragment } from "../internal/groq-fragments";
+import { imageFields, urlFragment } from "../lib/groq-fragments";
 
 export const socialGridGroqProjection = `
   _type == "socialGrid" => {

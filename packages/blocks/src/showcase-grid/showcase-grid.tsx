@@ -1,9 +1,9 @@
 import { cn } from "cn";
 
-import { normalizedLogoHeight } from "../internal/logo-height";
-import { sanitizeHref } from "../internal/safe-href";
-import { resolveAssetId, SanityImage } from "../internal/sanity-image";
-import type { SanityImageData } from "../internal/sanity-image";
+import { resolveAssetId, SanityImage } from "../components/sanity-image";
+import type { SanityImageData } from "../components/sanity-image";
+import { normalizedLogoHeight } from "../lib/logo-height";
+import { sanitizeHref } from "../lib/safe-href";
 
 export interface ShowcaseGridItem {
   _key: string;

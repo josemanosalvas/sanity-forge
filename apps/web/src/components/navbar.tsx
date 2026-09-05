@@ -1,6 +1,6 @@
 "use client";
 
-import { SanityButtons } from "@repo/blocks/internal/sanity-buttons";
+import { SanityButtons } from "@repo/blocks/components/sanity-buttons";
 import { ModeToggle } from "@repo/design-system/components/mode-toggle";
 import {
   NavigationMenu,

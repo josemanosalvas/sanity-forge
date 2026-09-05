@@ -1,13 +1,13 @@
 import { cn } from "cn";
 
-import { BlockEyebrow } from "../internal/block-eyebrow";
-import { muxPlaybackId, muxThumbnailUrl } from "../internal/mux";
-import type { RichTextValue } from "../internal/rich-text";
-import { RichText } from "../internal/rich-text";
-import type { ButtonProps } from "../internal/sanity-buttons";
-import { SanityButtons } from "../internal/sanity-buttons";
-import type { SanityImageData } from "../internal/sanity-image";
-import { getImageDimensions, SanityImage } from "../internal/sanity-image";
+import { BlockEyebrow } from "../components/block-eyebrow";
+import type { RichTextValue } from "../components/rich-text";
+import { RichText } from "../components/rich-text";
+import type { ButtonProps } from "../components/sanity-buttons";
+import { SanityButtons } from "../components/sanity-buttons";
+import type { SanityImageData } from "../components/sanity-image";
+import { getImageDimensions, SanityImage } from "../components/sanity-image";
+import { muxPlaybackId, muxThumbnailUrl } from "../lib/mux";
 import type { HeroVideoData, HeroVideoVariant } from "./hero-video";
 import { HeroVideo } from "./hero-video";
 import { isMuxPath, mediaTypeOf } from "./media-type";

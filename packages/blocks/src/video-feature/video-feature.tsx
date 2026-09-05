@@ -1,10 +1,10 @@
-import { BlockHeader } from "../internal/block-header";
-import { muxPlaybackId } from "../internal/mux";
-import type { MuxVideoData } from "../internal/mux";
-import { MuxVideo } from "../internal/mux-video";
-import type { MuxVideoOptions } from "../internal/mux-video";
-import type { RichTextValue } from "../internal/rich-text";
-import { RichText } from "../internal/rich-text";
+import { BlockHeader } from "../components/block-header";
+import { MuxVideo } from "../components/mux-video";
+import type { MuxVideoOptions } from "../components/mux-video";
+import type { RichTextValue } from "../components/rich-text";
+import { RichText } from "../components/rich-text";
+import { muxPlaybackId } from "../lib/mux";
+import type { MuxVideoData } from "../lib/mux";
 
 export interface VideoFeatureVideo extends MuxVideoOptions {
   asset?: MuxVideoData | null;

@@ -1,7 +1,7 @@
 import { Images } from "lucide-react";
 import { defineField, defineType } from "sanity";
 
-import { logoLinkItem } from "../internal/schema-fields";
+import { logoLinkItem } from "../lib/schema-fields";
 
 const logoCloudItem = logoLinkItem("logoCloudItem");
 

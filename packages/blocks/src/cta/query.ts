@@ -3,7 +3,7 @@ import {
   imageFragment,
   richTextFragment,
   urlFragment,
-} from "../internal/groq-fragments";
+} from "../lib/groq-fragments";
 
 export const ctaGroqProjection = `
   _type == "cta" => {

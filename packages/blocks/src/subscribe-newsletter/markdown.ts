@@ -2,12 +2,12 @@ import {
   eyebrowToMarkdown,
   headingToMarkdown,
   joinSections,
-} from "../internal/markdown";
-import type { MarkdownBlock, MarkdownOptions } from "../internal/markdown";
+} from "../lib/markdown";
+import type { MarkdownBlock, MarkdownOptions } from "../lib/markdown";
 import {
   escapeMarkdown,
   portableTextToMarkdown,
-} from "../internal/portable-text-to-markdown";
+} from "../lib/portable-text-to-markdown";
 
 export const subscribeNewsletterToMarkdown = (
   block: MarkdownBlock,

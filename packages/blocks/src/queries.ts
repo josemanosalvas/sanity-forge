@@ -13,7 +13,7 @@ import { videoFeatureGroqProjection } from "./video-feature/query";
  * The `pageBuilder[]` projection. Each block owns its own projection so the
  * GROQ and the component that reads it stay in lockstep; this only composes
  * them. Sanity TypeGen resolves the interpolations statically. Shared
- * fragments live in `@repo/blocks/internal/groq-fragments`.
+ * fragments live in `@repo/blocks/lib/groq-fragments`.
  */
 export const pageBuilderProjection = `
   pageBuilder[]{

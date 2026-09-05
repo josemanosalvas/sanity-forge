@@ -1,4 +1,4 @@
-import { imageFields, markDefsFragment } from "../internal/groq-fragments";
+import { imageFields, markDefsFragment } from "../lib/groq-fragments";
 
 export const subscribeNewsletterGroqProjection = `
   _type == "subscribeNewsletter" => {

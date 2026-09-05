@@ -3,7 +3,7 @@ import {
   imageFields,
   muxVideoFields,
   richTextFragment,
-} from "../internal/groq-fragments";
+} from "../lib/groq-fragments";
 
 /**
  * Both delivery paths, always. `mediaType` decides which one renders, but the

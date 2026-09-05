@@ -5,13 +5,13 @@ import {
   imageToMarkdown,
   joinSections,
   muxVideoToMarkdown,
-} from "../internal/markdown";
+} from "../lib/markdown";
 import type {
   MarkdownBlock,
   MarkdownOptions,
   MarkdownVideoVariant,
-} from "../internal/markdown";
-import { portableTextToMarkdown } from "../internal/portable-text-to-markdown";
+} from "../lib/markdown";
+import { portableTextToMarkdown } from "../lib/portable-text-to-markdown";
 import { isMuxPath, mediaTypeOf } from "./media-type";
 
 export const heroToMarkdown = (

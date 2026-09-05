@@ -1,4 +1,4 @@
-import { imageFragment, urlFragment } from "../internal/groq-fragments";
+import { imageFragment, urlFragment } from "../lib/groq-fragments";
 
 export const logoCloudGroqProjection = `
   _type == "logoCloud" => {

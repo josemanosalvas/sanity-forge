@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { paragraph, placeholderImage } from "../internal/testing/fixtures";
+import { paragraph, placeholderImage } from "../testing/fixtures";
 import { SubscribeNewsletter } from "./subscribe-newsletter";
 
 const meta = {

@@ -6,9 +6,9 @@ import type {
 } from "next-sanity";
 import Link from "next/link";
 
+import { headingChildrenToSlug as parseChildrenToSlug } from "../lib/heading-slug";
+import { sanitizeHref } from "../lib/safe-href";
 import { CodeBlock } from "./code-block";
-import { headingChildrenToSlug as parseChildrenToSlug } from "./heading-slug";
-import { sanitizeHref } from "./safe-href";
 import { SanityImage } from "./sanity-image";
 import { TableBlock } from "./table-block";
 

@@ -4,7 +4,7 @@ import { defineField, defineType } from "sanity";
 import {
   definePortableTextField,
   imageWithAltField,
-} from "../internal/schema-fields";
+} from "../lib/schema-fields";
 
 export const subscribeNewsletterSchema = defineType({
   fields: [

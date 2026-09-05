@@ -7,7 +7,7 @@
   "exports": {
     "./schemas": "./src/schemas.ts",
     "./queries": "./src/queries.ts",
-    "./keys": "./keys.ts",
+    "./keys": "./src/keys.ts",
     "./*/schema": "./src/*/schema.ts",
     "./*/query": "./src/*/query.ts",
     "./cta/cta-block": "./src/cta/cta-block.tsx",
@@ -22,21 +22,9 @@
     "./video-feature/video-feature": "./src/video-feature/video-feature.tsx",
     "./*/markdown": "./src/*/markdown.ts",
     "./*/json-ld": "./src/*/json-ld.ts",
-    "./internal/block-eyebrow": "./src/internal/block-eyebrow.tsx",
-    "./internal/block-header": "./src/internal/block-header.tsx",
-    "./internal/groq-fragments": "./src/internal/groq-fragments.ts",
-    "./internal/heading-slug": "./src/internal/heading-slug.ts",
-    "./internal/icons": "./src/internal/icons.tsx",
-    "./internal/logo-height": "./src/internal/logo-height.ts",
-    "./internal/lucide-icon-preview": "./src/internal/lucide-icon-preview.tsx",
-    "./internal/rich-text": "./src/internal/rich-text.tsx",
-    "./internal/safe-href": "./src/internal/safe-href.ts",
-    "./internal/sanity-buttons": "./src/internal/sanity-buttons.tsx",
-    "./internal/sanity-icon": "./src/internal/sanity-icon.tsx",
-    "./internal/sanity-image": "./src/internal/sanity-image.tsx",
-    "./internal/sanity-rich-text": "./src/internal/sanity-rich-text.ts",
-    "./internal/schema-fields": "./src/internal/schema-fields.ts",
-    "./internal/use-copy": "./src/internal/use-copy.ts"
+    "./components/*": "./src/components/*.tsx",
+    "./hooks/*": "./src/hooks/*.ts",
+    "./lib/*": "./src/lib/*.ts"
   },
   "scripts": {
     "clean": "git clean -xdf .cache .turbo node_modules coverage",

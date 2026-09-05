@@ -1,7 +1,7 @@
 import { Image, Images } from "lucide-react";
 import { defineArrayMember, defineField, defineType } from "sanity";
 
-import { imageWithAltField } from "../internal/schema-fields";
+import { imageWithAltField } from "../lib/schema-fields";
 
 const showcaseItem = defineArrayMember({
   fields: [

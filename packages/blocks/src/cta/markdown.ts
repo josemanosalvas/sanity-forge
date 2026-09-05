@@ -3,9 +3,9 @@ import {
   eyebrowToMarkdown,
   headingToMarkdown,
   joinSections,
-} from "../internal/markdown";
-import type { MarkdownBlock, MarkdownOptions } from "../internal/markdown";
-import { portableTextToMarkdown } from "../internal/portable-text-to-markdown";
+} from "../lib/markdown";
+import type { MarkdownBlock, MarkdownOptions } from "../lib/markdown";
+import { portableTextToMarkdown } from "../lib/portable-text-to-markdown";
 
 export const ctaToMarkdown = (
   block: MarkdownBlock,

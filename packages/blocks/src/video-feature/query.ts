@@ -1,7 +1,4 @@
-import {
-  muxVideoEmbedFields,
-  richTextFragment,
-} from "../internal/groq-fragments";
+import { muxVideoEmbedFields, richTextFragment } from "../lib/groq-fragments";
 
 export const videoFeatureGroqProjection = `
   _type == "videoFeature" => {

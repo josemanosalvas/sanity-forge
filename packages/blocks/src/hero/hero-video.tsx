@@ -8,9 +8,9 @@ import { useTheme } from "next-themes";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 
-import { muxMp4Url, muxPlaybackId } from "../internal/mux";
-import type { MuxVideoData } from "../internal/mux";
-import type { SanityImageData } from "../internal/sanity-image";
+import type { SanityImageData } from "../components/sanity-image";
+import { muxMp4Url, muxPlaybackId } from "../lib/mux";
+import type { MuxVideoData } from "../lib/mux";
 import { isMuxPath, mediaTypeOf } from "./media-type";
 
 export type { HeroMediaType } from "./media-type";

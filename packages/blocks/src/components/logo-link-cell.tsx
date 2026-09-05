@@ -2,7 +2,7 @@ import { cn } from "cn";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 
-import { sanitizeHref } from "./safe-href";
+import { sanitizeHref } from "../lib/safe-href";
 import type { SanityImageData } from "./sanity-image";
 import { resolveAssetId, SanityImage } from "./sanity-image";
 

@@ -5,7 +5,7 @@ import {
   buttonsField,
   definePortableTextField,
   muxVideoField,
-} from "../internal/schema-fields";
+} from "../lib/schema-fields";
 
 /** The three delivery paths a hero background can take. */
 export const HERO_MEDIA_TYPES = ["mux", "mux-mp4", "sanity"] as const;

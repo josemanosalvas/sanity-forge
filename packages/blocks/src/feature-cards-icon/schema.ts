@@ -1,8 +1,8 @@
 import { LayoutGrid } from "lucide-react";
 import { defineArrayMember, defineField, defineType } from "sanity";
 
-import { lucideIconPreview } from "../internal/lucide-icon-preview";
-import { definePortableTextField, iconField } from "../internal/schema-fields";
+import { lucideIconPreview } from "../components/lucide-icon-preview";
+import { definePortableTextField, iconField } from "../lib/schema-fields";
 
 const featureCardIconItem = defineArrayMember({
   fields: [
