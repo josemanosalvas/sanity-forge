@@ -68,7 +68,7 @@ The newsletter block needs an `action` or `onSubmit` handler to render a subscri
 
 ## Caching and previews
 
-Sanity reads run inside `use cache`. Resolve preview cookies outside the cache and pass `perspective`, `stega` and `variant` through to the cached layer. Shared fetch helpers live in [`content.ts`](apps/web/src/lib/content.ts); preview resolution and Live integration live in [`live.ts`](packages/sanity/src/live.ts).
+Sanity reads run inside `use cache`. Resolve preview cookies outside the cache and pass `perspective`, `stega` and `variant` through to the cached layer. Shared fetch helpers live in [`content.ts`](apps/web/src/lib/content.ts); preview resolution and Live integration live in [`live.ts`](packages/sanity/src/live.ts). The layering and names follow Sanity's official Next.js template.
 
 For revalidation when no browser has Sanity Live open, configure a GROQ-powered webhook:
 
@@ -95,4 +95,4 @@ The smoke suite covers site shells, locales, 404s, robots and sitemaps with an e
 
 ## License
 
-MIT. Portions adapted from [turbo-start-sanity](https://github.com/robotostudio/turbo-start-sanity), [next-forge](https://github.com/vercel/next-forge) and [create-t3-turbo](https://github.com/t3-oss/create-t3-turbo). See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE). Portions are adapted from [turbo-start-sanity](https://github.com/robotostudio/turbo-start-sanity), [next-forge](https://github.com/vercel/next-forge) and [create-t3-turbo](https://github.com/t3-oss/create-t3-turbo); their notices are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
