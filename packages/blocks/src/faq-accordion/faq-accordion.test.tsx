@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, test } from "vitest";
 
-import { FaqAccordion } from "./component";
+import { FaqAccordion } from "./faq-accordion";
 
 describe(FaqAccordion, () => {
   test("FaqAccordion renders questions and optional link", () => {

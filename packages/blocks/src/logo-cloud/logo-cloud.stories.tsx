@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { placeholderImage } from "../internal/testing/fixtures";
-import { LogoCloud } from "./component";
+import { LogoCloud } from "./logo-cloud";
 
 const meta = {
   args: {

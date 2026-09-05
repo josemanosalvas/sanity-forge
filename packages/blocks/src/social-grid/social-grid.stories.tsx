@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { SocialGrid } from "./component";
+import { SocialGrid } from "./social-grid";
 
 const meta = {
   args: {

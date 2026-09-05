@@ -1,8 +1,8 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, test } from "vitest";
 
-import type { ShowcaseGridItem } from "./component";
-import { ShowcaseGrid } from "./component";
+import type { ShowcaseGridItem } from "./showcase-grid";
+import { ShowcaseGrid } from "./showcase-grid";
 
 const item = (
   key: string,

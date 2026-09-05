@@ -95,19 +95,21 @@ const generator = (plop: PlopTypes.NodePlopAPI): void => {
         templateFile: "templates/block/query.ts.hbs",
         type: "add",
       },
+      // The component file carries the component's name in kebab-case, like
+      // every other component module in the repository.
       {
-        path: "packages/blocks/src/{{ name }}/component.tsx",
-        templateFile: "templates/block/component.tsx.hbs",
+        path: "packages/blocks/src/{{ name }}/{{ name }}.tsx",
+        templateFile: "templates/block/block.tsx.hbs",
         type: "add",
       },
       {
-        path: "packages/blocks/src/{{ name }}/component.test.tsx",
-        templateFile: "templates/block/component.test.tsx.hbs",
+        path: "packages/blocks/src/{{ name }}/{{ name }}.test.tsx",
+        templateFile: "templates/block/block.test.tsx.hbs",
         type: "add",
       },
       {
-        path: "packages/blocks/src/{{ name }}/component.stories.tsx",
-        templateFile: "templates/block/component.stories.tsx.hbs",
+        path: "packages/blocks/src/{{ name }}/{{ name }}.stories.tsx",
+        templateFile: "templates/block/block.stories.tsx.hbs",
         type: "add",
       },
       {
@@ -167,9 +169,16 @@ const generator = (plop: PlopTypes.NodePlopAPI): void => {
       },
       {
         path: "packages/blocks/src/components.ts",
-        pattern: /(?<anchor>export \{ CTABlock \} from "\.\/cta\/component";)/u,
+        pattern: /(?<anchor>export \{ CTABlock \} from "\.\/cta\/cta-block";)/u,
         template:
-          'export { {{ pascalCase name }} } from "./{{ name }}/component";\n$<anchor>',
+          'export { {{ pascalCase name }} } from "./{{ name }}/{{ name }}";\n$<anchor>',
+        type: "modify",
+      },
+      {
+        path: "packages/blocks/package.json",
+        pattern: /(?<anchor> {4}"\.\/cta\/cta-block": )/u,
+        template:
+          '    "./{{ name }}/{{ name }}": "./src/{{ name }}/{{ name }}.tsx",\n$<anchor>',
         type: "modify",
       },
       {

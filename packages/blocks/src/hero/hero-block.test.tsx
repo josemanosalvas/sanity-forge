@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, test } from "vitest";
 
-import { HeroBlock } from "./component";
+import { HeroBlock } from "./hero-block";
 
 describe(HeroBlock, () => {
   test("HeroBlock renders the title and button content", () => {

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { paragraph } from "../internal/testing/fixtures";
-import { FeatureCardsWithIcon } from "./component";
+import { FeatureCardsWithIcon } from "./feature-cards-with-icon";
 
 const meta = {
   args: {

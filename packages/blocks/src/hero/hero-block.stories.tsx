@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { buttons, MUX_SAMPLE, paragraph } from "../internal/testing/fixtures";
-import { HeroBlock } from "./component";
+import { HeroBlock } from "./hero-block";
 
 const meta = {
   args: {

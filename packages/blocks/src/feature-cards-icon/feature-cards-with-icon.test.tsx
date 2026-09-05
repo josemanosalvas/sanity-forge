@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, test } from "vitest";
 
-import { FeatureCardsWithIcon } from "./component";
+import { FeatureCardsWithIcon } from "./feature-cards-with-icon";
 
 describe(FeatureCardsWithIcon, () => {
   test("FeatureCardsWithIcon renders the card list", () => {

@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, test } from "vitest";
 
-import { VideoFeature } from "./component";
+import { VideoFeature } from "./video-feature";
 
 const render = (props: Parameters<typeof VideoFeature>[0]) =>
   renderToStaticMarkup(<VideoFeature {...props} />);

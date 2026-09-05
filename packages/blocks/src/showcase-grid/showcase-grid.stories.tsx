@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { placeholderImage } from "../internal/testing/fixtures";
-import { ShowcaseGrid } from "./component";
+import { ShowcaseGrid } from "./showcase-grid";
 
 const meta = {
   args: {

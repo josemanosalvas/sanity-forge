@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, test } from "vitest";
 
-import { SocialGrid } from "./component";
+import { SocialGrid } from "./social-grid";
 
 describe(SocialGrid, () => {
   const twoSocials = renderToStaticMarkup(

@@ -5,7 +5,7 @@ import {
   paragraph,
   placeholderImage,
 } from "../internal/testing/fixtures";
-import { CTABlock } from "./component";
+import { CTABlock } from "./cta-block";
 
 const meta = {
   args: {

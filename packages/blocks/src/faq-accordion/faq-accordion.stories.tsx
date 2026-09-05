@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { paragraph } from "../internal/testing/fixtures";
-import { FaqAccordion } from "./component";
+import { FaqAccordion } from "./faq-accordion";
 
 const meta = {
   args: {

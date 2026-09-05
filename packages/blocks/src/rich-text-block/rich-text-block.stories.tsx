@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { paragraph, paragraphs } from "../internal/testing/fixtures";
-import { RichTextBlock } from "./component";
+import { RichTextBlock } from "./rich-text-block";
 
 const meta = {
   args: {

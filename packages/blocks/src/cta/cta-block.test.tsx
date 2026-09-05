@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, test } from "vitest";
 
-import { CTABlock } from "./component";
+import { CTABlock } from "./cta-block";
 
 describe(CTABlock, () => {
   test("CTABlock renders primary content", () => {

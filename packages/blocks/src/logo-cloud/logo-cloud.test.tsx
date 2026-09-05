@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, test } from "vitest";
 
-import { LogoCloud } from "./component";
+import { LogoCloud } from "./logo-cloud";
 
 describe(LogoCloud, () => {
   test("LogoCloud renders the logos", () => {

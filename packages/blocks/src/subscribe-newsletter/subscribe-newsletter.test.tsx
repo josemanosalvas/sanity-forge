@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, test } from "vitest";
 
-import { SubscribeNewsletter } from "./component";
+import { SubscribeNewsletter } from "./subscribe-newsletter";
 
 describe(SubscribeNewsletter, () => {
   test("does not submit visitors' emails to the current page when no handler is configured", () => {

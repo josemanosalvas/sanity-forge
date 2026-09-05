@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { MUX_SAMPLE, paragraph } from "../internal/testing/fixtures";
-import { VideoFeature } from "./component";
+import { VideoFeature } from "./video-feature";
 
 const meta = {
   args: {

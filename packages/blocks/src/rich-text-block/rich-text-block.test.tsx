@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, test } from "vitest";
 
-import { RichTextBlock } from "./component";
+import { RichTextBlock } from "./rich-text-block";
 
 describe(RichTextBlock, () => {
   test("RichTextBlock renders headings and body text", () => {
