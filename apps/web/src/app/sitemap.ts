@@ -41,7 +41,9 @@ const sitemap = async ({
         lastModified: page.lastModified,
         route: {
           alternates: (page.translations ?? []).flatMap((translation) =>
-            isLocale(translation.language) && translation.slug
+            isLocale(translation.language) &&
+            translation.slug &&
+            translation.site === siteKey
               ? [{ locale: translation.language, path: translation.slug }]
               : []
           ),

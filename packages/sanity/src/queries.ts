@@ -23,12 +23,15 @@ const localized = <const Field extends string>(field: Field) =>
 /**
  * Every translation of the current document (including itself), from the
  * `translation.metadata` document that @sanity/document-internationalization
- * maintains. Drives hreflang alternates and the language switcher.
+ * maintains. Drives hreflang alternates and the language switcher. `site`
+ * comes along because the field is editable: a translation moved to another
+ * site must not become a link on this one.
  */
 const translationsFragment = `
   "translations": *[_type == "translation.metadata" && references(^._id)][0]
     .translations[defined(value)]{
       language,
+      "site": value->site,
       "slug": value->slug.current
     }
 ` as const;

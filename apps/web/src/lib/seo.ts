@@ -6,11 +6,15 @@ import type { Metadata } from "next";
 
 import type { PageDocument, SiteContext } from "@/types";
 
+/** Translations on this site only; the `site` field is editable, so a moved one is not an alternate here. */
 const toAlternates = (
-  translations: PageDocument["translations"] | undefined
+  translations: PageDocument["translations"] | undefined,
+  site: SiteContext["site"]
 ): RouteAlternate[] =>
   (translations ?? []).flatMap((translation) =>
-    isLocale(translation.language) && translation.slug
+    isLocale(translation.language) &&
+    translation.slug &&
+    translation.site === site.key
       ? [{ locale: translation.language, path: translation.slug }]
       : []
   );
@@ -49,7 +53,7 @@ export const pageMetadata = (
     ogDescription: page.ogDescription,
     ogTitle: page.ogTitle,
     route: {
-      alternates: toAlternates(page.translations),
+      alternates: toAlternates(page.translations, context.site),
       locale: context.locale,
       path: page.slug ?? "/",
       site: context.site,

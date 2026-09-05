@@ -7,6 +7,7 @@ import {
 import type { DynamicFetchOptions } from "@repo/sanity/live";
 import { pagePathsQuery, pageQuery, settingsQuery } from "@repo/sanity/queries";
 import type { Metadata } from "next";
+import { stegaClean } from "next-sanity";
 import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
 import { locale as localeParam, site as siteParam } from "next/root-params";
@@ -83,7 +84,7 @@ export const generateMetadata = async ({
   return pageMetadata(context, page, settings);
 };
 
-/** Draft Mode only: the published shell never suspends, so it never shows this. */
+/** Draft Mode only: published renders never suspend, so it never shows this. */
 const PageFallback = () => (
   <section aria-busy className="block-section">
     <div className="container">
@@ -120,7 +121,9 @@ const CachedPage = async ({
 
   const siteDefinition = getSite(site);
   const translations = (page.translations ?? []).flatMap((translation) =>
-    translation.slug && siteSupportsLocale(siteDefinition, translation.language)
+    translation.slug &&
+    stegaClean(translation.site) === site &&
+    siteSupportsLocale(siteDefinition, translation.language)
       ? [{ locale: translation.language, path: translation.slug }]
       : []
   );
@@ -151,10 +154,11 @@ const CachedPage = async ({
   );
 };
 
-// Layer 2: resolves params and the draft session outside the cache boundary.
-const DynamicPage = async ({
-  params,
-}: Pick<PageProps<"/[site]/[locale]/[[...slug]]">, "params">) => {
+type PageParams = Pick<PageProps<"/[site]/[locale]/[[...slug]]">, "params">;
+
+// Layer 2 (Draft Mode): resolves params and the preview cookies outside the
+// cache boundary and passes them in as plain props.
+const DynamicPage = async ({ params }: PageParams) => {
   const [{ slug }, context, { perspective, stega, variant }] =
     await Promise.all([params, getSiteContext(), getDynamicFetchOptions()]);
   return (
@@ -168,16 +172,17 @@ const DynamicPage = async ({
   );
 };
 
-// Layer 1: branches on Draft Mode; published renders skip Suspense entirely.
+// Layer 1: branches on Draft Mode. Draft renders stream behind Suspense so the
+// cookie reads never hold up the shell. Published renders stay outside any
+// boundary on purpose: a slug `generateStaticParams` did not list renders on
+// its first request, and when there is no document `notFound()` still produces
+// a real 404 status. Inside a boundary it would stream a soft 404 with 200.
 const Page = async ({ params }: PageProps<"/[site]/[locale]/[[...slug]]">) => {
   const { isEnabled: isDraftMode } = await draftMode();
   if (isDraftMode) {
     return (
       <Suspense fallback={<PageFallback />}>
-        <DynamicPage
-          // Awaited inside <DynamicPage> so the Suspense boundary can stream.
-          params={params}
-        />
+        <DynamicPage params={params} />
       </Suspense>
     );
   }
