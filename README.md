@@ -73,7 +73,7 @@ tooling/
 turbo/generators/ `pnpm turbo gen package` and `pnpm turbo gen block`
 ```
 
-Dependency direction: `blocks → ui`, `sanity → blocks` (query projections), `web → blocks + sanity`. The `ui` package has no Sanity, analytics or observability dependencies.
+Dependency direction: `blocks → ui`, `sanity → blocks` (query projections), `web → blocks + sanity`. The `ui` package has no Sanity, analytics or observability dependencies. `pnpm boundaries` enforces this direction through Turborepo Boundaries tags: `ui` may not depend on `platform` or `content` packages, and `platform` packages (i18n, SEO, security, observability, analytics, next-config) may not depend on `content` (blocks, sanity) or `ui`.
 
 Every package keeps its source under `src/`, laid out by kind like the shadcn monorepo template and next-forge's packages: React components in `src/components` (the shadcn CLI writes primitives there too, via the `ui` alias in `packages/ui/components.json`), hooks in `src/hooks`, helpers in `src/lib`. Blocks are the one exception: a block is a vertical folder (`src/<block>/`) holding its schema, GROQ projection, renderer, Markdown serializer, tests and stories, because those change together. Packages expose concrete modules through `package.json` exports (`@repo/blocks/hero/hero-block`, `@repo/seo/route`); there are no barrel files, so bundlers only load what a route imports.
 
@@ -91,6 +91,7 @@ Every package keeps its source under `src/`, laid out by kind like the shadcn mo
 | `pnpm test` | Vitest unit and component tests |
 | `pnpm test:e2e` | Playwright smoke tests against a production build of `web` |
 | `pnpm lint:ws` | Workspace consistency checks (sherif) |
+| `pnpm boundaries` | Turborepo Boundaries: undeclared or out-of-package imports, and the `ui → platform → content` dependency direction |
 | `pnpm turbo gen block` | Scaffold a page-builder block with all colocated files |
 | `pnpm turbo gen package` | Scaffold a `@repo/*` package |
 
