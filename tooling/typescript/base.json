@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Base",
+  "compilerOptions": {
+    /** Base options */
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "target": "ES2023",
+    "lib": ["ES2023"],
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+    "isolatedModules": true,
+
+    /** TypeScript 7 no longer auto-includes installed @types; list the globals we rely on */
+    "types": ["node"],
+
+    /** Keep tsc performant in monorepos */
+    "incremental": true,
+    "disableSourceOfProjectReferenceRedirect": true,
+    "tsBuildInfoFile": "${configDir}/.cache/tsbuildinfo.json",
+
+    /** Strictness */
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "checkJs": true,
+
+    /** Transpile using the bundler, not tsc */
+    "module": "Preserve",
+    "moduleResolution": "Bundler",
+    "noEmit": true
+  },
+  "exclude": [
+    "node_modules",
+    "build",
+    "dist",
+    ".next",
+    ".sanity",
+    "storybook-static"
+  ]
+}

@@ -1,0 +1,26 @@
+import { BlockHeader } from "../../components/block-header";
+import { RichText } from "../../components/rich-text";
+import type { RichTextValue } from "../../components/rich-text";
+
+export interface {{ pascalCase name }}Props {
+  eyebrow?: string | null;
+  richText?: RichTextValue;
+  title?: string | null;
+}
+
+export const {{ pascalCase name }} = ({
+  eyebrow,
+  richText,
+  title,
+}: Readonly<{{ pascalCase name }}Props>) => (
+  <section className="block-section" id="{{ name }}">
+    <div className="container">
+      <BlockHeader eyebrow={eyebrow} title={title}>
+        <RichText
+          className="body-text max-w-2xl text-muted-foreground"
+          richText={richText}
+        />
+      </BlockHeader>
+    </div>
+  </section>
+);

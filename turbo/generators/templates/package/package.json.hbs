@@ -1,0 +1,25 @@
+{
+  "name": "@repo/{{ name }}",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    "./{{ name }}": "./src/{{ name }}.ts"
+  },
+  "scripts": {
+    "clean": "git clean -xdf .cache .turbo node_modules",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "catalog:",{{#if (eq kind "react")}}
+    "@types/react": "catalog:",
+    "react": "catalog:",{{/if}}
+    "typescript": "catalog:"
+  }{{#if (eq kind "react")}},
+  "peerDependencies": {
+    "react": "catalog:"
+  }{{/if}}
+}

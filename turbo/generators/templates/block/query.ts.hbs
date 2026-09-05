@@ -1,0 +1,8 @@
+import { richTextFragment } from "../../lib/groq-fragments";
+
+export const {{ camelCase name }}GroqProjection =`
+  _type == "{{ camelCase name }}" => {
+    ...,
+    ${richTextFragment}
+  }
+`;

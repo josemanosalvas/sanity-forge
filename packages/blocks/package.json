@@ -1,0 +1,69 @@
+{
+  "name": "@repo/blocks",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    "./*": "./src/blocks/*/*.tsx",
+    "./*/schema": "./src/blocks/*/schema.ts",
+    "./*/query": "./src/blocks/*/query.ts",
+    "./*/markdown": "./src/blocks/*/markdown.ts",
+    "./*/json-ld": "./src/blocks/*/json-ld.ts",
+    "./components/*": "./src/components/*.tsx",
+    "./hooks/*": "./src/hooks/*.ts",
+    "./lib/*": "./src/lib/*.ts",
+    "./schemas": "./src/schemas.ts",
+    "./queries": "./src/queries.ts",
+    "./keys": "./src/keys.ts"
+  },
+  "scripts": {
+    "clean": "git clean -xdf .cache .turbo node_modules coverage",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@mux/mux-player-react": "^3.13.2",
+    "@mux/mux-video-react": "^0.31.2",
+    "@portabletext/markdown": "^2.0.0",
+    "@repo/ui": "workspace:*",
+    "@sanity/client": "catalog:",
+    "@sanity/icons": "catalog:",
+    "@t3-oss/env-nextjs": "catalog:",
+    "cn": "catalog:",
+    "lucide-react": "catalog:",
+    "next-sanity": "catalog:",
+    "next-themes": "catalog:",
+    "sanity-image": "^1.1.0",
+    "schema-dts": "^2.0.0",
+    "slugify": "^1.6.9",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@storybook/react": "catalog:",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "groq-js": "2.0.0",
+    "next": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "sanity": "catalog:",
+    "styled-components": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "next": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "sanity": "catalog:"
+  }
+}

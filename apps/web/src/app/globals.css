@@ -1,0 +1,5 @@
+@import "@repo/ui/styles/globals.css";
+
+/* Tailwind scans these on top of the design system's own sources. */
+@source "../../../../packages/blocks/src/**/*.{ts,tsx}";
+@source "../**/*.{ts,tsx}";

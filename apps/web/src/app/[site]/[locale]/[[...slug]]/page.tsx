@@ -1,0 +1,199 @@
+import { getSite, siteSupportsLocale } from "@repo/internationalization/sites";
+import {
+  getDynamicFetchOptions,
+  sanityFetchMetadata,
+  sanityFetchStaticParams,
+} from "@repo/sanity/live";
+import type { DynamicFetchOptions } from "@repo/sanity/live";
+import { pagePathsQuery, pageQuery, settingsQuery } from "@repo/sanity/queries";
+import type { Metadata } from "next";
+import { stegaClean } from "next-sanity";
+import { draftMode } from "next/headers";
+import { notFound } from "next/navigation";
+import { locale as localeParam, site as siteParam } from "next/root-params";
+import { Suspense } from "react";
+
+import { PageBuilder } from "@/components/page-builder";
+import { PageBuilderJsonLd } from "@/components/page-builder-json-ld";
+import { RegisterTranslations } from "@/components/translations";
+import { fetchPage } from "@/lib/content";
+import { pageMetadata } from "@/lib/seo";
+import {
+  getSiteContext,
+  toQueryParams,
+  toSettingsParams,
+} from "@/lib/site-context";
+import type { SiteQueryParams } from "@/types";
+
+type Params = Awaited<PageProps<"/[site]/[locale]/[[...slug]]">["params"]>;
+
+/** Prerendered without a document yet, so the site × locale shell always exists. */
+const PLACEHOLDER_SLUG = "__placeholder__";
+
+const toPath = (slug: string[] | undefined) =>
+  slug?.length ? `/${slug.join("/")}` : "/";
+
+export const generateStaticParams = async (): Promise<
+  Pick<Params, "slug">[]
+> => {
+  const [site, locale] = await Promise.all([siteParam(), localeParam()]);
+  try {
+    const { data: pages } = await sanityFetchStaticParams({
+      query: pagePathsQuery,
+    });
+    const params = pages.flatMap((page) =>
+      page.site === site && page.language === locale && page.slug
+        ? [
+            {
+              slug:
+                page.slug === "/" ? [] : page.slug.split("/").filter(Boolean),
+            },
+          ]
+        : []
+    );
+    return params.length > 0 ? params : [{ slug: [PLACEHOLDER_SLUG] }];
+  } catch (error) {
+    console.warn(
+      `[web] Could not list pages for ${site}/${locale}:`,
+      (error as Error).message
+    );
+    return [{ slug: [PLACEHOLDER_SLUG] }];
+  }
+};
+
+export const generateMetadata = async ({
+  params,
+}: PageProps<"/[site]/[locale]/[[...slug]]">): Promise<Metadata> => {
+  const [{ slug }, context, { perspective }] = await Promise.all([
+    params,
+    getSiteContext(),
+    getDynamicFetchOptions(),
+  ]);
+  const queryParams = toQueryParams(context);
+  const [{ data: page }, { data: settings }] = await Promise.all([
+    sanityFetchMetadata({
+      params: { ...queryParams, path: toPath(slug) },
+      perspective,
+      query: pageQuery,
+    }),
+    sanityFetchMetadata({
+      params: toSettingsParams(context),
+      perspective,
+      query: settingsQuery,
+    }),
+  ]);
+  if (!page) {
+    return {};
+  }
+  return pageMetadata(context, page, settings);
+};
+
+/** Draft Mode only: published renders never suspend, so it never shows this. */
+const PageFallback = () => (
+  <section aria-busy className="block-section">
+    <div className="container">
+      <div className="bg-muted h-12 w-2/3 animate-pulse rounded" />
+      <div className="bg-muted mt-6 h-5 w-1/2 animate-pulse rounded" />
+    </div>
+  </section>
+);
+
+const CachedPage = async ({
+  site,
+  locale,
+  defaultLocale,
+  path,
+  perspective,
+  stega,
+  variant,
+}: SiteQueryParams & { path: string } & DynamicFetchOptions) => {
+  "use cache";
+  const page = await fetchPage({
+    defaultLocale,
+    locale,
+    path,
+    perspective,
+    site,
+    stega,
+    variant,
+  });
+  if (!page) {
+    // `fetchPage` caches the miss; only this render re-runs on repeat hits.
+    notFound();
+  }
+
+  const siteDefinition = getSite(site);
+  const translations = (page.translations ?? []).flatMap((translation) =>
+    translation.slug &&
+    stegaClean(translation.site) === site &&
+    siteSupportsLocale(siteDefinition, translation.language)
+      ? [{ locale: translation.language, path: translation.slug }]
+      : []
+  );
+
+  return (
+    <>
+      <RegisterTranslations translations={translations} />
+      <PageBuilderJsonLd pageBuilder={page.pageBuilder} />
+      {page.pageBuilder?.length ? (
+        <PageBuilder
+          id={page._id}
+          pageBuilder={page.pageBuilder}
+          type={page._type}
+        />
+      ) : (
+        <section className="block-section">
+          <div className="container">
+            <h1 className="block-title">{page.title}</h1>
+            {page.description && (
+              <p className="body-text text-muted-foreground mt-4 max-w-2xl">
+                {page.description}
+              </p>
+            )}
+          </div>
+        </section>
+      )}
+    </>
+  );
+};
+
+type PageParams = Pick<PageProps<"/[site]/[locale]/[[...slug]]">, "params">;
+
+const DynamicPage = async ({ params }: PageParams) => {
+  const [{ slug }, context, { perspective, stega, variant }] =
+    await Promise.all([params, getSiteContext(), getDynamicFetchOptions()]);
+  return (
+    <CachedPage
+      {...toQueryParams(context)}
+      path={toPath(slug)}
+      perspective={perspective}
+      stega={stega}
+      variant={variant}
+    />
+  );
+};
+
+// Keep published renders outside Suspense so missing pages return HTTP 404.
+// Draft renders stream while preview cookies resolve.
+const Page = async ({ params }: PageProps<"/[site]/[locale]/[[...slug]]">) => {
+  const { isEnabled: isDraftMode } = await draftMode();
+  if (isDraftMode) {
+    return (
+      <Suspense fallback={<PageFallback />}>
+        <DynamicPage params={params} />
+      </Suspense>
+    );
+  }
+
+  const [{ slug }, context] = await Promise.all([params, getSiteContext()]);
+  return (
+    <CachedPage
+      {...toQueryParams(context)}
+      path={toPath(slug)}
+      perspective="published"
+      stega={false}
+    />
+  );
+};
+
+export default Page;

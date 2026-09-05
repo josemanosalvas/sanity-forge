@@ -1,0 +1,121 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "ui": "tui",
+  "envMode": "strict",
+  "globalEnv": ["NODE_ENV"],
+  "globalPassThroughEnv": [
+    "CI",
+    "GITHUB_ACTIONS",
+    "FORCE_COLOR",
+    "NODE_OPTIONS",
+    "SKIP_ENV_VALIDATION",
+    "VERCEL",
+    "VERCEL_ENV",
+    "VERCEL_URL",
+    "VERCEL_PROJECT_PRODUCTION_URL"
+  ],
+  "boundaries": {
+    "tags": {
+      "ui": {
+        "dependencies": {
+          "deny": ["content", "platform"]
+        }
+      },
+      "platform": {
+        "dependencies": {
+          "deny": ["content", "ui"]
+        }
+      }
+    }
+  },
+  "tasks": {
+    "transit": {
+      "description": "Phantom task that threads dependency hashes into no-emit checks without serializing them.",
+      "dependsOn": ["^transit"]
+    },
+    "schema:extract": {
+      "description": "Extracts the Studio schema that Sanity TypeGen consumes.",
+      "env": ["SANITY_STUDIO_*"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env",
+        "$TURBO_ROOT$/packages/blocks/src/blocks/**/schema.ts",
+        "$TURBO_ROOT$/packages/blocks/src/lib/**",
+        "$TURBO_ROOT$/packages/blocks/src/schemas.ts",
+        "$TURBO_ROOT$/packages/internationalization/src/**"
+      ],
+      "outputs": ["schema.json"]
+    },
+    "typegen": {
+      "description": "Generates typed GROQ results from the extracted schema and every defineQuery in the repo.",
+      "dependsOn": ["studio#schema:extract"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/apps/studio/schema.json",
+        "$TURBO_ROOT$/packages/blocks/src/**",
+        "$TURBO_ROOT$/apps/web/src/**"
+      ],
+      "outputs": ["src/sanity.types.ts"]
+    },
+    "build": {
+      "dependsOn": ["^build", "^typegen"],
+      "env": [
+        "NEXT_PUBLIC_*",
+        "SANITY_*",
+        "SENTRY_*",
+        "BETTERSTACK_*",
+        "ANALYZE",
+        "DEFAULT_SITE"
+      ],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "!.next/dev/**",
+        "dist/**",
+        ".sanity/**",
+        "storybook-static/**"
+      ]
+    },
+    "typecheck": {
+      "dependsOn": ["transit", "^typegen"],
+      "env": ["NEXT_PUBLIC_*", "SANITY_*"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env*",
+        "$TURBO_ROOT$/tooling/typescript/*.json"
+      ],
+      "outputs": [".cache/tsbuildinfo.json"]
+    },
+    "test": {
+      "dependsOn": ["transit"],
+      "inputs": ["$TURBO_DEFAULT$"],
+      "outputs": []
+    },
+    "test:e2e": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "env": [
+        "NEXT_PUBLIC_*",
+        "SANITY_*",
+        "PLAYWRIGHT_*",
+        "E2E_HAS_CONTENT",
+        "DEFAULT_SITE"
+      ],
+      "inputs": ["$TURBO_DEFAULT$", ".env*", "tests/**"],
+      "outputs": ["playwright-report/**", "test-results/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "env": ["NEXT_PUBLIC_*", "SANITY_*", "SENTRY_*", "DEFAULT_SITE"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"]
+    },
+    "clean": {
+      "cache": false
+    },
+    "//#clean": {
+      "cache": false
+    }
+  }
+}

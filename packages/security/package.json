@@ -1,0 +1,30 @@
+{
+  "name": "@repo/security",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    "./headers": "./src/headers.ts"
+  },
+  "scripts": {
+    "clean": "git clean -xdf .cache .turbo node_modules",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@nosecone/next": "^1.11.0",
+    "nosecone": "^1.11.0"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
+    "next": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "next": "catalog:"
+  }
+}

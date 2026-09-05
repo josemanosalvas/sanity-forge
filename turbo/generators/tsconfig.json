@@ -1,0 +1,5 @@
+{
+  "extends": "../../tooling/typescript/node.json",
+  "include": ["config.ts"],
+  "exclude": ["node_modules"]
+}

@@ -1,0 +1,50 @@
+{
+  "common": {
+    "skipToContent": "Aller au contenu",
+    "readMore": "Lire la suite",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu",
+    "mainNavigation": "Navigation principale",
+    "language": "Langue",
+    "switchLanguage": "Changer de langue",
+    "theme": {
+      "label": "Thème",
+      "light": "Clair",
+      "dark": "Sombre",
+      "system": "Système"
+    }
+  },
+  "notFound": {
+    "eyebrow": "Introuvable",
+    "title": "La page que vous cherchez n'existe pas.",
+    "cta": "Retour à l'accueil"
+  },
+  "preview": {
+    "message": "Vous consultez le site en mode aperçu.",
+    "exit": "Quitter",
+    "exiting": "Désactivation du mode brouillon…"
+  },
+  "blocks": {
+    "copied": "Copié dans le presse-papiers",
+    "copyCode": "Copier le code dans le presse-papiers",
+    "linkBroken": "Lien rompu",
+    "logoCloud": "Logos",
+    "opensInNewTab": "(s'ouvre dans un nouvel onglet)",
+    "playVideo": "Lire la vidéo",
+    "playVideoTitled": "Lire la vidéo : {title}",
+    "showcase": "Réalisations",
+    "visit": "Visiter {name}",
+    "newsletter": {
+      "emailLabel": "Adresse e-mail",
+      "emailPlaceholder": "Saisissez votre adresse e-mail",
+      "subscribe": "S'abonner",
+      "subscribeToNewsletter": "S'abonner à la newsletter",
+      "subscribing": "Abonnement en cours…"
+    }
+  },
+  "footer": {
+    "copyright": "© {year} {siteName}. Tous droits réservés."
+  }
+}

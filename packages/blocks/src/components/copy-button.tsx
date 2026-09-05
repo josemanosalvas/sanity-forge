@@ -1,0 +1,51 @@
+"use client";
+
+import { cn } from "cn";
+import { Check } from "lucide-react";
+
+import {
+  COPY_STATUS_CLASS,
+  SWAP_HIDDEN,
+  SWAP_LAYER,
+  SWAP_SHOWN,
+  useCopyToClipboard,
+} from "../hooks/use-copy";
+import { useBlockLabels } from "./block-labels";
+import { CopyIcon } from "./icons";
+
+export const CopyButton = ({ code }: Readonly<{ code: string }>) => {
+  const { status, copy } = useCopyToClipboard(() => code);
+  const copied = status === "copied";
+  const labels = useBlockLabels();
+
+  return (
+    // Keep the button name stable; announce the result through the status region.
+    <button
+      aria-label={labels.copyCode}
+      className={cn(
+        "focus-ring text-muted-foreground hover:text-foreground inline-flex shrink-0 items-center justify-center rounded-none p-1 transition-colors",
+        COPY_STATUS_CLASS[status]
+      )}
+      onClick={copy}
+      type="button"
+    >
+      <span aria-hidden="true" className="grid size-4 place-items-center">
+        <Check
+          className={cn(
+            SWAP_LAYER,
+            "size-4",
+            copied ? SWAP_SHOWN : SWAP_HIDDEN
+          )}
+        />
+        <CopyIcon
+          className={cn(
+            SWAP_LAYER,
+            "size-4",
+            copied ? SWAP_HIDDEN : SWAP_SHOWN
+          )}
+        />
+      </span>
+      <output className="sr-only">{copied ? labels.copied : ""}</output>
+    </button>
+  );
+};

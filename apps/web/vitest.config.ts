@@ -1,0 +1,23 @@
+import path from "node:path";
+
+import { defineConfig } from "vitest/config";
+
+export default defineConfig({
+  // Next's tsconfig keeps JSX for its own compiler; tests need it compiled.
+  oxc: { jsx: { runtime: "automatic" } },
+  resolve: {
+    alias: { "@": path.resolve(import.meta.dirname, "src") },
+  },
+  test: {
+    // Validated for real (no SKIP_ENV_VALIDATION) so defaults such as the
+    // Studio URL apply exactly as they do at runtime.
+    env: {
+      NEXT_PUBLIC_SANITY_DATASET: "production",
+      NEXT_PUBLIC_SANITY_PROJECT_ID: "test",
+    },
+    environment: "node",
+    globals: true,
+    include: ["src/**/*.test.{ts,tsx}"],
+    name: "web",
+  },
+});

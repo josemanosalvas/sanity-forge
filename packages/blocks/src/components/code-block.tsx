@@ -1,0 +1,65 @@
+import { CopyButton } from "./copy-button";
+
+// Short label shown in the language tile.
+const BADGE_MAP: Record<string, string> = {
+  bash: "SH",
+  css: "CSS",
+  groq: "GRQ",
+  js: "JS",
+  json: "{ }",
+  ts: "TS",
+  tsx: "TSX",
+};
+
+export interface CodeBlockValue {
+  code?: string | null;
+  language?: string | null;
+  filename?: string | null;
+}
+
+export const CodeBlock = ({
+  code,
+  language,
+  filename,
+}: Readonly<CodeBlockValue>) => {
+  if (!code) {
+    return null;
+  }
+
+  const badge = (language && BADGE_MAP[language]) || "TXT";
+
+  // Line numbers are rendered as a fixed gutter column beside the scrolling
+  // code, so they stay put during horizontal scroll and are excluded from copy.
+  const lineCount = code.replace(/\n$/u, "").split("\n").length;
+
+  return (
+    <figure className="not-prose border-border bg-background my-6 overflow-hidden rounded-none border">
+      <div className="border-border bg-muted flex items-center justify-between gap-3 border-b px-3 py-2">
+        <div className="flex min-w-0 items-center gap-2">
+          <span
+            aria-hidden="true"
+            className="border-border bg-background text-muted-foreground grid h-6 min-w-6 place-items-center rounded-none border px-1.5 font-mono text-[10px] font-semibold uppercase"
+          >
+            {badge}
+          </span>
+          {filename ? (
+            <span className="text-muted-foreground truncate font-mono text-xs">
+              {filename}
+            </span>
+          ) : null}
+        </div>
+        <CopyButton code={code} />
+      </div>
+      <div className="rich-code flex text-sm leading-relaxed">
+        <div aria-hidden="true" className="rich-code-gutter font-mono">
+          {Array.from({ length: lineCount }, (_, index) => (
+            <span key={index + 1}>{index + 1}</span>
+          ))}
+        </div>
+        <pre className="rich-code-pre overflow-x-auto font-mono">
+          <code className="font-mono">{code}</code>
+        </pre>
+      </div>
+    </figure>
+  );
+};

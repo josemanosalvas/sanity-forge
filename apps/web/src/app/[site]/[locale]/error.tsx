@@ -1,0 +1,35 @@
+"use client";
+
+import { captureException } from "@repo/observability/client";
+import { Button } from "@repo/ui/components/button";
+import { useEffect } from "react";
+
+const ErrorBoundary = ({
+  error,
+  retry,
+}: {
+  error: Error & { digest?: string };
+  retry: () => void;
+}) => {
+  useEffect(() => {
+    captureException(error);
+  }, [error]);
+
+  return (
+    <section className="block-section">
+      <div className="container grid max-w-2xl justify-items-center gap-6 py-24 text-center">
+        <h1 className="text-3xl font-normal tracking-tight sm:text-4xl">
+          Something went wrong
+        </h1>
+        <p className="text-muted-foreground">
+          The page could not be rendered. Try again, or come back in a moment.
+        </p>
+        <Button onClick={() => retry()} size="lg" variant="secondary">
+          Try again
+        </Button>
+      </div>
+    </section>
+  );
+};
+
+export default ErrorBoundary;
