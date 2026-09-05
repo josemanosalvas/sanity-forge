@@ -14,7 +14,6 @@ export default defineConfig({
         find: "lucide-react/dynamic",
         replacement: mock("lucide-react-dynamic.mock.tsx"),
       },
-      { find: "lucide-react", replacement: mock("lucide-react.mock.tsx") },
       { find: "next/link", replacement: mock("next-link.mock.tsx") },
     ],
   },
