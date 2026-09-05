@@ -12,7 +12,7 @@ Before any Next.js work, find and read the relevant doc in `apps/web/node_module
 - GROQ link projections already include the destination locale. Use `next/link` for them; use the internationalization `Link` for app-authored, unprefixed paths.
 - Keep Sanity fetches inside `use cache`; resolve preview cookies outside and pass perspective, stega and variant as props. Preserve stega-branded result types.
 - Edit schemas and queries, then run `pnpm typegen`. Do not hand-edit `apps/studio/schema.json` or `packages/sanity/src/sanity.types.ts`.
-- Packages keep source under `src/`: React components in `src/components`, hooks in `src/hooks`, helpers in `src/lib`. The blocks package follows turbo-start-sanity instead: a block is a vertical folder (`src/<block>/`), the primitives shared across blocks sit flat in `src/internal/` (`@repo/blocks/internal/*`, each module listed in `package.json` exports) and test mocks in `src/internal/testing/`.
+- Packages keep source under `src/`: React components in `src/components`, hooks in `src/hooks`, helpers in `src/lib`. The blocks package adds `src/blocks/<block>/`: a vertical folder whose renderer is named after the folder (`@repo/blocks/cta` resolves to `src/blocks/cta/cta.tsx`) beside `schema.ts`, `query.ts`, `markdown.ts`, tests and stories; code shared across blocks lives in `src/components`, `src/hooks` and `src/lib` (`@repo/blocks/components/*`, `@repo/blocks/lib/*`).
 - Import concrete modules through `package.json` exports. Do not add barrel files (re-export-only modules such as `index.ts`); registries that build an array or a projection are fine.
 
 # Verification

@@ -1,0 +1,202 @@
+import { cn } from "cn";
+
+import { BlockEyebrow } from "../../components/block-eyebrow";
+import type { RichTextValue } from "../../components/rich-text";
+import { RichText } from "../../components/rich-text";
+import type { ButtonProps } from "../../components/sanity-buttons";
+import { SanityButtons } from "../../components/sanity-buttons";
+import type { SanityImageData } from "../../components/sanity-image";
+import { getImageDimensions, SanityImage } from "../../components/sanity-image";
+import { muxPlaybackId, muxThumbnailUrl } from "../../lib/mux";
+import type { HeroVideoData, HeroVideoVariant } from "./hero-video";
+import { HeroVideo } from "./hero-video";
+import { isMuxPath, mediaTypeOf } from "./media-type";
+
+export type { HeroVideoData, HeroVideoVariant } from "./hero-video";
+
+export interface HeroBlockProps {
+  badge?: string | null;
+  buttons?: ButtonProps[] | null;
+  dataSanity?: string;
+  isFirst?: boolean;
+  richText?: RichTextValue;
+  title?: string | null;
+  video?: HeroVideoData | null;
+}
+
+const bannerFill = "absolute inset-0 size-full";
+
+const POSTER_WIDTH = 1440;
+
+/** `key` compares themes: these objects are rebuilt each render, so identity cannot. */
+interface HeroStill {
+  image?: SanityImageData;
+  key: string;
+  url?: string;
+}
+
+const stillOf = (variant?: HeroVideoVariant | null): HeroStill | null => {
+  if (variant?.poster?.id) {
+    return { image: variant.poster, key: variant.poster.id };
+  }
+  // Only the Mux path may borrow Mux's generated still. A hero served from the
+  // Sanity CDN must not reach image.mux.com for its poster, or the two
+  // delivery paths stop being measurable against each other.
+  if (!isMuxPath(mediaTypeOf(variant))) {
+    return null;
+  }
+  const url = muxThumbnailUrl(
+    muxPlaybackId(variant?.mux),
+    variant?.mux?.thumbTime,
+    POSTER_WIDTH
+  );
+  return url ? { key: url, url } : null;
+};
+
+const HeroPoster = ({
+  className,
+  eager,
+  still,
+}: Readonly<{
+  className?: string;
+  eager?: boolean;
+  still: HeroStill;
+}>) => {
+  const shared = cn(
+    bannerFill,
+    "rounded-none! object-cover object-[50%_45%]",
+    className
+  );
+
+  if (still.url) {
+    return (
+      // oxlint-disable-next-line next/no-img-element -- Mux serves the still already sized and encoded; next/image would add a proxy hop
+      <img
+        alt=""
+        className={shared}
+        fetchPriority={eager ? "high" : undefined}
+        loading={eager ? "eager" : "lazy"}
+        src={still.url}
+      />
+    );
+  }
+
+  const image = still.image as SanityImageData;
+  const dimensions = getImageDimensions(image);
+  return (
+    <SanityImage
+      alt=""
+      className={shared}
+      fetchPriority={eager ? "high" : undefined}
+      height={
+        dimensions
+          ? Math.round(POSTER_WIDTH / dimensions.aspectRatio)
+          : undefined
+      }
+      image={image}
+      loading={eager ? "eager" : "lazy"}
+      width={POSTER_WIDTH}
+    />
+  );
+};
+
+/**
+ * The still under the clip, and the whole background when there is no video.
+ * Split light/dark in CSS: this renders on the server, which has no theme.
+ */
+const HeroPosters = ({
+  eager,
+  video,
+}: Readonly<{ eager?: boolean; video?: HeroVideoData | null }>) => {
+  const light = stillOf(video?.light) ?? stillOf(video?.dark);
+  const dark = stillOf(video?.dark) ?? light;
+  if (!light) {
+    return null;
+  }
+
+  const split = dark !== null && dark.key !== light.key;
+
+  return (
+    <>
+      <HeroPoster
+        className={split ? "dark:hidden" : undefined}
+        eager={eager}
+        still={light}
+      />
+      {/* Never eager: the server cannot know the theme, so preloading both
+          halves of a CSS-split pair always wastes one full-size download and
+          earns a "preloaded but not used" warning. The light one carries the
+          priority; the dark one arrives a beat later in dark mode. */}
+      {split && <HeroPoster className="hidden dark:block" still={dark} />}
+    </>
+  );
+};
+
+export const HeroBlock = ({
+  title,
+  buttons,
+  badge,
+  dataSanity,
+  richText,
+  isFirst,
+  video,
+}: Readonly<HeroBlockProps>) => {
+  const banner = (
+    <>
+      <HeroPosters eager video={video} />
+      <HeroVideo className={bannerFill} video={video} />
+    </>
+  );
+
+  const copy = (
+    <div className="container grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:gap-12">
+      <div className="grid gap-5">
+        <BlockEyebrow eyebrow={badge} />
+        <h1 className="hero-enter text-foreground max-w-[827px] text-4xl leading-[1.1] font-normal tracking-[-0.24px] text-pretty break-words sm:text-5xl lg:text-[64px]">
+          {title}
+        </h1>
+        <RichText
+          className="body-text hero-enter text-muted-foreground max-w-[633px] [animation-delay:80ms]"
+          richText={richText}
+        />
+      </div>
+      <SanityButtons
+        buttonClassName="h-auto w-full px-5 py-2 text-xl leading-8 sm:w-auto"
+        buttons={buttons}
+        className="hero-enter gap-3 [animation-delay:160ms] sm:flex-row lg:justify-end"
+      />
+    </div>
+  );
+
+  if (!isFirst) {
+    return (
+      <section
+        className="bg-background relative flex min-h-svh flex-col"
+        id="hero"
+      >
+        <div className="relative min-h-0 flex-1 overflow-hidden">{banner}</div>
+        <div className="bg-background relative z-10 pt-6 pb-8 md:pt-8 md:pb-12">
+          {copy}
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <>
+      <div
+        className="hero-park bg-background relative z-0 h-[calc(100svh-var(--hero-copy))] overflow-hidden lg:sticky lg:top-0"
+        data-sanity={dataSanity}
+        id="hero"
+      >
+        <div className="hero-blur absolute inset-0">{banner}</div>
+      </div>
+      <div
+        className="bg-background relative z-10 pt-6 pb-8 md:pt-8 md:pb-12"
+        data-sanity={dataSanity}
+      >
+        {copy}
+      </div>
+    </>
+  );
+};

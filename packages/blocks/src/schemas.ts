@@ -1,13 +1,13 @@
-import { ctaSchema } from "./cta/schema";
-import { faqAccordionSchema } from "./faq-accordion/schema";
-import { featureCardsIconSchema } from "./feature-cards-icon/schema";
-import { heroSchema } from "./hero/schema";
-import { logoCloudSchema } from "./logo-cloud/schema";
-import { richTextBlockSchema } from "./rich-text-block/schema";
-import { showcaseGridSchema } from "./showcase-grid/schema";
-import { socialGridSchema } from "./social-grid/schema";
-import { subscribeNewsletterSchema } from "./subscribe-newsletter/schema";
-import { videoFeatureSchema } from "./video-feature/schema";
+import { ctaSchema } from "./blocks/cta/schema";
+import { faqAccordionSchema } from "./blocks/faq-accordion/schema";
+import { featureCardsIconSchema } from "./blocks/feature-cards-icon/schema";
+import { heroSchema } from "./blocks/hero/schema";
+import { logoCloudSchema } from "./blocks/logo-cloud/schema";
+import { richTextBlockSchema } from "./blocks/rich-text-block/schema";
+import { showcaseGridSchema } from "./blocks/showcase-grid/schema";
+import { socialGridSchema } from "./blocks/social-grid/schema";
+import { subscribeNewsletterSchema } from "./blocks/subscribe-newsletter/schema";
+import { videoFeatureSchema } from "./blocks/video-feature/schema";
 
 /**
  * Every page-builder block schema, in the order the Studio's insert menu

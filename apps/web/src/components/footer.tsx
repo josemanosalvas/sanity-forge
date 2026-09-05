@@ -5,9 +5,9 @@ import {
   RedditBrandIcon,
   XBrandIcon,
   YoutubeIcon,
-} from "@repo/blocks/internal/icons";
-import { normalizedLogoHeight } from "@repo/blocks/internal/logo-height";
-import { SanityImage } from "@repo/blocks/internal/sanity-image";
+} from "@repo/blocks/components/icons";
+import { SanityImage } from "@repo/blocks/components/sanity-image";
+import { normalizedLogoHeight } from "@repo/blocks/lib/logo-height";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { Fragment } from "react";

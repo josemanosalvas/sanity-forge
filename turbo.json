@@ -39,8 +39,8 @@
       "inputs": [
         "$TURBO_DEFAULT$",
         ".env",
-        "$TURBO_ROOT$/packages/blocks/src/**/schema.ts",
-        "$TURBO_ROOT$/packages/blocks/src/internal/**",
+        "$TURBO_ROOT$/packages/blocks/src/blocks/**/schema.ts",
+        "$TURBO_ROOT$/packages/blocks/src/lib/**",
         "$TURBO_ROOT$/packages/blocks/src/schemas.ts",
         "$TURBO_ROOT$/packages/internationalization/src/**"
       ],

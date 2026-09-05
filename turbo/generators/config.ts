@@ -88,44 +88,44 @@ const generator = (plop: PlopTypes.NodePlopAPI): void => {
   plop.setGenerator("block", {
     actions: [
       {
-        path: "packages/blocks/src/{{ name }}/schema.ts",
+        path: "packages/blocks/src/blocks/{{ name }}/schema.ts",
         templateFile: "templates/block/schema.ts.hbs",
         type: "add",
       },
       {
-        path: "packages/blocks/src/{{ name }}/query.ts",
+        path: "packages/blocks/src/blocks/{{ name }}/query.ts",
         templateFile: "templates/block/query.ts.hbs",
         type: "add",
       },
-      // The component file carries the component's name in kebab-case, like
-      // every other component module in the repository.
+      // The renderer is named after its folder so the `./*` export pattern
+      // resolves `@repo/blocks/<name>` to it.
       {
-        path: "packages/blocks/src/{{ name }}/{{ name }}.tsx",
+        path: "packages/blocks/src/blocks/{{ name }}/{{ name }}.tsx",
         templateFile: "templates/block/block.tsx.hbs",
         type: "add",
       },
       {
-        path: "packages/blocks/src/{{ name }}/{{ name }}.test.tsx",
+        path: "packages/blocks/src/blocks/{{ name }}/{{ name }}.test.tsx",
         templateFile: "templates/block/block.test.tsx.hbs",
         type: "add",
       },
       {
-        path: "packages/blocks/src/{{ name }}/{{ name }}.stories.tsx",
+        path: "packages/blocks/src/blocks/{{ name }}/{{ name }}.stories.tsx",
         templateFile: "templates/block/block.stories.tsx.hbs",
         type: "add",
       },
       {
-        path: "packages/blocks/src/{{ name }}/markdown.ts",
+        path: "packages/blocks/src/blocks/{{ name }}/markdown.ts",
         templateFile: "templates/block/markdown.ts.hbs",
         type: "add",
       },
       {
-        path: "packages/blocks/src/{{ name }}/markdown.test.ts",
+        path: "packages/blocks/src/blocks/{{ name }}/markdown.test.ts",
         templateFile: "templates/block/markdown.test.ts.hbs",
         type: "add",
       },
-      // Register the block in the schema list, the projection, the package
-      // exports and the Markdown dispatcher.
+      // Register the block in the schema list, the projection and the Markdown
+      // dispatcher; the wildcard package exports already cover the new files.
       {
         path: "packages/blocks/src/schemas.ts",
         pattern: /(?<anchor>export const blockSchemas = \[)/u,
@@ -134,17 +134,18 @@ const generator = (plop: PlopTypes.NodePlopAPI): void => {
       },
       {
         path: "packages/blocks/src/schemas.ts",
-        pattern: /(?<anchor>import \{ ctaSchema \} from "\.\/cta\/schema";)/u,
+        pattern:
+          /(?<anchor>import \{ ctaSchema \} from "\.\/blocks\/cta\/schema";)/u,
         template:
-          'import { {{ camelCase name }}Schema } from "./{{ name }}/schema";\n$<anchor>',
+          'import { {{ camelCase name }}Schema } from "./blocks/{{ name }}/schema";\n$<anchor>',
         type: "modify",
       },
       {
         path: "packages/blocks/src/queries.ts",
         pattern:
-          /(?<anchor>import \{ ctaGroqProjection \} from "\.\/cta\/query";)/u,
+          /(?<anchor>import \{ ctaGroqProjection \} from "\.\/blocks\/cta\/query";)/u,
         template:
-          'import { {{ camelCase name }}GroqProjection } from "./{{ name }}/query";\n$<anchor>',
+          'import { {{ camelCase name }}GroqProjection } from "./blocks/{{ name }}/query";\n$<anchor>',
         type: "modify",
       },
       {
@@ -155,22 +156,15 @@ const generator = (plop: PlopTypes.NodePlopAPI): void => {
         type: "modify",
       },
       {
-        path: "packages/blocks/package.json",
-        pattern: /(?<anchor> {4}"\.\/cta\/cta-block": )/u,
-        template:
-          '    "./{{ name }}/{{ name }}": "./src/{{ name }}/{{ name }}.tsx",\n$<anchor>',
-        type: "modify",
-      },
-      {
-        path: "packages/blocks/src/internal/page-builder-to-markdown.ts",
+        path: "packages/blocks/src/lib/page-builder-to-markdown.ts",
         pattern:
-          /(?<anchor>import \{ ctaToMarkdown \} from "\.\.\/cta\/markdown";)/u,
+          /(?<anchor>import \{ ctaToMarkdown \} from "\.\.\/blocks\/cta\/markdown";)/u,
         template:
-          'import { {{ camelCase name }}ToMarkdown } from "../{{ name }}/markdown";\n$<anchor>',
+          'import { {{ camelCase name }}ToMarkdown } from "../blocks/{{ name }}/markdown";\n$<anchor>',
         type: "modify",
       },
       {
-        path: "packages/blocks/src/internal/page-builder-to-markdown.ts",
+        path: "packages/blocks/src/lib/page-builder-to-markdown.ts",
         pattern: /(?<anchor>\n {4}default: \{)/u,
         template:
           '\n    case "{{ camelCase name }}": {\n      return {{ camelCase name }}ToMarkdown(block, options);\n    }$<anchor>',
@@ -178,7 +172,7 @@ const generator = (plop: PlopTypes.NodePlopAPI): void => {
       },
       (answers) =>
         format(
-          `packages/blocks/src/${String((answers as { name: string }).name)} packages/blocks/src`
+          `packages/blocks/src/blocks/${String((answers as { name: string }).name)} packages/blocks/src`
         ),
       () =>
         "Block scaffolded. Next: add a dynamic import and a `case` for it in apps/web/src/components/page-builder.tsx, then run `pnpm typegen`.",

@@ -8,45 +8,43 @@ import { sanityDataAttribute } from "@/lib/data-attribute";
 import type { PageBuilderBlock } from "@/types";
 
 const CTABlock = dynamic(async () => {
-  const block = await import("@repo/blocks/cta/cta-block");
+  const block = await import("@repo/blocks/cta");
   return block.CTABlock;
 });
 const FaqAccordion = dynamic(async () => {
-  const block = await import("@repo/blocks/faq-accordion/faq-accordion");
+  const block = await import("@repo/blocks/faq-accordion");
   return block.FaqAccordion;
 });
 const FeatureCardsWithIcon = dynamic(async () => {
-  const block =
-    await import("@repo/blocks/feature-cards-icon/feature-cards-with-icon");
+  const block = await import("@repo/blocks/feature-cards-icon");
   return block.FeatureCardsWithIcon;
 });
 const HeroBlock = dynamic(async () => {
-  const block = await import("@repo/blocks/hero/hero-block");
+  const block = await import("@repo/blocks/hero");
   return block.HeroBlock;
 });
 const LogoCloud = dynamic(async () => {
-  const block = await import("@repo/blocks/logo-cloud/logo-cloud");
+  const block = await import("@repo/blocks/logo-cloud");
   return block.LogoCloud;
 });
 const RichTextBlock = dynamic(async () => {
-  const block = await import("@repo/blocks/rich-text-block/rich-text-block");
+  const block = await import("@repo/blocks/rich-text-block");
   return block.RichTextBlock;
 });
 const ShowcaseGrid = dynamic(async () => {
-  const block = await import("@repo/blocks/showcase-grid/showcase-grid");
+  const block = await import("@repo/blocks/showcase-grid");
   return block.ShowcaseGrid;
 });
 const SocialGrid = dynamic(async () => {
-  const block = await import("@repo/blocks/social-grid/social-grid");
+  const block = await import("@repo/blocks/social-grid");
   return block.SocialGrid;
 });
 const SubscribeNewsletter = dynamic(async () => {
-  const block =
-    await import("@repo/blocks/subscribe-newsletter/subscribe-newsletter");
+  const block = await import("@repo/blocks/subscribe-newsletter");
   return block.SubscribeNewsletter;
 });
 const VideoFeature = dynamic(async () => {
-  const block = await import("@repo/blocks/video-feature/video-feature");
+  const block = await import("@repo/blocks/video-feature");
   return block.VideoFeature;
 });
 

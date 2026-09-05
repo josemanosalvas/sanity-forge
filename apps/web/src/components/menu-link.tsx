@@ -1,6 +1,6 @@
 "use client";
 
-import { SanityIcon } from "@repo/blocks/internal/sanity-icon";
+import { SanityIcon } from "@repo/blocks/components/sanity-icon";
 import Link from "next/link";
 
 export const MenuLink = ({
