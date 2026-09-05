@@ -1,6 +1,11 @@
 import { defineField, defineType } from "sanity";
 
 import { createRadioListLayout, isValidUrl } from "../../lib/helpers";
+import {
+  internalPageFilter,
+  linkedPageRule,
+  linkTypeRule,
+} from "../../lib/link-scope";
 
 const linkableTypes = [{ type: "page" }];
 
@@ -10,12 +15,15 @@ export const customUrl = defineType({
   fields: [
     defineField({
       description:
-        "Choose whether this link points to another page on this site (internal) or to a different website (external)",
+        "Internal points at a page of this site. External is any address: a full https:// URL, or a path such as /about. Shared content (FAQs) uses External only, because it is shown on more than one site.",
       initialValue: "external",
       name: "type",
       options: createRadioListLayout(["internal", "external"]),
       type: "string",
-      validation: (rule) => rule.required(),
+      validation: (rule) => [
+        rule.required(),
+        rule.custom((value, { document }) => linkTypeRule(value, document)),
+      ],
     }),
     defineField({
       description:
@@ -27,7 +35,7 @@ export const customUrl = defineType({
     }),
     defineField({
       description:
-        "Enter either a full web address (URL) starting with https:// for external sites, or a relative path like /about for internal pages",
+        "A full web address starting with https://, or a path such as /about. A path opens on whichever site shows this content; a full address always opens one site.",
       hidden: ({ parent }) => parent?.type !== "external",
       name: "external",
       title: "URL",
@@ -63,24 +71,21 @@ export const customUrl = defineType({
       name: "internal",
       options: {
         disableNew: true,
-        // Only pages of the document's own site can be linked; cross-site
-        // links are external links with a full URL.
-        filter: ({ document }) => {
-          const site = (document as { site?: string } | undefined)?.site;
-          return site
-            ? { filter: "site == $site", params: { site } }
-            : { filter: "defined(site)" };
-        },
+        // Only pages of the document's own site; none for shared content.
+        filter: ({ document }) => internalPageFilter(document),
       },
       to: linkableTypes,
       type: "reference",
       validation: (rule) => [
-        rule.custom((value, { parent }) => {
-          const type = (parent as { type?: string })?.type;
-          if (type === "internal" && !value?._ref) {
+        rule.custom((value, context) => {
+          const type = (context.parent as { type?: string })?.type;
+          if (type !== "internal") {
+            return true;
+          }
+          if (!value?._ref) {
             return "internal can't be empty";
           }
-          return true;
+          return linkedPageRule(value, context);
         }),
       ],
     }),

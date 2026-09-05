@@ -1,6 +1,10 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, test } from "vitest";
 
+import {
+  BlockLabelsProvider,
+  defaultBlockLabels,
+} from "../../components/block-labels";
 import { VideoFeature } from "./video-feature";
 
 const render = (props: Parameters<typeof VideoFeature>[0]) =>
@@ -110,5 +114,22 @@ describe(VideoFeature, () => {
 
     expect(label).toBe("Play video: The tour");
     expect(html).toContain(zeroWidth);
+  });
+
+  test("VideoFeature names the play button in the labels the site provides", () => {
+    const html = renderToStaticMarkup(
+      <BlockLabelsProvider
+        labels={{
+          ...defaultBlockLabels,
+          playVideo: (title) =>
+            title ? `Video abspielen: ${title}` : "Video abspielen",
+        }}
+      >
+        <VideoFeature title="Die Tour" video={{ asset: READY }} />
+      </BlockLabelsProvider>
+    );
+
+    expect(html).toMatch(/aria-label="Video abspielen: Die Tour"/u);
+    expect(html).not.toMatch(/Play video/u);
   });
 });

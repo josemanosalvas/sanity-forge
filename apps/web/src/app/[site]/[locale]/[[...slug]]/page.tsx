@@ -18,7 +18,11 @@ import { PageBuilderJsonLd } from "@/components/page-builder-json-ld";
 import { RegisterTranslations } from "@/components/translations";
 import { fetchPage } from "@/lib/content";
 import { pageMetadata } from "@/lib/seo";
-import { getSiteContext, toQueryParams } from "@/lib/site-context";
+import {
+  getSiteContext,
+  toQueryParams,
+  toSettingsParams,
+} from "@/lib/site-context";
 import type { SiteQueryParams } from "@/types";
 
 type Params = Awaited<PageProps<"/[site]/[locale]/[[...slug]]">["params"]>;
@@ -73,7 +77,7 @@ export const generateMetadata = async ({
       query: pageQuery,
     }),
     sanityFetchMetadata({
-      params: queryParams,
+      params: toSettingsParams(context),
       perspective,
       query: settingsQuery,
     }),

@@ -1,6 +1,10 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, test } from "vitest";
 
+import {
+  BlockLabelsProvider,
+  defaultBlockLabels,
+} from "../../components/block-labels";
 import { SubscribeNewsletter } from "./subscribe-newsletter";
 
 describe(SubscribeNewsletter, () => {
@@ -39,5 +43,30 @@ describe(SubscribeNewsletter, () => {
     expect(html).toContain('action="/api/subscribe"');
     expect(html).toContain('method="post"');
     expect(html).toMatch(/No spam, ever/u);
+  });
+
+  test("renders the form controls in the labels the site provides", () => {
+    const html = renderToStaticMarkup(
+      <BlockLabelsProvider
+        labels={{
+          ...defaultBlockLabels,
+          newsletter: {
+            emailLabel: "E-Mail-Adresse",
+            emailPlaceholder: "E-Mail-Adresse eingeben",
+            subscribe: "Abonnieren",
+            subscribeToNewsletter: "Newsletter abonnieren",
+            subscribing: "Wird abonniert…",
+          },
+        }}
+      >
+        <SubscribeNewsletter action="/api/subscribe" title="Newsletter" />
+      </BlockLabelsProvider>
+    );
+
+    expect(html).toContain('aria-label="E-Mail-Adresse"');
+    expect(html).toContain('placeholder="E-Mail-Adresse eingeben"');
+    expect(html).toContain('aria-label="Newsletter abonnieren"');
+    expect(html).toContain(">Abonnieren<");
+    expect(html).not.toMatch(/Subscribe/u);
   });
 });

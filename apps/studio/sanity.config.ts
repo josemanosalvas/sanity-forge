@@ -1,3 +1,4 @@
+import { isSingletonType } from "@repo/blocks/lib/singletons";
 import { siteList } from "@repo/internationalization/sites";
 import type { Site } from "@repo/internationalization/sites";
 import { lucideIconPicker } from "@robotostudio/sanity-plugin-lucide-icon-picker";
@@ -48,6 +49,11 @@ const createWorkspace = (site: Site): WorkspaceOptions => {
     basePath: `/${site.key}`,
     dataset,
     document: {
+      // A singleton lives under one ID per scope; a duplicate would never be read.
+      actions: (prev, { schemaType }) =>
+        isSingletonType(schemaType)
+          ? prev.filter(({ action }) => action !== "duplicate")
+          : prev,
       newDocumentOptions: (prev, { creationContext }) => {
         if (creationContext.type === "global") {
           return prev.filter(

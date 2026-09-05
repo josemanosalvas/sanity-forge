@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 
+import { useBlockLabels } from "../../components/block-labels";
 import { LogoLinkCell } from "../../components/logo-link-cell";
 import type { SanityImageData } from "../../components/sanity-image";
 import { normalizedLogoHeight } from "../../lib/logo-height";
@@ -41,6 +42,7 @@ const HOVER_PLAYBACK_RATE = 0.6;
 const CYCLE_CLASS = "flex shrink-0 items-center gap-12 pr-12";
 
 export const LogoCloud = ({ logos }: Readonly<LogoCloudProps>) => {
+  const labels = useBlockLabels();
   const trackRef = useRef<HTMLDivElement>(null);
 
   if (!(Array.isArray(logos) && logos.length > 0)) {
@@ -60,7 +62,7 @@ export const LogoCloud = ({ logos }: Readonly<LogoCloudProps>) => {
   return (
     // oxlint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- hover only slows the decorative marquee; keyboard users are unaffected
     <section
-      aria-label="Logo cloud"
+      aria-label={labels.logoCloud}
       className="bg-highlight overflow-hidden py-6"
       id="logo-cloud"
       onMouseEnter={() => setPlaybackRate(HOVER_PLAYBACK_RATE)}

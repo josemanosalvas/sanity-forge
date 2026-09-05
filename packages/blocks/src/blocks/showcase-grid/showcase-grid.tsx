@@ -1,5 +1,8 @@
+"use client";
+
 import { cn } from "cn";
 
+import { useBlockLabels } from "../../components/block-labels";
 import { resolveAssetId, SanityImage } from "../../components/sanity-image";
 import type { SanityImageData } from "../../components/sanity-image";
 import { normalizedLogoHeight } from "../../lib/logo-height";
@@ -185,6 +188,7 @@ const FeaturedBanner = ({
   featured,
   side = "left",
 }: Readonly<{ featured: CardView; side?: "left" | "right" }>) => {
+  const labels = useBlockLabels();
   const panelRight = side === "right";
   const clickable = Boolean(featured.url);
 
@@ -261,7 +265,7 @@ const FeaturedBanner = ({
           rel="noopener noreferrer"
           target="_blank"
         >
-          <span className="sr-only">{`Visit ${featured.name}`}</span>
+          <span className="sr-only">{labels.visit(featured.name)}</span>
           {inner}
         </a>
       ) : (
@@ -314,6 +318,7 @@ const CardCaption = ({
 };
 
 const ShowcaseCard = ({ item }: Readonly<{ item: CardView }>) => {
+  const labels = useBlockLabels();
   const clickable = Boolean(item.url);
 
   const body = (
@@ -341,7 +346,7 @@ const ShowcaseCard = ({ item }: Readonly<{ item: CardView }>) => {
         rel="noopener noreferrer"
         target="_blank"
       >
-        <span className="sr-only">{`Visit ${item.name}`}</span>
+        <span className="sr-only">{labels.visit(item.name)}</span>
         {body}
       </a>
     );
@@ -359,8 +364,9 @@ export const ShowcaseGrid = ({
   description,
   items,
 }: Readonly<ShowcaseGridProps>) => {
+  const labels = useBlockLabels();
   const cmsItems = items ?? [];
-  const label = title?.trim() || "Showcase";
+  const label = title?.trim() || labels.showcase;
   const allViews = cmsItems.map(cmsToView);
 
   const explicitFeaturedKeys = new Set(

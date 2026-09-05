@@ -17,6 +17,7 @@ import { draftMode } from "next/headers";
 import { Suspense } from "react";
 import { preconnect, prefetchDNS } from "react-dom";
 
+import { BlockLabels } from "@/components/block-labels";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { PreviewBar } from "@/components/preview-bar";
@@ -24,7 +25,11 @@ import { SiteJsonLd } from "@/components/site-json-ld";
 import { TranslationsProvider } from "@/components/translations";
 import { fetchFooter, fetchNavigation, fetchSettings } from "@/lib/content";
 import { siteMetadata } from "@/lib/seo";
-import { getSiteContext, toQueryParams } from "@/lib/site-context";
+import {
+  getSiteContext,
+  toQueryParams,
+  toSettingsParams,
+} from "@/lib/site-context";
 import type { SiteContext } from "@/types";
 
 const fontSans = Geist({ subsets: ["latin"], variable: "--font-sans" });
@@ -42,7 +47,7 @@ export const generateMetadata = async () => {
     getDynamicFetchOptions(),
   ]);
   const { data: settings } = await sanityFetchMetadata({
-    params: toQueryParams(context),
+    params: toSettingsParams(context),
     perspective,
     query: settingsQuery,
   });
@@ -104,51 +109,53 @@ const RootLayout = async ({ children }: LayoutProps<"/[site]/[locale]">) => {
       >
         <UIProvider>
           <NextIntlClientProvider>
-            <SiteProvider site={context.site}>
-              <TranslationsProvider>
-                <AnalyticsProvider>
-                  {isDraftMode ? (
-                    <Suspense fallback={<HeaderFallback />}>
-                      <DynamicHeader context={context} />
-                    </Suspense>
-                  ) : (
-                    <CachedHeader
+            <BlockLabels>
+              <SiteProvider site={context.site}>
+                <TranslationsProvider>
+                  <AnalyticsProvider>
+                    {isDraftMode ? (
+                      <Suspense fallback={<HeaderFallback />}>
+                        <DynamicHeader context={context} />
+                      </Suspense>
+                    ) : (
+                      <CachedHeader
+                        context={context}
+                        perspective="published"
+                        stega={false}
+                      />
+                    )}
+                    <main className="min-h-dvh" id="main">
+                      {children}
+                    </main>
+                    {isDraftMode ? (
+                      <Suspense fallback={<FooterFallback />}>
+                        <DynamicFooter context={context} />
+                      </Suspense>
+                    ) : (
+                      <CachedFooter
+                        context={context}
+                        perspective="published"
+                        stega={false}
+                      />
+                    )}
+                    {/* Structured data is for crawlers, which never hold a draft session. */}
+                    <SiteJsonLd
                       context={context}
                       perspective="published"
                       stega={false}
                     />
-                  )}
-                  <main className="min-h-dvh" id="main">
-                    {children}
-                  </main>
-                  {isDraftMode ? (
-                    <Suspense fallback={<FooterFallback />}>
-                      <DynamicFooter context={context} />
-                    </Suspense>
-                  ) : (
-                    <CachedFooter
-                      context={context}
-                      perspective="published"
-                      stega={false}
-                    />
-                  )}
-                  {/* Structured data is for crawlers, which never hold a draft session. */}
-                  <SiteJsonLd
-                    context={context}
-                    perspective="published"
-                    stega={false}
-                  />
-                  {/* The default Live action handles refresh and invalidation for each mode. */}
-                  <SanityLive includeDrafts={isDraftMode} />
-                  {isDraftMode && (
-                    <>
-                      <PreviewBar />
-                      <VisualEditing />
-                    </>
-                  )}
-                </AnalyticsProvider>
-              </TranslationsProvider>
-            </SiteProvider>
+                    {/* The default Live action handles refresh and invalidation for each mode. */}
+                    <SanityLive includeDrafts={isDraftMode} />
+                    {isDraftMode && (
+                      <>
+                        <PreviewBar />
+                        <VisualEditing />
+                      </>
+                    )}
+                  </AnalyticsProvider>
+                </TranslationsProvider>
+              </SiteProvider>
+            </BlockLabels>
           </NextIntlClientProvider>
         </UIProvider>
       </body>

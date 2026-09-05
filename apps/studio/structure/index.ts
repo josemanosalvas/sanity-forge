@@ -1,8 +1,14 @@
+import {
+  localizedSingletonId,
+  settingsDocumentId,
+} from "@repo/blocks/lib/singletons";
+import type { LocalizedSingletonType } from "@repo/blocks/lib/singletons";
 import { localeLabels } from "@repo/internationalization/locales";
 import type { Locale } from "@repo/internationalization/locales";
 import type { Site } from "@repo/internationalization/sites";
 import {
   Cog,
+  EyeOff,
   File,
   Folder,
   Languages,
@@ -25,10 +31,14 @@ export const templateIds = {
   settings: "settings-by-site",
 } as const;
 
-export const settingsDocumentId = (site: Site) => `settings-${site.key}`;
-
-/** One list per language for a site-scoped, document-localized type. */
-const languageLists = (
+/**
+ * One document per language for a localized singleton. Opening a language
+ * opens the document the site reads for it, created from the template on
+ * first use; there is no list to add a second one to. Documents of the type
+ * under any other ID are never read, so they are listed at the end where an
+ * editor can find and delete them.
+ */
+const languageDocuments = (
   S: StructureBuilder,
   site: Site,
   {
@@ -36,30 +46,55 @@ const languageLists = (
     title,
     templateId,
     icon,
-  }: { type: string; title: string; templateId: string; icon: typeof File }
-) =>
-  site.locales.map((language: Locale) =>
+  }: {
+    type: LocalizedSingletonType;
+    title: string;
+    templateId: string;
+    icon: typeof File;
+  }
+) => {
+  const ids = site.locales.map((language) =>
+    localizedSingletonId(type, site.key, language)
+  );
+  return [
+    ...site.locales.map((language: Locale) =>
+      S.listItem()
+        .id(`${type}-${language}`)
+        .title(localeLabels[language])
+        .icon(icon)
+        .child(
+          S.document()
+            .id(`${type}-${language}`)
+            .schemaType(type)
+            .documentId(localizedSingletonId(type, site.key, language))
+            .title(`${title} (${language.toUpperCase()})`)
+            .initialValueTemplate(templateId, { language, site: site.key })
+        )
+    ),
+    S.divider(),
     S.listItem()
-      .id(`${type}-${language}`)
-      .title(localeLabels[language])
-      .icon(icon)
+      .id(`${type}-unused`)
+      .title("Not shown on the site")
+      .icon(EyeOff)
       .child(
         S.documentList()
           .apiVersion(API_VERSION)
-          .id(`${type}-${language}`)
-          .title(`${title} (${language.toUpperCase()})`)
+          .id(`${type}-unused`)
+          .title(`${title} documents the site never reads`)
           .schemaType(type)
-          .filter("_type == $type && site == $site && language == $language")
-          .params({ language, site: site.key, type })
+          .filter(
+            "_type == $type && site == $site && !(_id in $ids) && !(_id in $draftIds)"
+          )
+          .params({
+            draftIds: ids.map((id) => `drafts.${id}`),
+            ids,
+            site: site.key,
+            type,
+          })
           .defaultOrdering([{ direction: "desc", field: "_updatedAt" }])
-          .initialValueTemplates([
-            S.initialValueTemplateItem(templateId, {
-              language,
-              site: site.key,
-            }),
-          ])
-      )
-  );
+      ),
+  ];
+};
 
 const pagesForLanguage = (S: StructureBuilder, site: Site, language: Locale) =>
   S.listItem()
@@ -138,7 +173,7 @@ export const createStructure =
               .id("navigation")
               .title("Navigation")
               .items(
-                languageLists(S, site, {
+                languageDocuments(S, site, {
                   icon: PanelTop,
                   templateId: templateIds.navigation,
                   title: "Navigation",
@@ -155,7 +190,7 @@ export const createStructure =
               .id("footer")
               .title("Footer")
               .items(
-                languageLists(S, site, {
+                languageDocuments(S, site, {
                   icon: PanelBottom,
                   templateId: templateIds.footer,
                   title: "Footer",
@@ -170,7 +205,7 @@ export const createStructure =
           .child(
             S.document()
               .schemaType("settings")
-              .documentId(settingsDocumentId(site))
+              .documentId(settingsDocumentId(site.key))
               .initialValueTemplate(templateIds.settings, { site: site.key })
           ),
         S.listItem()

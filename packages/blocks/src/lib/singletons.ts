@@ -8,7 +8,10 @@ export const LOCALIZED_SINGLETON_TYPES = ["navigation", "footer"] as const;
 
 export type LocalizedSingletonType = (typeof LOCALIZED_SINGLETON_TYPES)[number];
 
-export const SINGLETON_TYPES = [...LOCALIZED_SINGLETON_TYPES, "settings"] as const;
+export const SINGLETON_TYPES = [
+  ...LOCALIZED_SINGLETON_TYPES,
+  "settings",
+] as const;
 
 export type SingletonType = (typeof SINGLETON_TYPES)[number];
 

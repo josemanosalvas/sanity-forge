@@ -2,6 +2,7 @@ import { imageWithAltField } from "@repo/blocks/lib/schema-fields";
 import { Cog } from "lucide-react";
 import { defineField, defineType } from "sanity";
 
+import { singletonIdRule } from "../../lib/singletons";
 import { siteField } from "../fields/site";
 
 const socialLinks = defineField({
@@ -164,4 +165,5 @@ export const settings = defineType({
   },
   title: "Site Settings",
   type: "document",
+  validation: singletonIdRule("settings"),
 });

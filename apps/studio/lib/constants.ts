@@ -26,13 +26,14 @@ export const GROUPS: FieldGroupDefinition[] = [
   },
 ];
 
-/** Document types that are localized per document via @sanity/document-internationalization. */
-export const TRANSLATED_TYPES = [
-  "page",
-  "navigation",
-  "footer",
-  "faq",
-] as const;
+/**
+ * Document types the document-internationalization plugin manages. Navigation
+ * and footer are localized too, but as singletons: the Structure opens one
+ * fixed document per language, so the plugin's "create translation", which
+ * makes a new document under a random ID the site would never read, must not
+ * apply to them.
+ */
+export const TRANSLATED_TYPES = ["page", "faq"] as const;
 
 /** Document types that belong to exactly one site (they carry a `site` key). */
 export const SITE_SCOPED_TYPES = [

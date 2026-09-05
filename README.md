@@ -29,15 +29,19 @@ Configure domains and locales in [`sites.ts`](packages/internationalization/src/
 
 Public URLs have no site prefix. The default locale is unprefixed (`/pricing`); other locales are prefixed (`/de/preise`). CMS slugs are localized per document.
 
-| Document               | Scope                                       |
-| ---------------------- | ------------------------------------------- |
-| `page`                 | Site and locale; slug `/` is the home page  |
-| `navigation`, `footer` | Expected once per site and locale           |
-| `settings`             | One per site, with localized string fields  |
-| `faq`                  | Localized per document, shared across sites |
-| `redirect`             | Site; applied at build time                 |
+| Document | Scope |
+| --- | --- |
+| `page` | Site and locale; slug `/` is the home page |
+| `navigation`, `footer` | One per site and locale, at `navigation-<site>-<locale>` and `footer-<site>-<locale>` |
+| `settings` | One per site, at `settings-<site>`, with localized string fields |
+| `faq` | Localized per document, shared across sites; links by address, never to one site's page |
+| `redirect` | Site; applied at build time |
 
 GROQ-projected links already include the destination locale: render them with `next/link`. Use `@repo/internationalization/navigation`'s `Link` for app-authored paths without locale prefixes.
+
+Navigation, footer and settings are singletons: their IDs derive from the site and locale (`@repo/blocks/lib/singletons`), the Studio opens those documents directly instead of listing them, the queries read them by ID, the duplicate action is off, and a document under any other ID fails validation and appears under "Not shown on the site".
+
+Links never cross sites. The Studio offers a document only its own site's pages, and a reference that still points at another site's page (a page moved after it was linked) projects as `null` and renders as a broken link. Shared content (FAQs) is shown on several sites, so it links by address instead: a path such as `/about` opens on whichever site shows it, a full URL pins one site.
 
 ## Development
 
@@ -64,7 +68,7 @@ Import concrete modules through package exports, such as `@repo/blocks/hero` or 
 
 Sentry and Google Analytics activate when configured in `apps/web/.env`. Vercel Analytics is enabled by default; disable it with `NEXT_PUBLIC_VERCEL_ANALYTICS=false`. See the `.env.example` files for all options.
 
-The newsletter block needs an `action` or `onSubmit` handler to render a subscription form. Markdown serializers are available per block; there is no Markdown HTTP route.
+The newsletter block needs an `action` or `onSubmit` handler to render a subscription form. The strings blocks render themselves (form labels, the copy and play buttons, screen-reader text) come from the `blocks` namespace of `packages/internationalization/messages/` through `BlockLabelsProvider` (`@repo/blocks/components/block-labels`), which the layout mounts; without a provider, as in Storybook, the English defaults apply. Markdown serializers are available per block; there is no Markdown HTTP route.
 
 ## Caching and previews
 

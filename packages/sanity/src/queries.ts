@@ -76,8 +76,13 @@ export const sitemapQuery = defineQuery(`
   }
 `);
 
+/**
+ * Navigation, footer and settings are singletons read by the ID their scope
+ * derives (`@repo/blocks/lib/singletons`), so the Studio and the site agree on
+ * the document; the scope filters stay as a guard.
+ */
 export const navigationQuery = defineQuery(`
-  *[_type == "navigation" && site == $site && language == $locale][0]{
+  *[_type == "navigation" && _id == $id && site == $site && language == $locale][0]{
     _id,
     columns[]{
       _key,
@@ -104,7 +109,7 @@ export const navigationQuery = defineQuery(`
 `);
 
 export const footerQuery = defineQuery(`
-  *[_type == "footer" && site == $site && language == $locale][0]{
+  *[_type == "footer" && _id == $id && site == $site && language == $locale][0]{
     _id,
     subtitle,
     columns[]{
@@ -129,7 +134,7 @@ export const footerQuery = defineQuery(`
 `);
 
 export const settingsQuery = defineQuery(`
-  *[_type == "settings" && site == $site][0]{
+  *[_type == "settings" && _id == $id && site == $site][0]{
     _id,
     _type,
     site,

@@ -6,9 +6,10 @@ import {
 import { defineField } from "sanity";
 
 /**
- * Managed by @sanity/document-internationalization (`languageField`). Hidden
- * from editors; the plugin sets it when a translation is created. The custom
- * rule keeps a site from receiving a translation in a locale it doesn't serve.
+ * Hidden from editors. @sanity/document-internationalization sets it when a
+ * page or FAQ translation is created; navigation and footer receive it from
+ * the Structure's template. The custom rule keeps a site from receiving a
+ * document in a locale it doesn't serve.
  */
 export const languageField = defineField({
   hidden: true,

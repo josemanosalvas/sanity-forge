@@ -2,6 +2,7 @@ import { imageWithAltField } from "@repo/blocks/lib/schema-fields";
 import { BadgeCheck, LayoutPanelLeft, Link, PanelBottom } from "lucide-react";
 import { defineArrayMember, defineField, defineType } from "sanity";
 
+import { singletonIdRule } from "../../lib/singletons";
 import { languageField } from "../fields/language";
 import { siteField } from "../fields/site";
 
@@ -115,7 +116,7 @@ const footerColumn = defineArrayMember({
   type: "object",
 });
 
-/** The footer of one site in one language, localized per document like the navigation. */
+/** The footer of one site in one language: one document per site and language, like the navigation. */
 export const footer = defineType({
   description: "Footer content of a site for one language",
   fields: [
@@ -166,4 +167,5 @@ export const footer = defineType({
   },
   title: "Footer",
   type: "document",
+  validation: singletonIdRule("footer"),
 });

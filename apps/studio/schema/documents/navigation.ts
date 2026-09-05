@@ -3,6 +3,7 @@ import { LayoutPanelLeft, Link, PanelTop } from "lucide-react";
 import { defineArrayMember, defineField, defineType } from "sanity";
 
 import { lucideIconPreview } from "../../components/icon-preview";
+import { singletonIdRule } from "../../lib/singletons";
 import { languageField } from "../fields/language";
 import { siteField } from "../fields/site";
 
@@ -136,8 +137,9 @@ const navigationColumn = defineArrayMember({
 });
 
 /**
- * The main navigation of one site in one language. Localized per document:
- * each language links to that language's pages and is published on its own.
+ * The main navigation of one site in one language: one document per site and
+ * language, under the ID `navigation-<site>-<language>` the site reads. Each
+ * language links to that language's pages and is published on its own.
  */
 export const navigation = defineType({
   description: "Configure the main navigation of a site for one language",
@@ -168,4 +170,5 @@ export const navigation = defineType({
   },
   title: "Navigation",
   type: "document",
+  validation: singletonIdRule("navigation"),
 });

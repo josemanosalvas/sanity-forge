@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "cn";
 import { PortableText } from "next-sanity";
 import type {
@@ -5,12 +7,49 @@ import type {
   PortableTextReactComponents,
 } from "next-sanity";
 import Link from "next/link";
+import type { ReactNode } from "react";
 
 import { headingChildrenToSlug as parseChildrenToSlug } from "../lib/heading-slug";
 import { sanitizeHref } from "../lib/safe-href";
+import { useBlockLabels } from "./block-labels";
 import { CodeBlock } from "./code-block";
 import { SanityImage } from "./sanity-image";
 import { TableBlock } from "./table-block";
+
+interface CustomLinkValue {
+  href?: string | null;
+  openInNewTab?: boolean | null;
+}
+
+const CustomLinkMark = ({
+  children,
+  value,
+}: Readonly<{ children?: ReactNode; value?: CustomLinkValue }>) => {
+  const labels = useBlockLabels();
+  const safeHref = sanitizeHref(value?.href);
+  if (!safeHref || safeHref === "#") {
+    return (
+      <span className="underline decoration-dotted underline-offset-2">
+        {labels.linkBroken}
+      </span>
+    );
+  }
+  return (
+    // The anchor text is the accessible name; an `aria-label` would replace it.
+    <Link
+      className="underline decoration-dotted underline-offset-2"
+      href={safeHref}
+      prefetch={false}
+      rel={value?.openInNewTab ? "noopener noreferrer" : undefined}
+      target={value?.openInNewTab ? "_blank" : "_self"}
+    >
+      {children}
+      {value?.openInNewTab ? (
+        <span className="sr-only"> {labels.opensInNewTab}</span>
+      ) : null}
+    </Link>
+  );
+};
 
 const components: Partial<PortableTextReactComponents> = {
   block: {
@@ -83,30 +122,7 @@ const components: Partial<PortableTextReactComponents> = {
         {children}
       </code>
     ),
-    customLink: ({ children, value }) => {
-      const safeHref = sanitizeHref(value.href);
-      if (!safeHref || safeHref === "#") {
-        return (
-          <span className="underline decoration-dotted underline-offset-2">
-            Link Broken
-          </span>
-        );
-      }
-      return (
-        <Link
-          className="underline decoration-dotted underline-offset-2"
-          href={safeHref}
-          prefetch={false}
-          rel={value.openInNewTab ? "noopener noreferrer" : undefined}
-          target={value.openInNewTab ? "_blank" : "_self"}
-        >
-          {children}
-          {value.openInNewTab ? (
-            <span className="sr-only"> (opens in a new tab)</span>
-          ) : null}
-        </Link>
-      );
-    },
+    customLink: CustomLinkMark,
   },
   types: {
     code: ({ value }) => {

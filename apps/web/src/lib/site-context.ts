@@ -1,3 +1,4 @@
+import { settingsDocumentId } from "@repo/blocks/lib/singletons";
 import {
   getDefaultLocale,
   isSiteKey,
@@ -30,4 +31,10 @@ export const toQueryParams = ({
   defaultLocale,
   locale,
   site: site.key,
+});
+
+/** The parameters of `settingsQuery`, which reads the site's one settings document by ID. */
+export const toSettingsParams = (context: SiteContext) => ({
+  ...toQueryParams(context),
+  id: settingsDocumentId(context.site.key),
 });

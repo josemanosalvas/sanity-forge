@@ -46,7 +46,10 @@ export const singletonIdRule =
   (type: SingletonType) =>
   (rule: DocumentRule): DocumentRule =>
     rule.custom((document) => {
-      const expected = expectedSingletonId(type, document ?? {});
+      const expected = expectedSingletonId(type, {
+        language: document?.language,
+        site: document?.site,
+      });
       if (!(document?._id && expected)) {
         return true;
       }

@@ -3,11 +3,13 @@ import { describe, expect, test } from "vitest";
 
 import { expectedSingletonId, singletonIdRule } from "./singletons";
 
-type Validator = (document: Record<string, unknown> | undefined) => unknown;
+type Validator = (document?: Record<string, unknown>) => unknown;
+
+const passes: Validator = () => true;
 
 /** Runs the rule's custom validator directly. */
 const validator = (type: Parameters<typeof singletonIdRule>[0]): Validator => {
-  let custom: Validator = () => true;
+  let custom = passes;
   const rule = {
     custom: (fn: Validator) => {
       custom = fn;
@@ -32,7 +34,9 @@ describe(expectedSingletonId, () => {
   });
 
   test("has no answer while the scope is unknown or incomplete", () => {
-    expect(expectedSingletonId("settings", { site: "brand-z" })).toBeUndefined();
+    expect(
+      expectedSingletonId("settings", { site: "brand-z" })
+    ).toBeUndefined();
     expect(
       expectedSingletonId("navigation", { site: "brand-a" })
     ).toBeUndefined();
@@ -47,7 +51,7 @@ describe(singletonIdRule, () => {
     "drafts.navigation-brand-a-de",
     "versions.r1.navigation-brand-a-de",
   ])("accepts every version of the document the site reads (%s)", (_id) => {
-    expect(validate({ _id, language: "de", site: "brand-a" })).toBe(true);
+    expect(validate({ _id, language: "de", site: "brand-a" })).toBeTruthy();
   });
 
   test("rejects a document the site never reads and says where the real one is", () => {
@@ -62,15 +66,15 @@ describe(singletonIdRule, () => {
   });
 
   test("leaves an incomplete scope to the site and language rules", () => {
-    expect(validate({ _id: "anything", site: "brand-a" })).toBe(true);
-    expect(validate(undefined)).toBe(true);
+    expect(validate({ _id: "anything", site: "brand-a" })).toBeTruthy();
+    expect(validate()).toBeTruthy();
   });
 
   test("settings are scoped by site alone", () => {
     const validateSettings = validator("settings");
-    expect(validateSettings({ _id: "settings-brand-b", site: "brand-b" })).toBe(
-      true
-    );
+    expect(
+      validateSettings({ _id: "settings-brand-b", site: "brand-b" })
+    ).toBeTruthy();
     expect(
       validateSettings({ _id: "settings-copy", site: "brand-b" })
     ).toContain("Site settings");

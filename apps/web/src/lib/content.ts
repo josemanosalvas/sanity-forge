@@ -1,3 +1,7 @@
+import {
+  localizedSingletonId,
+  settingsDocumentId,
+} from "@repo/blocks/lib/singletons";
 import { sanityFetch } from "@repo/sanity/live";
 import type { DynamicFetchOptions } from "@repo/sanity/live";
 import {
@@ -45,7 +49,7 @@ export const fetchSettings = async ({
 }: Scoped) => {
   "use cache";
   const { data } = await sanityFetch({
-    params: { defaultLocale, locale, site },
+    params: { defaultLocale, id: settingsDocumentId(site), locale, site },
     perspective,
     query: settingsQuery,
     stega,
@@ -59,7 +63,12 @@ export const fetchNavigation = async (options: Scoped) => {
   const { site, locale, defaultLocale, perspective, stega, variant } = options;
   const [navigation, settings] = await Promise.all([
     sanityFetch({
-      params: { defaultLocale, locale, site },
+      params: {
+        defaultLocale,
+        id: localizedSingletonId("navigation", site, locale),
+        locale,
+        site,
+      },
       perspective,
       query: navigationQuery,
       stega,
@@ -80,7 +89,12 @@ export const fetchFooter = async ({
 }: Scoped) => {
   "use cache";
   const { data } = await sanityFetch({
-    params: { defaultLocale, locale, site },
+    params: {
+      defaultLocale,
+      id: localizedSingletonId("footer", site, locale),
+      locale,
+      site,
+    },
     perspective,
     query: footerQuery,
     stega,
