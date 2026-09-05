@@ -23,13 +23,21 @@ const hasFiles = (variant?: HeroVariantValue) =>
   Boolean(variant?.webm || variant?.hevc || variant?.mobileWebm);
 
 /**
- * Absent on everything authored before this field existed, so the renderer
- * infers rather than defaults — see `mediaTypeOf` in `hero-video`. Kept in one
- * place so schema, validation and render agree on what a blank value means.
+ * Absent on everything authored before this field existed. Infer it the way
+ * the renderer does (`mediaTypeOf` in `./media-type`): a Mux asset means Mux,
+ * anything else means the uploaded files, so the Studio shows and validates
+ * the fields that are actually being served.
  */
-const selected = (variant?: HeroVariantValue) => {
+const selected = (
+  variant?: HeroVariantValue
+): (typeof HERO_MEDIA_TYPES)[number] => {
   const type = variant?.mediaType;
-  return type === "sanity" || type === "mux-mp4" ? type : "mux";
+  if (type === "sanity" || type === "mux-mp4" || type === "mux") {
+    return type;
+  }
+  // The Studio only sees the reference; the renderer also needs a public,
+  // ready playback ID, so a broken Mux asset still plays the files on the site.
+  return variant?.mux?.asset ? "mux" : "sanity";
 };
 
 /** Hides a field unless one of the listed paths is the one selected. */
@@ -53,10 +61,6 @@ const videoVariantFields = () => [
   defineField({
     description:
       "Where this background is served from. Mux encodes one upload for every device. Sanity serves the files you upload below, exactly as encoded.",
-    // Measured: the hand-encoded set is smaller and sharper than either Mux
-    // path on this hero — 2.02 MB at 3408x2160 against 2.92 MB at 1704x1080 —
-    // and ships no player. Mux earns its place on video blocks an editor
-    // uploads to often, not on the one clip that autoplays on every visit.
     initialValue: "sanity",
     name: "mediaType",
     options: {
