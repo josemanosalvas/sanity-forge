@@ -1,7 +1,7 @@
 import { isLocale } from "@repo/internationalization/locales";
 import type { SettingsQueryResult } from "@repo/sanity/types";
-import { createMetadata } from "@repo/seo";
-import type { RouteAlternate } from "@repo/seo";
+import { createMetadata } from "@repo/seo/metadata";
+import type { RouteAlternate } from "@repo/seo/route";
 import type { Metadata } from "next";
 
 import type { PageDocument, SiteContext } from "@/types";

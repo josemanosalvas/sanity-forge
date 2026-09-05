@@ -3,7 +3,7 @@ import { defineField, defineType } from "sanity";
 
 import { parseRichTextToString } from "../../lib/helpers";
 import { customRichText } from "../definitions/rich-text";
-import { languageField } from "../fields";
+import { languageField } from "../fields/language";
 
 /** Shared across sites; localized per document so each language is published independently. */
 export const faq = defineType({

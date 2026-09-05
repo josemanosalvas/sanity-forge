@@ -3,7 +3,7 @@ import {
   rewriteToSiteRoute,
 } from "@repo/internationalization/proxy";
 import { siteKeys } from "@repo/internationalization/sites";
-import { applySecurityHeaders } from "@repo/security/proxy";
+import { applySecurityHeaders } from "@repo/security/headers";
 import { NextResponse } from "next/server";
 import type { NextProxy } from "next/server";
 

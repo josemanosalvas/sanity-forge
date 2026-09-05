@@ -1,7 +1,9 @@
+import { imageWithAltField } from "@repo/blocks/internal/schema-fields";
 import { BadgeCheck, LayoutPanelLeft, Link, PanelBottom } from "lucide-react";
 import { defineArrayMember, defineField, defineType } from "sanity";
 
-import { imageWithAltField, languageField, siteField } from "../fields";
+import { languageField } from "../fields/language";
+import { siteField } from "../fields/site";
 
 const footerCreditItem = defineArrayMember({
   description: "A short 'made with' style credit shown in the footer bar",

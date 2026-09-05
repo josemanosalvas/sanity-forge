@@ -5,8 +5,8 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts",
     "./metadata": "./src/metadata.ts",
+    "./route": "./src/route.ts",
     "./json-ld": "./src/json-ld.tsx",
     "./sitemap": "./src/sitemap.ts",
     "./robots": "./src/robots.ts"

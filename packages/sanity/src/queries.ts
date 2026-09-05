@@ -2,9 +2,9 @@ import {
   buttonsFragment,
   imageFields,
   imageFragment,
-  pageBuilderProjection,
   urlFragment,
-} from "@repo/blocks/queries";
+} from "@repo/blocks/internal/groq-fragments";
+import { pageBuilderProjection } from "@repo/blocks/queries";
 import { defineQuery } from "next-sanity";
 
 /**

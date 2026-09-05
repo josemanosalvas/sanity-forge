@@ -1,16 +1,13 @@
+import { imageWithAltField } from "@repo/blocks/internal/schema-fields";
 import { File } from "lucide-react";
 import { defineField, defineType } from "sanity";
 
 import { GROUP, GROUPS } from "../../lib/constants";
 import { pageBuilderField } from "../definitions/page-builder";
-import {
-  documentSlugField,
-  imageWithAltField,
-  languageField,
-  ogFields,
-  seoFields,
-  siteField,
-} from "../fields";
+import { languageField } from "../fields/language";
+import { ogFields, seoFields } from "../fields/seo";
+import { siteField } from "../fields/site";
+import { documentSlugField } from "../fields/slug";
 
 export const page = defineType({
   description:

@@ -5,9 +5,7 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./index.ts",
-    "./headers": "./headers.ts",
-    "./proxy": "./proxy.ts"
+    "./headers": "./headers.ts"
   },
   "scripts": {
     "clean": "git clean -xdf .cache .turbo node_modules",

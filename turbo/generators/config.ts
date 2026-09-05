@@ -53,9 +53,11 @@ const generator = (plop: PlopTypes.NodePlopAPI): void => {
         templateFile: "templates/package/tsconfig.json.hbs",
         type: "add",
       },
+      // A concrete first module rather than an `index.ts` that would grow into
+      // a barrel; consumers import `@repo/{{ name }}/{{ name }}`.
       {
-        path: "packages/{{ name }}/src/index.ts",
-        templateFile: "templates/package/index.ts.hbs",
+        path: "packages/{{ name }}/src/{{ name }}.ts",
+        templateFile: "templates/package/module.ts.hbs",
         type: "add",
       },
       install,
@@ -122,19 +124,12 @@ const generator = (plop: PlopTypes.NodePlopAPI): void => {
         templateFile: "templates/block/markdown.test.ts.hbs",
         type: "add",
       },
-      // Register the block in the schema list, the projection, the renderer
-      // barrel and the Markdown dispatcher.
+      // Register the block in the schema list, the projection, the package
+      // exports and the Markdown dispatcher.
       {
         path: "packages/blocks/src/schemas.ts",
         pattern: /(?<anchor>export const blockSchemas = \[)/u,
         template: "$<anchor>\n  {{ camelCase name }}Schema,",
-        type: "modify",
-      },
-      {
-        path: "packages/blocks/src/schemas.ts",
-        pattern: /(?<anchor>export \{ ctaSchema \} from "\.\/cta\/schema";)/u,
-        template:
-          'export { {{ camelCase name }}Schema } from "./{{ name }}/schema";\n$<anchor>',
         type: "modify",
       },
       {
@@ -154,24 +149,9 @@ const generator = (plop: PlopTypes.NodePlopAPI): void => {
       },
       {
         path: "packages/blocks/src/queries.ts",
-        pattern:
-          /(?<anchor>export \{ ctaGroqProjection \} from "\.\/cta\/query";)/u,
-        template:
-          'export { {{ camelCase name }}GroqProjection } from "./{{ name }}/query";\n$<anchor>',
-        type: "modify",
-      },
-      {
-        path: "packages/blocks/src/queries.ts",
         pattern: /(?<anchor>\$\{videoFeatureGroqProjection\})/u,
         // oxlint-disable-next-line no-template-curly-in-string -- emits a literal `${}` GROQ interpolation
         template: "$<anchor>,\n    ${ {{ camelCase name }}GroqProjection}",
-        type: "modify",
-      },
-      {
-        path: "packages/blocks/src/components.ts",
-        pattern: /(?<anchor>export \{ CTABlock \} from "\.\/cta\/cta-block";)/u,
-        template:
-          'export { {{ pascalCase name }} } from "./{{ name }}/{{ name }}";\n$<anchor>',
         type: "modify",
       },
       {
@@ -201,7 +181,7 @@ const generator = (plop: PlopTypes.NodePlopAPI): void => {
           `packages/blocks/src/${String((answers as { name: string }).name)} packages/blocks/src`
         ),
       () =>
-        "Block scaffolded. Next: add a `case` for it in apps/web/src/components/page-builder.tsx, then run `pnpm typegen`.",
+        "Block scaffolded. Next: add a dynamic import and a `case` for it in apps/web/src/components/page-builder.tsx, then run `pnpm typegen`.",
     ],
     description: "Scaffold a new page-builder block in packages/blocks",
     prompts: [

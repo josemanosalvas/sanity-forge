@@ -1,8 +1,10 @@
+import { buttonsField, iconField } from "@repo/blocks/internal/schema-fields";
 import { LayoutPanelLeft, Link, PanelTop } from "lucide-react";
 import { defineArrayMember, defineField, defineType } from "sanity";
 
 import { lucideIconPreview } from "../../components/icon-preview";
-import { buttonsField, iconField, languageField, siteField } from "../fields";
+import { languageField } from "../fields/language";
+import { siteField } from "../fields/site";
 
 const navigationLink = defineArrayMember({
   description: "Individual navigation link with name and URL",

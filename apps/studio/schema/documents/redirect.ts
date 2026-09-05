@@ -7,7 +7,7 @@ import type { SanityClient, SlugValue } from "sanity";
 import { defineField, defineType, getDraftId, getPublishedId } from "sanity";
 
 import { API_VERSION } from "../../lib/constants";
-import { siteField } from "../fields";
+import { siteField } from "../fields/site";
 
 interface Redirect {
   site?: string;

@@ -73,7 +73,7 @@ tooling/
 turbo/generators/ `pnpm turbo gen package` and `pnpm turbo gen block`
 ```
 
-Dependency direction: `blocks → design-system`, `sanity → blocks` (query projections), `web → blocks + sanity`. The design system has no Sanity, analytics or observability dependencies.
+Dependency direction: `blocks → design-system`, `sanity → blocks` (query projections), `web → blocks + sanity`. The design system has no Sanity, analytics or observability dependencies. Packages expose concrete modules through `package.json` exports (`@repo/blocks/hero/hero-block`, `@repo/seo/route`); there are no barrel files, so bundlers only load what a route imports.
 
 ## Commands
 

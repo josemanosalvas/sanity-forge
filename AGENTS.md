@@ -12,6 +12,7 @@ Before any Next.js work, find and read the relevant doc in `apps/web/node_module
 - GROQ link projections already include the destination locale. Use `next/link` for them; use the internationalization `Link` for app-authored, unprefixed paths.
 - Keep Sanity fetches inside `use cache`; resolve preview cookies outside and pass perspective, stega and variant as props. Preserve stega-branded result types.
 - Edit schemas and queries, then run `pnpm typegen`. Do not hand-edit `apps/studio/schema.json` or `packages/sanity/src/sanity.types.ts`.
+- Import concrete modules through `package.json` exports. Do not add barrel files (re-export-only modules such as `index.ts`); registries that build an array or a projection are fine.
 
 # Verification
 

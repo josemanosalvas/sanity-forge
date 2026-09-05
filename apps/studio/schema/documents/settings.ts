@@ -1,7 +1,8 @@
+import { imageWithAltField } from "@repo/blocks/internal/schema-fields";
 import { Cog } from "lucide-react";
 import { defineField, defineType } from "sanity";
 
-import { imageWithAltField, siteField } from "../fields";
+import { siteField } from "../fields/site";
 
 const socialLinks = defineField({
   description: "Add links to your social media profiles",

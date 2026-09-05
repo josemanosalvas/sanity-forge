@@ -1,7 +1,7 @@
 import type { DynamicFetchOptions } from "@repo/sanity/live";
-import { canonicalOrigin } from "@repo/seo";
 import { JsonLd } from "@repo/seo/json-ld";
 import type { Organization, WebSite } from "@repo/seo/json-ld";
+import { canonicalOrigin } from "@repo/seo/route";
 import { stegaClean } from "next-sanity";
 
 import { fetchSettings } from "@/lib/content";
