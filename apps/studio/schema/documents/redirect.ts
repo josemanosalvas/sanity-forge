@@ -13,18 +13,18 @@ interface Redirect {
   status: string;
 }
 
-async function validateRedirectLoop(
+const validateRedirectLoop = async (
   client: SanityClient,
   { slug, _id, site }: { _id: string; slug: string; site?: string }
-) {
+) => {
   const id = getPublishedId(_id);
   const draftId = getDraftId(_id);
   const existingRedirect = await client.fetch(
     `*[_type == "redirect" && site == $site && !(_id in $ids) && (source.current == $slug || destination.current == $slug)]`,
-    { slug, ids: [id, draftId], site: site ?? null }
+    { ids: [id, draftId], site: site ?? null, slug }
   );
   return existingRedirect.length !== 0;
-}
+};
 
 /**
  * A path redirect for one site. Paths are public paths as visitors see them,
@@ -32,33 +32,29 @@ async function validateRedirectLoop(
  * Applied at build time through next.config redirects, matched by host.
  */
 export const redirect = defineType({
-  name: "redirect",
-  type: "document",
-  title: "Redirect",
   description: "Redirect for next.config.js",
-  icon: TrendingUpDown,
   fields: [
     siteField,
     defineField({
-      name: "status",
-      type: "string",
       description: "Enable or disable this redirect",
+      initialValue: () => "active",
+      name: "status",
       options: {
+        layout: "radio",
         list: [
           { title: "Active", value: "active" },
           { title: "Inactive", value: "inactive" },
         ],
-        layout: "radio",
       },
-      initialValue: () => "active",
+      type: "string",
     }),
     defineField({
-      name: "source",
-      type: "slug",
       description: "The path to redirect from",
+      name: "source",
       options: {
         isUnique: () => true,
       },
+      type: "slug",
       validation: (rule) => [
         rule.required(),
         rule.custom<SlugValue>(async (value, { document, getClient }) => {
@@ -77,8 +73,8 @@ export const redirect = defineType({
           const client = getClient({ apiVersion: API_VERSION });
           const existingRedirect = await validateRedirectLoop(client, {
             _id: document?._id ?? "",
-            slug: source,
             site: (document as Redirect | undefined)?.site,
+            slug: source,
           });
           if (existingRedirect) {
             return "This would create a redirect loop - a redirect already exists from the source";
@@ -88,12 +84,12 @@ export const redirect = defineType({
       ],
     }),
     defineField({
-      name: "destination",
-      type: "slug",
       description: "The path to redirect to",
+      name: "destination",
       options: {
         isUnique: () => true,
       },
+      type: "slug",
       validation: (rule) => [
         rule.required(),
         rule.custom<SlugValue>(async (value, { getClient, document }) => {
@@ -111,8 +107,8 @@ export const redirect = defineType({
           const client = getClient({ apiVersion: API_VERSION });
           const existingRedirect = await validateRedirectLoop(client, {
             _id: document?._id ?? "",
-            slug: destination,
             site: (document as Redirect | undefined)?.site,
+            slug: destination,
           });
           if (existingRedirect) {
             return "This would create a redirect loop - a redirect already exists from the destination";
@@ -122,32 +118,36 @@ export const redirect = defineType({
       ],
     }),
     defineField({
-      name: "permanent",
-      type: "string",
       description:
         "Whether this is a permanent (301) or temporary (302) redirect",
+      initialValue: () => "true",
+      name: "permanent",
       options: {
+        layout: "radio",
         list: [
           { title: "Permanent (301)", value: "true" },
           { title: "Temporary (302)", value: "false" },
         ],
-        layout: "radio",
       },
-      initialValue: () => "true",
+      type: "string",
     }),
   ],
+  icon: TrendingUpDown,
+  name: "redirect",
   preview: {
-    select: {
-      title: "source.current",
-      subtitle: "destination.current",
-      permanent: "permanent",
-      status: "status",
-      site: "site",
-    },
     prepare: ({ title, subtitle, permanent, status, site }) => ({
-      title: `${title ?? "Untitled"} to ${subtitle ?? "Untitled"}`,
-      subtitle: `${site ?? "no site"} · ${permanent === "true" ? "Permanent" : "Temporary"}, ${status}`,
       media: TrendingUpDown,
+      subtitle: `${site ?? "no site"} · ${permanent === "true" ? "Permanent" : "Temporary"}, ${status}`,
+      title: `${title ?? "Untitled"} to ${subtitle ?? "Untitled"}`,
     }),
+    select: {
+      permanent: "permanent",
+      site: "site",
+      status: "status",
+      subtitle: "destination.current",
+      title: "source.current",
+    },
   },
+  title: "Redirect",
+  type: "document",
 });

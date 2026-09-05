@@ -6,31 +6,31 @@ import { logoLinkItem } from "../internal/schema-fields";
 const logoCloudItem = logoLinkItem("logoCloudItem");
 
 export const logoCloudSchema = defineType({
-  name: "logoCloud",
-  type: "object",
-  title: "Logo Cloud",
-  icon: Images,
   fields: [
     defineField({
-      name: "logos",
-      type: "array",
-      title: "Logos",
       description: "Add the partner or brand logos to display in the row",
+      name: "logos",
       of: [logoCloudItem],
+      title: "Logos",
+      type: "array",
     }),
   ],
+  icon: Images,
+  name: "logoCloud",
   preview: {
-    select: {
-      logos: "logos",
-    },
     prepare: ({ logos = [] }) => {
       const logoCount = logos.length;
       const logoLabel = logoCount === 1 ? "logo" : "logos";
 
       return {
-        title: "Logo Cloud",
         subtitle: `${logoCount} ${logoLabel}`,
+        title: "Logo Cloud",
       };
     },
+    select: {
+      logos: "logos",
+    },
   },
+  title: "Logo Cloud",
+  type: "object",
 });

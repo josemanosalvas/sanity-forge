@@ -10,60 +10,60 @@ import {
 const usedByTeamsLogo = logoLinkItem("usedByTeamsLogo");
 
 export const ctaSchema = defineType({
-  name: "cta",
-  type: "object",
-  icon: Phone,
   fields: [
     defineField({
-      name: "eyebrow",
-      type: "string",
-      title: "Eyebrow",
       description:
         "The smaller text that sits above the title to provide context",
+      name: "eyebrow",
+      title: "Eyebrow",
+      type: "string",
     }),
     defineField({
-      name: "title",
-      type: "string",
-      title: "Title",
       description: "The large text that is the primary focus of the block",
+      name: "title",
+      title: "Title",
+      type: "string",
     }),
     definePortableTextField(["block"], {
-      name: "richText",
       description:
         "The supporting paragraph shown beneath the title, explaining what visitors get if they act",
+      name: "richText",
     }),
     buttonsField,
     defineField({
-      name: "usedByTeams",
-      type: "object",
-      title: "Used By Teams",
       description:
         "Optional logo grid shown to the side of the heading, highlighting the teams or brands that use the product",
       fields: [
         defineField({
-          name: "title",
-          type: "string",
-          title: "Title",
           description:
             'Short label displayed above the logo grid, for example "Trusted by teams at leading companies"',
+          name: "title",
+          title: "Title",
+          type: "string",
         }),
         defineField({
-          name: "logos",
-          type: "array",
-          title: "Logos",
           description: "Add the partner or brand logos to display in the grid",
+          name: "logos",
           of: [usedByTeamsLogo],
+          title: "Logos",
+          type: "array",
         }),
       ],
+      name: "usedByTeams",
+      title: "Used By Teams",
+      type: "object",
     }),
   ],
+  icon: Phone,
+  name: "cta",
   preview: {
+    prepare: ({ title }) => ({
+      subtitle: "CTA Block",
+      title,
+    }),
     select: {
       title: "title",
     },
-    prepare: ({ title }) => ({
-      title,
-      subtitle: "CTA Block",
-    }),
   },
+  type: "object",
 });

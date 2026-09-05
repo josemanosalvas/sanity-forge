@@ -18,13 +18,13 @@ export interface VideoFeatureProps {
   video?: VideoFeatureVideo | null;
 }
 
-export function VideoFeature({
+export const VideoFeature = ({
   caption,
   eyebrow,
   richText,
   title,
   video,
-}: Readonly<VideoFeatureProps>) {
+}: Readonly<VideoFeatureProps>) => {
   // No upload, a failed encode and a deleted asset all land here. The copy
   // renders anyway: dropping the section would delete published text, hide the
   // block from Presentation, and disagree with its own Markdown.
@@ -52,4 +52,4 @@ export function VideoFeature({
       </div>
     </section>
   );
-}
+};

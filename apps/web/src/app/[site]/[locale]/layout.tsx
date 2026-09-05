@@ -32,7 +32,7 @@ const fontMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" });
 /** Every site × locale pair has a static shell; unknown slugs upgrade in the background. */
 export const generateStaticParams = () =>
   siteList.flatMap((site) =>
-    site.locales.map((locale) => ({ site: site.key, locale }))
+    site.locales.map((locale) => ({ locale, site: site.key }))
   );
 
 export const generateMetadata = async () => {
@@ -44,9 +44,70 @@ export const generateMetadata = async () => {
   return siteMetadata(context, settings);
 };
 
-export default async function RootLayout({
-  children,
-}: LayoutProps<"/[site]/[locale]">) {
+/** Live updates plus the Presentation overlay, wherever a validated draft session exists. */
+const LivePreviewLayer = async () => {
+  const { isEnabled } = await draftMode();
+  return (
+    <>
+      <SanityLive action={revalidateSyncTags} includeDrafts={isEnabled} />
+      {isEnabled && (
+        <>
+          <PreviewBar />
+          <VisualEditing />
+        </>
+      )}
+    </>
+  );
+};
+
+const CachedHeader = async ({
+  context,
+  options,
+}: {
+  context: SiteContext;
+  options: FetchOptions;
+}) => {
+  const data = await getNavigationData({
+    ...toQueryParams(context),
+    ...options,
+  });
+  return <Header context={context} data={data} />;
+};
+
+const DynamicHeader = async ({ context }: { context: SiteContext }) => {
+  const options = await getDynamicFetchOptions();
+  return <CachedHeader context={context} options={options} />;
+};
+
+const PublishedHeader = ({ context }: { context: SiteContext }) => (
+  <CachedHeader context={context} options={PUBLISHED_FETCH_OPTIONS} />
+);
+
+const CachedFooter = async ({
+  context,
+  options,
+}: {
+  context: SiteContext;
+  options: FetchOptions;
+}) => {
+  const params = { ...toQueryParams(context), ...options };
+  const [footer, settings] = await Promise.all([
+    getFooter(params),
+    getSettings(params),
+  ]);
+  return <Footer context={context} footer={footer} settings={settings} />;
+};
+
+const DynamicFooter = async ({ context }: { context: SiteContext }) => {
+  const options = await getDynamicFetchOptions();
+  return <CachedFooter context={context} options={options} />;
+};
+
+const PublishedFooter = ({ context }: { context: SiteContext }) => (
+  <CachedFooter context={context} options={PUBLISHED_FETCH_OPTIONS} />
+);
+
+const RootLayout = async ({ children }: LayoutProps<"/[site]/[locale]">) => {
   const context = await getSiteContext();
   preconnect("https://cdn.sanity.io");
   prefetchDNS("https://cdn.sanity.io");
@@ -91,67 +152,6 @@ export default async function RootLayout({
       </body>
     </html>
   );
-}
+};
 
-/** Live updates plus the Presentation overlay, wherever a validated draft session exists. */
-async function LivePreviewLayer() {
-  const { isEnabled } = await draftMode();
-  return (
-    <>
-      <SanityLive action={revalidateSyncTags} includeDrafts={isEnabled} />
-      {isEnabled && (
-        <>
-          <PreviewBar />
-          <VisualEditing />
-        </>
-      )}
-    </>
-  );
-}
-
-async function DynamicHeader({ context }: { context: SiteContext }) {
-  const options = await getDynamicFetchOptions();
-  return <CachedHeader context={context} options={options} />;
-}
-
-function PublishedHeader({ context }: { context: SiteContext }) {
-  return <CachedHeader context={context} options={PUBLISHED_FETCH_OPTIONS} />;
-}
-
-async function CachedHeader({
-  context,
-  options,
-}: {
-  context: SiteContext;
-  options: FetchOptions;
-}) {
-  const data = await getNavigationData({
-    ...toQueryParams(context),
-    ...options,
-  });
-  return <Header context={context} data={data} />;
-}
-
-async function DynamicFooter({ context }: { context: SiteContext }) {
-  const options = await getDynamicFetchOptions();
-  return <CachedFooter context={context} options={options} />;
-}
-
-function PublishedFooter({ context }: { context: SiteContext }) {
-  return <CachedFooter context={context} options={PUBLISHED_FETCH_OPTIONS} />;
-}
-
-async function CachedFooter({
-  context,
-  options,
-}: {
-  context: SiteContext;
-  options: FetchOptions;
-}) {
-  const params = { ...toQueryParams(context), ...options };
-  const [footer, settings] = await Promise.all([
-    getFooter(params),
-    getSettings(params),
-  ]);
-  return <Footer context={context} footer={footer} settings={settings} />;
-}
+export default RootLayout;

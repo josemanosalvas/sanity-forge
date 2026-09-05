@@ -1,23 +1,25 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { expect, test } from "vitest";
+import { describe, expect, test } from "vitest";
 
 import { {{ pascalCase name }} } from "./component";
 
-test("{{ pascalCase name }} renders its title and copy", () => {
-  const html = renderToStaticMarkup(
-    <{{ pascalCase name }}
-      eyebrow="New"
-      richText={[
-        {
-          _type: "block",
-          _key: "block-1",
-          children: [{ _type: "span", text: "Supporting copy." }],
-        },
-      ]}
-      title="{{ titleCase name }}"
-    />
-  );
+describe({{ pascalCase name }}, () => {
+  test("renders its title and copy", () => {
+    const html = renderToStaticMarkup(
+      <{{ pascalCase name }}
+        eyebrow="New"
+        richText={[
+          {
+            _key: "block-1",
+            _type: "block",
+            children: [{ _type: "span", text: "Supporting copy." }],
+          },
+        ]}
+        title="{{ titleCase name }}"
+      />
+    );
 
-  expect(html).toMatch(/{{ titleCase name }}/);
-  expect(html).toMatch(/Supporting copy\./);
+    expect(html).toMatch(/{{ titleCase name }}/u);
+    expect(html).toMatch(/Supporting copy\./u);
+  });
 });

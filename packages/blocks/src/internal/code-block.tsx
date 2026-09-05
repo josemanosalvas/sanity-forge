@@ -2,13 +2,13 @@ import { CopyButton } from "./copy-button";
 
 // Short label shown in the language tile.
 const BADGE_MAP: Record<string, string> = {
+  bash: "SH",
+  css: "CSS",
+  groq: "GRQ",
+  js: "JS",
+  json: "{ }",
   ts: "TS",
   tsx: "TSX",
-  js: "JS",
-  groq: "GRQ",
-  bash: "SH",
-  json: "{ }",
-  css: "CSS",
 };
 
 export interface CodeBlockValue {
@@ -17,11 +17,11 @@ export interface CodeBlockValue {
   filename?: string | null;
 }
 
-export function CodeBlock({
+export const CodeBlock = ({
   code,
   language,
   filename,
-}: Readonly<CodeBlockValue>) {
+}: Readonly<CodeBlockValue>) => {
   if (!code) {
     return null;
   }
@@ -30,7 +30,7 @@ export function CodeBlock({
 
   // Line numbers are rendered as a fixed gutter column beside the scrolling
   // code, so they stay put during horizontal scroll and are excluded from copy.
-  const lineCount = code.replace(/\n$/, "").split("\n").length;
+  const lineCount = code.replace(/\n$/u, "").split("\n").length;
 
   return (
     <figure className="not-prose border-border bg-background my-6 overflow-hidden rounded-none border">
@@ -65,4 +65,4 @@ export function CodeBlock({
       </div>
     </figure>
   );
-}
+};

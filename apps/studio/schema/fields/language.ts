@@ -11,11 +11,11 @@ import { defineField } from "sanity";
  * rule keeps a site from receiving a translation in a locale it doesn't serve.
  */
 export const languageField = defineField({
-  name: "language",
-  type: "string",
-  title: "Language",
-  readOnly: true,
   hidden: true,
+  name: "language",
+  readOnly: true,
+  title: "Language",
+  type: "string",
   validation: (rule) =>
     rule.custom((value, context) => {
       if (!isLocale(value)) {

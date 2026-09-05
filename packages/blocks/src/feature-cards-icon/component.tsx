@@ -17,7 +17,7 @@ export interface FeatureCardsIconProps {
   title?: string | null;
 }
 
-function FeatureCardItem({ card }: Readonly<{ card: FeatureCard }>) {
+const FeatureCardItem = ({ card }: Readonly<{ card: FeatureCard }>) => {
   const { icon, title, richText } = card;
   return (
     <div className="group bg-background text-foreground hover:bg-highlight hover:text-highlight-foreground flex min-w-0 transform-gpu flex-col gap-12 p-[31.2px] transition-colors duration-200 ease-out lg:row-span-3 lg:grid lg:min-h-72 lg:grid-rows-subgrid lg:gap-0">
@@ -48,34 +48,32 @@ function FeatureCardItem({ card }: Readonly<{ card: FeatureCard }>) {
       </div>
     </div>
   );
-}
+};
 
-export function FeatureCardsWithIcon({
+export const FeatureCardsWithIcon = ({
   eyebrow,
   title,
   richText,
   cards,
-}: Readonly<FeatureCardsIconProps>) {
-  return (
-    <section className="block-section" id="features">
-      <div className="container">
-        <BlockHeader eyebrow={eyebrow} title={title}>
-          <RichText
-            className="body-text text-muted-foreground max-w-xl"
-            richText={richText}
-          />
-        </BlockHeader>
-        <div className="bleed-x bg-grid-dots mt-12 [background-size:7px_7px] p-[var(--container-px,0.5rem)] text-zinc-800 md:mt-16 lg:p-[42px] dark:text-zinc-50">
-          <div className="grid gap-[var(--container-px,0.5rem)] lg:grid-cols-3 lg:gap-0">
-            {cards?.map((card, index) => (
-              <FeatureCardItem
-                card={card}
-                key={card._key ?? `FeatureCard-${index}`}
-              />
-            ))}
-          </div>
+}: Readonly<FeatureCardsIconProps>) => (
+  <section className="block-section" id="features">
+    <div className="container">
+      <BlockHeader eyebrow={eyebrow} title={title}>
+        <RichText
+          className="body-text text-muted-foreground max-w-xl"
+          richText={richText}
+        />
+      </BlockHeader>
+      <div className="bleed-x bg-grid-dots mt-12 [background-size:7px_7px] p-[var(--container-px,0.5rem)] text-zinc-800 md:mt-16 lg:p-[42px] dark:text-zinc-50">
+        <div className="grid gap-[var(--container-px,0.5rem)] lg:grid-cols-3 lg:gap-0">
+          {cards?.map((card, index) => (
+            <FeatureCardItem
+              card={card}
+              key={card._key ?? `FeatureCard-${index}`}
+            />
+          ))}
         </div>
       </div>
-    </section>
-  );
-}
+    </div>
+  </section>
+);

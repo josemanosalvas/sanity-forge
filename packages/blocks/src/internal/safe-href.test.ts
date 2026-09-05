@@ -32,7 +32,7 @@ describe(isSafeHref, () => {
 
 describe(sanitizeHref, () => {
   it("returns undefined for empty, null and undefined", () => {
-    expect(sanitizeHref(undefined)).toBeUndefined();
+    expect(sanitizeHref()).toBeUndefined();
     expect(sanitizeHref(null)).toBeUndefined();
     expect(sanitizeHref("")).toBeUndefined();
     expect(sanitizeHref("   ")).toBeUndefined();

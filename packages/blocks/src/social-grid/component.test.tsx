@@ -1,25 +1,25 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { expect, test } from "vitest";
+import { describe, expect, test } from "vitest";
 
 import { SocialGrid } from "./component";
 
-test("SocialGrid renders the header and social cards", () => {
-  const html = renderToStaticMarkup(
+describe(SocialGrid, () => {
+  const twoSocials = renderToStaticMarkup(
     <SocialGrid
       eyebrow="Socials"
       socials={[
         {
           _key: "s1",
-          platform: "reddit",
-          label: "Reddit",
           href: "https://reddit.com/r/example",
+          label: "Reddit",
           openInNewTab: true,
+          platform: "reddit",
         },
         {
           _key: "s2",
-          platform: "github",
-          label: "GitHub",
           href: "https://github.com/example",
+          label: "GitHub",
+          platform: "github",
         },
       ]}
       subtitle="Join our community today and stay updated."
@@ -27,30 +27,37 @@ test("SocialGrid renders the header and social cards", () => {
     />
   );
 
-  expect(html).toMatch(/Socials/);
-  expect(html).toMatch(/Join our community/);
-  expect(html).toMatch(/Join our community today and stay updated\./);
-  expect(html).toMatch(/Reddit/);
-  expect(html).toMatch(/GitHub/);
-  expect(html).toMatch(/href="https:\/\/reddit\.com\/r\/example"/);
-  expect(html).toContain('target="_blank"');
-  expect(html).toContain("bg-highlight");
-});
+  test("SocialGrid renders the header", () => {
+    expect(twoSocials).toMatch(/Socials/u);
+    expect(twoSocials).toMatch(/Join our community/u);
+    expect(twoSocials).toMatch(/Join our community today and stay updated\./u);
+  });
 
-test("SocialGrid renders a card without a link", () => {
-  const html = renderToStaticMarkup(
-    <SocialGrid
-      socials={[{ _key: "s1", platform: "youtube", label: "YouTube" }]}
-      title="Follow us"
-    />
-  );
+  test("SocialGrid renders a linked card per social", () => {
+    expect(twoSocials).toMatch(/Reddit/u);
+    expect(twoSocials).toMatch(/GitHub/u);
+    expect(twoSocials).toMatch(/href="https:\/\/reddit\.com\/r\/example"/u);
+    expect(twoSocials).toContain('target="_blank"');
+    expect(twoSocials).toContain("bg-highlight");
+  });
 
-  expect(html).toMatch(/YouTube/);
-  expect(html).not.toContain("<a ");
-});
+  test("SocialGrid renders a card without a link", () => {
+    const html = renderToStaticMarkup(
+      <SocialGrid
+        socials={[{ _key: "s1", label: "YouTube", platform: "youtube" }]}
+        title="Follow us"
+      />
+    );
 
-test("SocialGrid renders nothing when there are no socials", () => {
-  const html = renderToStaticMarkup(<SocialGrid title="Join our community" />);
+    expect(html).toMatch(/YouTube/u);
+    expect(html).not.toContain("<a ");
+  });
 
-  expect(html).toBe("");
+  test("SocialGrid renders nothing when there are no socials", () => {
+    const html = renderToStaticMarkup(
+      <SocialGrid title="Join our community" />
+    );
+
+    expect(html).toBe("");
+  });
 });

@@ -49,7 +49,7 @@ export const getHref = (url?: CustomUrlValue | null) => {
 
   if (url.type === "internal") {
     const slug = url.internal?.slug?.current;
-    return slug ? `/${slug.replace(/^\/+/, "")}` : undefined;
+    return slug ? `/${slug.replace(/^\/+/u, "")}` : undefined;
   }
 
   const external = url.external?.trim();
@@ -94,7 +94,7 @@ export const renderPortableText = (value?: PortableTextValue) =>
     }
 
     const style = block.style ?? "normal";
-    const tag = /^h[2-6]$/.test(style) ? style : "p";
+    const tag = /^h[2-6]$/u.test(style) ? style : "p";
 
     return createElement(tag, { key }, text);
   });

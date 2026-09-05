@@ -36,34 +36,32 @@ interface CardView {
 
 // Gate on the same canonical validity as SanityImage/resolveAssetId; the local
 // type guard only exists to narrow away null/undefined for the call sites.
-function hasValidAssetId(
+const hasValidAssetId = (
   image: SanityImageData | null | undefined
-): image is SanityImageData {
-  return resolveAssetId(image) !== null;
-}
+): image is SanityImageData => resolveAssetId(image) !== null;
 
-function cmsToView(item: ShowcaseGridItem): CardView {
+const cmsToView = (item: ShowcaseGridItem): CardView => {
   const name = item.siteName ?? "Untitled";
 
   const screenshot: ImageSource = hasValidAssetId(item.screenshot)
-    ? { kind: "sanity", image: item.screenshot }
+    ? { image: item.screenshot, kind: "sanity" }
     : { kind: "none" };
 
   return {
-    id: item._key,
-    name,
-    url: sanitizeHref(item.url) ?? null,
     category: item.category?.trim() || null,
-    screenshot,
+    id: item._key,
     logo: hasValidAssetId(item.attributionLogo) ? item.attributionLogo : null,
+    name,
+    screenshot,
+    url: sanitizeHref(item.url) ?? null,
   };
-}
+};
 
-function AttributionLogo({
+const AttributionLogo = ({
   item,
   base = 20,
   className,
-}: Readonly<{ item: CardView; base?: number; className?: string }>) {
+}: Readonly<{ item: CardView; base?: number; className?: string }>) => {
   if (!item.logo) {
     return null;
   }
@@ -76,36 +74,34 @@ function AttributionLogo({
       style={{
         height: normalizedLogoHeight(item.logo, {
           base,
-          min: Math.round(base * 0.8),
           max: Math.round(base * 1.2),
+          min: Math.round(base * 0.8),
         }),
       }}
       width={96}
     />
   );
-}
+};
 
-function AttributionMark({ item }: Readonly<{ item: CardView }>) {
-  return (
-    <span className="flex size-6 shrink-0 items-center justify-center overflow-hidden bg-zinc-900 text-white">
-      {item.logo ? (
-        <SanityImage
-          alt={`${item.name} logo`}
-          className="size-full object-contain"
-          height={24}
-          image={item.logo}
-          width={24}
-        />
-      ) : (
-        <span className="text-sm leading-none font-medium">
-          {item.name.charAt(0).toUpperCase()}
-        </span>
-      )}
-    </span>
-  );
-}
+const AttributionMark = ({ item }: Readonly<{ item: CardView }>) => (
+  <span className="flex size-6 shrink-0 items-center justify-center overflow-hidden bg-zinc-900 text-white">
+    {item.logo ? (
+      <SanityImage
+        alt={`${item.name} logo`}
+        className="size-full object-contain"
+        height={24}
+        image={item.logo}
+        width={24}
+      />
+    ) : (
+      <span className="text-sm leading-none font-medium">
+        {item.name.charAt(0).toUpperCase()}
+      </span>
+    )}
+  </span>
+);
 
-function ScreenshotImage({
+const ScreenshotImage = ({
   screenshot,
   name,
   sizes,
@@ -117,7 +113,7 @@ function ScreenshotImage({
   sizes: string;
   className?: string;
   loading?: "eager" | "lazy";
-}>) {
+}>) => {
   if (screenshot.kind === "sanity") {
     return (
       <SanityImage
@@ -132,9 +128,9 @@ function ScreenshotImage({
     );
   }
   return null;
-}
+};
 
-function FocusBrackets() {
+const FocusBrackets = () => {
   const corner =
     "absolute size-2 border-highlight-foreground opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100";
   return (
@@ -157,15 +153,15 @@ function FocusBrackets() {
       />
     </>
   );
-}
+};
 
-function ShowcaseHeader({
+const ShowcaseHeader = ({
   title,
   description,
 }: Readonly<{
   title?: string | null;
   description?: string | null;
-}>) {
+}>) => {
   if (!(title || description)) {
     return null;
   }
@@ -183,12 +179,12 @@ function ShowcaseHeader({
       ) : null}
     </div>
   );
-}
+};
 
-function FeaturedBanner({
+const FeaturedBanner = ({
   featured,
   side = "left",
-}: Readonly<{ featured: CardView; side?: "left" | "right" }>) {
+}: Readonly<{ featured: CardView; side?: "left" | "right" }>) => {
   const panelRight = side === "right";
   const clickable = Boolean(featured.url);
 
@@ -273,12 +269,12 @@ function FeaturedBanner({
       )}
     </div>
   );
-}
+};
 
-function CardCaption({
+const CardCaption = ({
   item,
   clickable,
-}: Readonly<{ item: CardView; clickable: boolean }>) {
+}: Readonly<{ item: CardView; clickable: boolean }>) => {
   const hoverText =
     clickable &&
     "group-hover:text-highlight-foreground group-focus-visible:text-highlight-foreground";
@@ -315,9 +311,9 @@ function CardCaption({
       ) : null}
     </div>
   );
-}
+};
 
-function ShowcaseCard({ item }: Readonly<{ item: CardView }>) {
+const ShowcaseCard = ({ item }: Readonly<{ item: CardView }>) => {
   const clickable = Boolean(item.url);
 
   const body = (
@@ -356,13 +352,13 @@ function ShowcaseCard({ item }: Readonly<{ item: CardView }>) {
       {body}
     </article>
   );
-}
+};
 
-export function ShowcaseGrid({
+export const ShowcaseGrid = ({
   title,
   description,
   items,
-}: Readonly<ShowcaseGridProps>) {
+}: Readonly<ShowcaseGridProps>) => {
   const cmsItems = items ?? [];
   const label = title?.trim() || "Showcase";
   const allViews = cmsItems.map(cmsToView);
@@ -422,4 +418,4 @@ export function ShowcaseGrid({
       </div>
     </section>
   );
-}
+};

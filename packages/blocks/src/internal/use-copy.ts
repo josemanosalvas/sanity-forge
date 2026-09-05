@@ -11,13 +11,13 @@ export type CopyStatus = "idle" | "loading" | "copied" | "error";
  * as fills and don't hold contrast as text. Failure had no visual at all until
  * now: a failed copy looked exactly like an idle one. */
 export const COPY_STATUS_CLASS: Record<CopyStatus, string> = {
-  idle: "",
-  loading: "",
   // Both hold through hover: without the pair the buttons' own
   // `hover:text-foreground` wins on specificity and wipes the outcome out under
   // the very cursor that triggered the copy.
   copied: "text-success hover:text-success",
   error: "text-danger hover:text-danger",
+  idle: "",
+  loading: "",
 };
 
 // Grid-stacked status swap shared by the copy buttons: the active layer
@@ -29,10 +29,10 @@ export const SWAP_HIDDEN = "scale-[0.25] opacity-0 blur-xs";
 export const SWAP_TEXT_SHOWN = "opacity-100 blur-0";
 export const SWAP_TEXT_HIDDEN = "opacity-0 blur-xs";
 
-export function useCopyToClipboard(
+export const useCopyToClipboard = (
   getText: () => string | Promise<string>,
   resetMs: number = COPY_RESET_MS
-) {
+) => {
   const [status, setStatus] = useState<CopyStatus>("idle");
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -67,5 +67,5 @@ export function useCopyToClipboard(
     return next;
   }, [getText, resetMs]);
 
-  return { status, copy };
-}
+  return { copy, status };
+};

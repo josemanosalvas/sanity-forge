@@ -12,17 +12,18 @@ import {
  * of content.
  */
 const meta = {
-  title: "ui/Accordion",
-  component: Accordion,
-  tags: ["autodocs"],
   argTypes: {
     multiple: {
       control: "boolean",
     },
   },
   args: {
-    multiple: false,
     className: "w-96",
+    multiple: false,
+  },
+  component: Accordion,
+  parameters: {
+    layout: "centered",
   },
   render: (args) => (
     <Accordion {...args}>
@@ -46,9 +47,8 @@ const meta = {
       </AccordionItem>
     </Accordion>
   ),
-  parameters: {
-    layout: "centered",
-  },
+  tags: ["autodocs"],
+  title: "ui/Accordion",
 } satisfies Meta<typeof Accordion>;
 
 export default meta;
@@ -60,5 +60,5 @@ export const Default: Story = {};
 
 /** Set `multiple` to allow several items to be open at once. */
 export const Multiple: Story = {
-  args: { multiple: true, defaultValue: ["item-1", "item-2"] },
+  args: { defaultValue: ["item-1", "item-2"], multiple: true },
 };

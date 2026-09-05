@@ -19,15 +19,15 @@ export default defineConfig({
     ],
   },
   test: {
-    name: "blocks",
+    css: false,
+    env: {
+      NEXT_PUBLIC_SANITY_DATASET: "production",
+      NEXT_PUBLIC_SANITY_PROJECT_ID: "test-project-id",
+    },
     environment: "node",
     globals: true,
-    css: false,
-    setupFiles: ["./vitest.setup.ts"],
     include: ["src/**/*.test.{ts,tsx}"],
-    env: {
-      NEXT_PUBLIC_SANITY_PROJECT_ID: "test-project-id",
-      NEXT_PUBLIC_SANITY_DATASET: "production",
-    },
+    name: "blocks",
+    setupFiles: ["./vitest.setup.ts"],
   },
 });

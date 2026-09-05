@@ -6,10 +6,10 @@ import { Separator } from "./separator";
  * Visually or semantically separates content.
  */
 const meta = {
-  title: "ui/Separator",
+  argTypes: {},
   component: Separator,
   tags: ["autodocs"],
-  argTypes: {},
+  title: "ui/Separator",
 } satisfies Meta<typeof Separator>;
 
 export default meta;

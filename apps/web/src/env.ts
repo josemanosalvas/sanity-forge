@@ -10,15 +10,15 @@ import { z } from "zod";
  * its own contract, and the app adds only what is specific to it.
  */
 export const env = createEnv({
+  client: {},
+  emptyStringAsUndefined: true,
   extends: [sanity(), analytics(), observability()],
+  runtimeEnv: {
+    DEFAULT_SITE: process.env.DEFAULT_SITE,
+  },
   server: {
     /** Site served when the request host matches no known domain. */
     DEFAULT_SITE: z.enum(siteKeys).optional(),
   },
-  client: {},
-  runtimeEnv: {
-    DEFAULT_SITE: process.env.DEFAULT_SITE,
-  },
-  emptyStringAsUndefined: true,
   skipValidation: process.env.SKIP_ENV_VALIDATION === "true",
 });

@@ -9,7 +9,7 @@ import { toQueryParams } from "@/lib/site-context";
 import type { SiteContext } from "@/types";
 
 /** Organization + WebSite structured data for the current site. */
-export async function SiteJsonLd({ context }: { context: SiteContext }) {
+export const SiteJsonLd = async ({ context }: { context: SiteContext }) => {
   const settings = stegaClean(
     await getSettings({ ...toQueryParams(context), ...PUBLISHED_FETCH_OPTIONS })
   );
@@ -25,26 +25,26 @@ export async function SiteJsonLd({ context }: { context: SiteContext }) {
 
   const organization: Organization = {
     "@type": "Organization",
-    name,
-    url,
-    description: settings.siteDescription ?? undefined,
     contactPoint: settings.contactEmail
       ? {
           "@type": "ContactPoint",
-          email: settings.contactEmail,
           contactType: "customer service",
+          email: settings.contactEmail,
         }
       : undefined,
+    description: settings.siteDescription ?? undefined,
+    name,
     sameAs: sameAs.length ? sameAs : undefined,
+    url,
   };
 
   const website: WebSite = {
     "@type": "WebSite",
-    name,
-    url,
-    inLanguage: context.locale,
     description: settings.siteDescription ?? undefined,
+    inLanguage: context.locale,
+    name,
     publisher: organization,
+    url,
   };
 
   return (
@@ -59,4 +59,4 @@ export async function SiteJsonLd({ context }: { context: SiteContext }) {
       />
     </>
   );
-}
+};

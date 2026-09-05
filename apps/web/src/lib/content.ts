@@ -25,9 +25,9 @@ export const getPage = async ({
 }: Scoped & { path: string }) => {
   "use cache";
   const { data } = await sanityFetch({
-    query: pageQuery,
-    params: { site, locale, defaultLocale, path },
+    params: { defaultLocale, locale, path, site },
     perspective,
+    query: pageQuery,
     stega,
   });
   return data;
@@ -42,9 +42,9 @@ export const getSettings = async ({
 }: Scoped) => {
   "use cache";
   const { data } = await sanityFetch({
-    query: settingsQuery,
-    params: { site, locale, defaultLocale },
+    params: { defaultLocale, locale, site },
     perspective,
+    query: settingsQuery,
     stega,
   });
   return data;
@@ -55,9 +55,9 @@ export const getNavigationData = async (options: Scoped) => {
   const { site, locale, defaultLocale, perspective, stega } = options;
   const [navigation, settings] = await Promise.all([
     sanityFetch({
-      query: navigationQuery,
-      params: { site, locale, defaultLocale },
+      params: { defaultLocale, locale, site },
       perspective,
+      query: navigationQuery,
       stega,
     }),
     getSettings(options),
@@ -74,9 +74,9 @@ export const getFooter = async ({
 }: Scoped) => {
   "use cache";
   const { data } = await sanityFetch({
-    query: footerQuery,
-    params: { site, locale, defaultLocale },
+    params: { defaultLocale, locale, site },
     perspective,
+    query: footerQuery,
     stega,
   });
   return data;

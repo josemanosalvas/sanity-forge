@@ -35,10 +35,10 @@ const siteRedirects = async () => {
       return Object.values(site.domains).flatMap((domain) => {
         const host = domain.split(":")[0] ?? domain;
         return [host, `www.${host}`].map((value) => ({
-          source: redirect.source,
           destination: redirect.destination,
-          permanent: redirect.permanent,
           has: [{ type: "host" as const, value }],
+          permanent: redirect.permanent,
+          source: redirect.source,
         }));
       });
     });
@@ -70,9 +70,12 @@ if (process.env.ANALYZE === "true") {
   plugins.push(withAnalyzer);
 }
 
-const nextConfig = plugins.reduce(
-  (config, plugin) => plugin(config),
-  baseConfig
-);
+const applyPlugins = (config: NextConfig): NextConfig => {
+  let result = config;
+  for (const plugin of plugins) {
+    result = plugin(result);
+  }
+  return result;
+};
 
-export default nextConfig;
+export default applyPlugins(baseConfig);

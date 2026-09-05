@@ -35,7 +35,7 @@ interface HeroStill {
   url?: string;
 }
 
-function stillOf(variant?: HeroVideoVariant | null): HeroStill | null {
+const stillOf = (variant?: HeroVideoVariant | null): HeroStill | null => {
   if (variant?.poster?.id) {
     return { image: variant.poster, key: variant.poster.id };
   }
@@ -51,9 +51,9 @@ function stillOf(variant?: HeroVideoVariant | null): HeroStill | null {
     POSTER_WIDTH
   );
   return url ? { key: url, url } : null;
-}
+};
 
-function HeroPoster({
+const HeroPoster = ({
   className,
   eager,
   still,
@@ -61,7 +61,7 @@ function HeroPoster({
   className?: string;
   eager?: boolean;
   still: HeroStill;
-}>) {
+}>) => {
   const shared = cn(
     bannerFill,
     "rounded-none! object-cover object-[50%_45%]",
@@ -98,16 +98,16 @@ function HeroPoster({
       width={POSTER_WIDTH}
     />
   );
-}
+};
 
 /**
  * The still under the clip, and the whole background when there is no video.
  * Split light/dark in CSS: this renders on the server, which has no theme.
  */
-function HeroPosters({
+const HeroPosters = ({
   eager,
   video,
-}: Readonly<{ eager?: boolean; video?: HeroVideoData | null }>) {
+}: Readonly<{ eager?: boolean; video?: HeroVideoData | null }>) => {
   const light = stillOf(video?.light) ?? stillOf(video?.dark);
   const dark = stillOf(video?.dark) ?? light;
   if (!light) {
@@ -130,9 +130,9 @@ function HeroPosters({
       {split && <HeroPoster className="hidden dark:block" still={dark} />}
     </>
   );
-}
+};
 
-export function HeroBlock({
+export const HeroBlock = ({
   title,
   buttons,
   badge,
@@ -140,7 +140,7 @@ export function HeroBlock({
   richText,
   isFirst,
   video,
-}: Readonly<HeroBlockProps>) {
+}: Readonly<HeroBlockProps>) => {
   const banner = (
     <>
       <HeroPosters eager video={video} />
@@ -199,4 +199,4 @@ export function HeroBlock({
       </div>
     </>
   );
-}
+};

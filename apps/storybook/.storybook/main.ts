@@ -15,10 +15,6 @@ const getAbsolutePath = (value: string) =>
   path.dirname(require.resolve(path.join(value, "package.json")));
 
 const config: StorybookConfig = {
-  stories: [
-    "../../../packages/design-system/**/*.stories.@(ts|tsx)",
-    "../../../packages/blocks/src/**/*.stories.@(ts|tsx)",
-  ],
   addons: [
     getAbsolutePath("@storybook/addon-docs"),
     getAbsolutePath("@storybook/addon-a11y"),
@@ -29,17 +25,21 @@ const config: StorybookConfig = {
     options: {},
   },
   staticDirs: ["../public"],
+  stories: [
+    "../../../packages/design-system/**/*.stories.@(ts|tsx)",
+    "../../../packages/blocks/src/**/*.stories.@(ts|tsx)",
+  ],
   // The block renderers build Sanity CDN URLs from the public project
   // coordinates. Storybook has no project of its own, so any value works;
   // `define` inlines them where t3-env reads `process.env`.
   viteFinal: (viteConfig) =>
     mergeConfig(viteConfig, {
       define: {
-        "process.env.NEXT_PUBLIC_SANITY_PROJECT_ID": JSON.stringify(
-          process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ?? "storybook"
-        ),
         "process.env.NEXT_PUBLIC_SANITY_DATASET": JSON.stringify(
           process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production"
+        ),
+        "process.env.NEXT_PUBLIC_SANITY_PROJECT_ID": JSON.stringify(
+          process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ?? "storybook"
         ),
       },
     }),

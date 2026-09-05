@@ -16,10 +16,11 @@ import {
  * A swipeable panel that slides in from an edge of the screen.
  */
 const meta = {
-  title: "ui/Drawer",
-  component: Drawer,
-  tags: ["autodocs"],
   argTypes: {},
+  component: Drawer,
+  parameters: {
+    layout: "centered",
+  },
   render: (args) => (
     <Drawer {...args}>
       <DrawerTrigger render={<Button variant="outline" />}>Open</DrawerTrigger>
@@ -35,9 +36,8 @@ const meta = {
       </DrawerContent>
     </Drawer>
   ),
-  parameters: {
-    layout: "centered",
-  },
+  tags: ["autodocs"],
+  title: "ui/Drawer",
 } satisfies Meta<typeof Drawer>;
 
 export default meta;

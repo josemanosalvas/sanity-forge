@@ -36,7 +36,7 @@ export { videoFeatureGroqProjection } from "./video-feature/query";
  * GROQ and the component that reads it stay in lockstep; this only composes
  * them. Sanity TypeGen resolves the interpolations statically.
  */
-export const pageBuilderProjection = /* groq */ `
+export const pageBuilderProjection = `
   pageBuilder[]{
     ...,
     _type,

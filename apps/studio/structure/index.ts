@@ -17,12 +17,12 @@ import { API_VERSION } from "../lib/constants";
 import { createPagesByPathList } from "./nested-pages";
 
 export const templateIds = {
-  page: "page-by-site-language",
-  navigation: "navigation-by-site-language",
-  footer: "footer-by-site-language",
-  settings: "settings-by-site",
-  redirect: "redirect-by-site",
   faq: "faq-by-language",
+  footer: "footer-by-site-language",
+  navigation: "navigation-by-site-language",
+  page: "page-by-site-language",
+  redirect: "redirect-by-site",
+  settings: "settings-by-site",
 } as const;
 
 export const settingsDocumentId = (site: Site) => `settings-${site.key}`;
@@ -50,12 +50,12 @@ const languageLists = (
           .title(`${title} (${language.toUpperCase()})`)
           .schemaType(type)
           .filter("_type == $type && site == $site && language == $language")
-          .params({ type, site: site.key, language })
-          .defaultOrdering([{ field: "_updatedAt", direction: "desc" }])
+          .params({ language, site: site.key, type })
+          .defaultOrdering([{ direction: "desc", field: "_updatedAt" }])
           .initialValueTemplates([
             S.initialValueTemplateItem(templateId, {
-              site: site.key,
               language,
+              site: site.key,
             }),
           ])
       )
@@ -84,12 +84,12 @@ const pagesForLanguage = (S: StructureBuilder, site: Site, language: Locale) =>
                 .filter(
                   '_type == "page" && site == $site && language == $language'
                 )
-                .params({ site: site.key, language })
-                .defaultOrdering([{ field: "_updatedAt", direction: "desc" }])
+                .params({ language, site: site.key })
+                .defaultOrdering([{ direction: "desc", field: "_updatedAt" }])
                 .initialValueTemplates([
                   S.initialValueTemplateItem(templateIds.page, {
-                    site: site.key,
                     language,
+                    site: site.key,
                   }),
                 ])
             ),
@@ -99,9 +99,9 @@ const pagesForLanguage = (S: StructureBuilder, site: Site, language: Locale) =>
             .icon(Folder)
             .child(
               createPagesByPathList(S, {
+                language,
                 schemaType: "page",
                 site: site.key,
-                language,
                 templateId: templateIds.page,
               })
             ),
@@ -145,10 +145,10 @@ export const createStructure =
               .title("Navigation")
               .items(
                 languageLists(S, site, {
-                  type: "navigation",
-                  title: "Navigation",
-                  templateId: templateIds.navigation,
                   icon: PanelTop,
+                  templateId: templateIds.navigation,
+                  title: "Navigation",
+                  type: "navigation",
                 })
               )
           ),
@@ -162,10 +162,10 @@ export const createStructure =
               .title("Footer")
               .items(
                 languageLists(S, site, {
-                  type: "footer",
-                  title: "Footer",
-                  templateId: templateIds.footer,
                   icon: PanelBottom,
+                  templateId: templateIds.footer,
+                  title: "Footer",
+                  type: "footer",
                 })
               )
           ),

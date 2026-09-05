@@ -14,7 +14,7 @@ test.describe("Routing", { tag: "@smoke" }, () => {
       maxRedirects: 0,
     });
     expect(response.status()).toBe(308);
-    expect(response.headers().location).toMatch(/\/about$/);
+    expect(response.headers().location).toMatch(/\/about$/u);
   });
 
   test("security headers allow the Studio to frame the site", async ({

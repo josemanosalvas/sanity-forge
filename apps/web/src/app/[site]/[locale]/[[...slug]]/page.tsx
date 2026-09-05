@@ -29,7 +29,7 @@ const PLACEHOLDER_SLUG = "__placeholder__";
 const toPath = (slug: string[] | undefined) =>
   slug?.length ? `/${slug.join("/")}` : "/";
 
-export async function generateStaticParams(): Promise<Params[]> {
+export const generateStaticParams = async (): Promise<Params[]> => {
   const [site, locale] = await Promise.all([siteParam(), localeParam()]);
   try {
     const pages = await sanityFetchStatic({ query: pagePathsQuery });
@@ -51,11 +51,11 @@ export async function generateStaticParams(): Promise<Params[]> {
     );
     return [{ slug: [PLACEHOLDER_SLUG] }];
   }
-}
+};
 
-export async function generateMetadata({
+export const generateMetadata = async ({
   params,
-}: PageProps<"/[site]/[locale]/[[...slug]]">): Promise<Metadata> {
+}: PageProps<"/[site]/[locale]/[[...slug]]">): Promise<Metadata> => {
   const [{ slug }, context, { perspective }] = await Promise.all([
     params,
     getSiteContext(),
@@ -70,59 +70,16 @@ export async function generateMetadata({
     return {};
   }
   return pageMetadata(context, page, settings);
-}
+};
 
-export default async function Page({
-  params,
-}: PageProps<"/[site]/[locale]/[[...slug]]">) {
-  const { isEnabled } = await draftMode();
-
-  if (isEnabled) {
-    return (
-      <Suspense fallback={null}>
-        <DraftPage params={params} />
-      </Suspense>
-    );
-  }
-
-  // Published render with a real 404, not a soft one streamed inside Suspense.
-  const [{ slug }, context] = await Promise.all([params, getSiteContext()]);
-  const page = await getPage({
-    ...toQueryParams(context),
-    ...PUBLISHED_FETCH_OPTIONS,
-    path: toPath(slug),
-  });
-  if (!page) {
-    notFound();
-  }
-  return <PageContent context={context} page={page} />;
-}
-
-async function DraftPage({ params }: { params: Promise<Params> }) {
-  const [{ slug }, context, options] = await Promise.all([
-    params,
-    getSiteContext(),
-    getDynamicFetchOptions(),
-  ]);
-  const page = await getPage({
-    ...toQueryParams(context),
-    ...options,
-    path: toPath(slug),
-  });
-  if (!page) {
-    notFound();
-  }
-  return <PageContent context={context} options={options} page={page} />;
-}
-
-function PageContent({
+const PageContent = ({
   context,
   page,
 }: {
   context: SiteContext;
   page: PageData;
   options?: FetchOptions;
-}) {
+}) => {
   const translations = (page.translations ?? []).flatMap((translation) =>
     translation.slug && siteSupportsLocale(context.site, translation.language)
       ? [{ locale: translation.language, path: translation.slug }]
@@ -153,4 +110,47 @@ function PageContent({
       )}
     </>
   );
-}
+};
+
+const DraftPage = async ({ params }: { params: Promise<Params> }) => {
+  const [{ slug }, context, options] = await Promise.all([
+    params,
+    getSiteContext(),
+    getDynamicFetchOptions(),
+  ]);
+  const page = await getPage({
+    ...toQueryParams(context),
+    ...options,
+    path: toPath(slug),
+  });
+  if (!page) {
+    notFound();
+  }
+  return <PageContent context={context} options={options} page={page} />;
+};
+
+const Page = async ({ params }: PageProps<"/[site]/[locale]/[[...slug]]">) => {
+  const { isEnabled } = await draftMode();
+
+  if (isEnabled) {
+    return (
+      <Suspense fallback={null}>
+        <DraftPage params={params} />
+      </Suspense>
+    );
+  }
+
+  // Published render with a real 404, not a soft one streamed inside Suspense.
+  const [{ slug }, context] = await Promise.all([params, getSiteContext()]);
+  const page = await getPage({
+    ...toQueryParams(context),
+    ...PUBLISHED_FETCH_OPTIONS,
+    path: toPath(slug),
+  });
+  if (!page) {
+    notFound();
+  }
+  return <PageContent context={context} page={page} />;
+};
+
+export default Page;

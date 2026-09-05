@@ -28,11 +28,11 @@ export interface PageBuilderProps {
  * Renders one block, asserting the query result against its projection type
  * so a GROQ or schema rename breaks the build instead of passing `any`.
  */
-function renderBlockComponent(
+const renderBlockComponent = (
   block: PageBuilderBlock,
   isFirst: boolean,
   dataSanity?: string
-) {
+) => {
   switch (block?._type) {
     case "cta": {
       return <CTABlock {...(block as PagebuilderType<"cta">)} />;
@@ -82,23 +82,21 @@ function renderBlockComponent(
       return null;
     }
   }
-}
+};
 
-function UnknownBlock({ blockType }: { blockType: string }) {
-  return (
-    <div
-      className="border-muted-foreground/20 bg-muted text-muted-foreground flex items-center justify-center rounded-lg border-2 border-dashed p-8 text-center"
-      role="alert"
-    >
-      <div className="space-y-2">
-        <p>Component not found for block type:</p>
-        <code className="bg-background rounded px-2 py-1 font-mono text-sm">
-          {blockType}
-        </code>
-      </div>
+const UnknownBlock = ({ blockType }: { blockType: string }) => (
+  <div
+    className="border-muted-foreground/20 bg-muted text-muted-foreground flex items-center justify-center rounded-lg border-2 border-dashed p-8 text-center"
+    role="alert"
+  >
+    <div className="space-y-2">
+      <p>Component not found for block type:</p>
+      <code className="bg-background rounded px-2 py-1 font-mono text-sm">
+        {blockType}
+      </code>
     </div>
-  );
-}
+  </div>
+);
 
 interface OptimisticDocument {
   pageBuilder?: { _key?: string }[];
@@ -109,11 +107,11 @@ interface OptimisticDocument {
  * mutation carries the raw document, not the projected blocks, so only the
  * `_key` order is taken; a just-inserted block appears after revalidation.
  */
-function useOptimisticPageBuilder(
+const useOptimisticPageBuilder = (
   initialBlocks: PageBuilderBlock[],
   documentId: string
-) {
-  return useOptimistic<PageBuilderBlock[], OptimisticDocument>(
+) =>
+  useOptimistic<PageBuilderBlock[], OptimisticDocument>(
     initialBlocks,
     (currentBlocks, action) => {
       const incoming = action.document.pageBuilder;
@@ -133,11 +131,10 @@ function useOptimisticPageBuilder(
       return reordered;
     }
   );
-}
 
 const NO_BLOCKS: PageBuilderBlock[] = [];
 
-export function PageBuilder({ pageBuilder, id, type }: PageBuilderProps) {
+export const PageBuilder = ({ pageBuilder, id, type }: PageBuilderProps) => {
   const blocks = useOptimisticPageBuilder(pageBuilder ?? NO_BLOCKS, id);
 
   if (!blocks.length) {
@@ -147,7 +144,7 @@ export function PageBuilder({ pageBuilder, id, type }: PageBuilderProps) {
   return (
     <div
       className="grid min-w-0 grid-cols-1"
-      data-sanity={sanityDataAttribute({ id, type, path: "pageBuilder" })}
+      data-sanity={sanityDataAttribute({ id, path: "pageBuilder", type })}
     >
       {blocks.map((block, index) => {
         // The leading hero's wrapper is `display: contents` so its banner can
@@ -156,8 +153,8 @@ export function PageBuilder({ pageBuilder, id, type }: PageBuilderProps) {
         const isLeadingHero = index === 0 && block?._type === "hero";
         const dataSanity = sanityDataAttribute({
           id,
-          type,
           path: `pageBuilder[_key=="${block._key}"]`,
+          type,
         });
         const content = renderBlockComponent(
           block,
@@ -180,4 +177,4 @@ export function PageBuilder({ pageBuilder, id, type }: PageBuilderProps) {
       })}
     </div>
   );
-}
+};

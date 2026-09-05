@@ -8,24 +8,22 @@ export interface RichTextBlockProps {
   title?: string | null;
 }
 
-export function RichTextBlock({
+export const RichTextBlock = ({
   richText,
   title,
   eyebrow,
-}: Readonly<RichTextBlockProps>) {
-  return (
-    <section className="block-section">
-      <div className="container">
-        <div className="flex flex-col items-start gap-6">
-          <BlockEyebrow eyebrow={eyebrow} />
-          {title && <h2 className="block-title max-w-2xl">{title}</h2>}
-        </div>
-        {richText && (
-          <div className="mt-8 max-w-3xl">
-            <RichText richText={richText} />
-          </div>
-        )}
+}: Readonly<RichTextBlockProps>) => (
+  <section className="block-section">
+    <div className="container">
+      <div className="flex flex-col items-start gap-6">
+        <BlockEyebrow eyebrow={eyebrow} />
+        {title && <h2 className="block-title max-w-2xl">{title}</h2>}
       </div>
-    </section>
-  );
-}
+      {richText && (
+        <div className="mt-8 max-w-3xl">
+          <RichText richText={richText} />
+        </div>
+      )}
+    </div>
+  </section>
+);

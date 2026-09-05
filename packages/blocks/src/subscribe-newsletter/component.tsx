@@ -30,7 +30,7 @@ export interface SubscribeNewsletterProps {
   title?: string | null;
 }
 
-function SubscribeNewsletterButton() {
+const SubscribeNewsletterButton = () => {
   const { pending } = useFormStatus();
   return (
     <Button
@@ -56,11 +56,11 @@ function SubscribeNewsletterButton() {
       </output>
     </Button>
   );
-}
+};
 
-function TestimonialPanel({
+const TestimonialPanel = ({
   testimonial,
-}: Readonly<{ testimonial: NewsletterTestimonial }>) {
+}: Readonly<{ testimonial: NewsletterTestimonial }>) => {
   const { eyebrow, quote, authorImage, authorName, authorRole } = testimonial;
   return (
     <div className="bleed-x bg-grid-dots p-[var(--container-px,0.5rem)] text-zinc-800 lg:mx-0 lg:p-8 dark:text-zinc-50">
@@ -98,9 +98,9 @@ function TestimonialPanel({
       </div>
     </div>
   );
-}
+};
 
-export function SubscribeNewsletter({
+export const SubscribeNewsletter = ({
   action,
   title,
   subTitle,
@@ -108,7 +108,7 @@ export function SubscribeNewsletter({
   method,
   onSubmit,
   testimonial,
-}: Readonly<SubscribeNewsletterProps>) {
+}: Readonly<SubscribeNewsletterProps>) => {
   // A cleared Sanity object is still truthy; only treat the testimonial as
   // present when it actually carries content.
   const hasTestimonialContent = Boolean(
@@ -175,4 +175,4 @@ export function SubscribeNewsletter({
       </div>
     </section>
   );
-}
+};

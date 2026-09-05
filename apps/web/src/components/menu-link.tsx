@@ -3,7 +3,7 @@
 import { SanityIcon } from "@repo/blocks/internal/sanity-icon";
 import { Link } from "@repo/internationalization/navigation";
 
-export function MenuLink({
+export const MenuLink = ({
   name,
   href,
   description,
@@ -17,7 +17,7 @@ export function MenuLink({
   icon?: string | null;
   openInNewTab?: boolean | null;
   onClick?: () => void;
-}) {
+}) => {
   if (!href) {
     return null;
   }
@@ -46,4 +46,4 @@ export function MenuLink({
       </span>
     </Link>
   );
-}
+};

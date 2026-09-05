@@ -3,45 +3,45 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { SocialGrid } from "./component";
 
 const meta = {
-  title: "blocks/Social Grid",
-  component: SocialGrid,
-  tags: ["autodocs"],
-  parameters: { layout: "fullscreen" },
   args: {
     eyebrow: "Community",
-    title: "Follow along",
-    subtitle: "Release notes, office hours and the occasional launch.",
     socials: [
       {
         _key: "s1",
-        platform: "github",
-        label: "GitHub",
         href: "https://github.com",
+        label: "GitHub",
         openInNewTab: true,
+        platform: "github",
       },
       {
         _key: "s2",
-        platform: "youtube",
-        label: "YouTube",
         href: "https://youtube.com",
+        label: "YouTube",
         openInNewTab: true,
+        platform: "youtube",
       },
       {
         _key: "s3",
-        platform: "linkedin",
-        label: "LinkedIn",
         href: "https://linkedin.com",
+        label: "LinkedIn",
         openInNewTab: true,
+        platform: "linkedin",
       },
       {
         _key: "s4",
-        platform: "reddit",
-        label: "Reddit",
         href: "https://reddit.com",
+        label: "Reddit",
         openInNewTab: true,
+        platform: "reddit",
       },
     ],
+    subtitle: "Release notes, office hours and the occasional launch.",
+    title: "Follow along",
   },
+  component: SocialGrid,
+  parameters: { layout: "fullscreen" },
+  tags: ["autodocs"],
+  title: "blocks/Social Grid",
 } satisfies Meta<typeof SocialGrid>;
 
 export default meta;

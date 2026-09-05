@@ -5,132 +5,132 @@ import { lucideIconPreview } from "../../components/icon-preview";
 import { buttonsField, iconField, languageField, siteField } from "../fields";
 
 const navigationLink = defineArrayMember({
-  name: "navigationLink",
-  type: "object",
-  title: "Navigation Link",
   description: "Individual navigation link with name and URL",
-  icon: Link,
   fields: [
     defineField({
-      name: "name",
-      type: "string",
-      title: "Link Text",
       description: "The text that will be displayed for this navigation link",
+      name: "name",
+      title: "Link Text",
+      type: "string",
     }),
     defineField({
-      name: "url",
-      type: "customUrl",
-      title: "Link URL",
       description: "The URL that this link will navigate to when clicked",
+      name: "url",
+      title: "Link URL",
+      type: "customUrl",
     }),
   ],
+  icon: Link,
+  name: "navigationLink",
   preview: {
-    select: {
-      title: "name",
-      externalUrl: "url.external",
-      urlType: "url.type",
-      internalUrl: "url.internal.slug.current",
-      openInNewTab: "url.openInNewTab",
-    },
     prepare({ title, externalUrl, urlType, internalUrl, openInNewTab }) {
       const url = urlType === "external" ? externalUrl : internalUrl;
       const newTabIndicator = openInNewTab ? " ↗" : "";
       const truncatedUrl = url?.length > 30 ? `${url.slice(0, 30)}...` : url;
 
       return {
-        title: title || "Untitled Link",
-        subtitle: `${urlType === "external" ? "External" : "Internal"} • ${truncatedUrl}${newTabIndicator}`,
         media: Link,
+        subtitle: `${urlType === "external" ? "External" : "Internal"} • ${truncatedUrl}${newTabIndicator}`,
+        title: title || "Untitled Link",
       };
     },
+    select: {
+      externalUrl: "url.external",
+      internalUrl: "url.internal.slug.current",
+      openInNewTab: "url.openInNewTab",
+      title: "name",
+      urlType: "url.type",
+    },
   },
+  title: "Navigation Link",
+  type: "object",
 });
 
 const navigationColumnLink = defineArrayMember({
-  name: "navigationColumnLink",
-  type: "object",
-  title: "Navigation Column Link",
   description: "A link within a navigation column",
-  icon: LayoutPanelLeft,
   fields: [
     iconField,
     defineField({
-      name: "name",
-      type: "string",
-      title: "Link Text",
       description: "The text that will be displayed for this navigation link",
-    }),
-    defineField({
-      name: "description",
+      name: "name",
+      title: "Link Text",
       type: "string",
-      title: "Description",
-      description: "The description for this navigation link",
     }),
     defineField({
-      name: "url",
-      type: "customUrl",
-      title: "Link URL",
+      description: "The description for this navigation link",
+      name: "description",
+      title: "Description",
+      type: "string",
+    }),
+    defineField({
       description: "The URL that this link will navigate to when clicked",
+      name: "url",
+      title: "Link URL",
+      type: "customUrl",
     }),
   ],
+  icon: LayoutPanelLeft,
+  name: "navigationColumnLink",
   preview: {
-    select: {
-      title: "name",
-      externalUrl: "url.external",
-      urlType: "url.type",
-      internalUrl: "url.internal.slug.current",
-      openInNewTab: "url.openInNewTab",
-      icon: "icon",
-    },
     prepare({ title, icon, externalUrl, urlType, internalUrl, openInNewTab }) {
       const url = urlType === "external" ? externalUrl : internalUrl;
       const newTabIndicator = openInNewTab ? " ↗" : "";
       const truncatedUrl = url?.length > 30 ? `${url.slice(0, 30)}...` : url;
 
       return {
-        title: title || "Untitled Link",
-        subtitle: `${urlType === "external" ? "External" : "Internal"} • ${truncatedUrl}${newTabIndicator}`,
         media: lucideIconPreview(icon),
+        subtitle: `${urlType === "external" ? "External" : "Internal"} • ${truncatedUrl}${newTabIndicator}`,
+        title: title || "Untitled Link",
       };
     },
+    select: {
+      externalUrl: "url.external",
+      icon: "icon",
+      internalUrl: "url.internal.slug.current",
+      openInNewTab: "url.openInNewTab",
+      title: "name",
+      urlType: "url.type",
+    },
   },
+  title: "Navigation Column Link",
+  type: "object",
 });
 
 const navigationColumn = defineArrayMember({
-  name: "navigationColumn",
-  type: "object",
-  title: "Navigation Column",
   description: "A column of navigation links with an optional title",
-  icon: LayoutPanelLeft,
   fields: [
     defineField({
-      name: "title",
-      type: "string",
-      title: "Column Title",
       description:
         "The heading text displayed above this group of navigation links",
+      name: "title",
+      title: "Column Title",
+      type: "string",
     }),
     defineField({
-      name: "links",
-      type: "array",
-      title: "Column Links",
       description: "The list of navigation links to display in this column",
-      validation: (rule) => [rule.required(), rule.unique()],
+      name: "links",
       of: [navigationColumnLink],
+      title: "Column Links",
+      type: "array",
+      validation: (rule) => [rule.required(), rule.unique()],
     }),
   ],
+  icon: LayoutPanelLeft,
+  name: "navigationColumn",
   preview: {
-    select: {
-      title: "title",
-      links: "links",
-    },
     prepare({ title, links = [] }) {
       return {
-        title: title || "Untitled Column",
         subtitle: `${links.length} link${links.length === 1 ? "" : "s"}`,
+        title: title || "Untitled Column",
       };
     },
+    select: {
+      links: "links",
+      title: "title",
+    },
   },
+  title: "Navigation Column",
+  type: "object",
 });
 
 /**
@@ -138,32 +138,32 @@ const navigationColumn = defineArrayMember({
  * each language links to that language's pages and is published on its own.
  */
 export const navigation = defineType({
-  name: "navigation",
-  type: "document",
-  title: "Navigation",
   description: "Configure the main navigation of a site for one language",
-  icon: PanelTop,
   fields: [
     siteField,
     languageField,
     defineField({
-      name: "columns",
-      type: "array",
-      title: "Navigation Structure",
       description:
         "Build your navigation menu using columns and links. Add either a column of links or individual links.",
+      name: "columns",
       of: [navigationColumn, navigationLink],
+      title: "Navigation Structure",
+      type: "array",
     }),
     buttonsField,
   ],
+  icon: PanelTop,
+  name: "navigation",
   preview: {
-    select: {
-      site: "site",
-      language: "language",
-    },
     prepare: ({ site, language }) => ({
-      title: `Navigation · ${(language ?? "??").toUpperCase()}`,
       subtitle: site,
+      title: `Navigation · ${(language ?? "??").toUpperCase()}`,
     }),
+    select: {
+      language: "language",
+      site: "site",
+    },
   },
+  title: "Navigation",
+  type: "document",
 });

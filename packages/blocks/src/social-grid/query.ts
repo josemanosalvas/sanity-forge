@@ -1,6 +1,6 @@
 import { imageFields, urlFragment } from "../internal/groq-fragments";
 
-export const socialGridGroqProjection = /* groq */ `
+export const socialGridGroqProjection = `
   _type == "socialGrid" => {
     ...,
     "socials": array::compact(socials[]{

@@ -24,7 +24,7 @@ export interface LogoLinkCellProps {
  * image has no usable asset id. Sizing and cell styling are passed in so each
  * caller keeps its own layout.
  */
-export function LogoLinkCell({
+export const LogoLinkCell = ({
   image,
   href,
   openInNewTab,
@@ -33,7 +33,7 @@ export function LogoLinkCell({
   height,
   width,
   imageStyle,
-}: Readonly<LogoLinkCellProps>) {
+}: Readonly<LogoLinkCellProps>) => {
   // Gate on the same validity SanityImage uses, so a malformed id renders
   // nothing rather than an empty (unnamed) link wrapping a null image.
   if (!(resolveAssetId(image) && image)) {
@@ -71,4 +71,4 @@ export function LogoLinkCell({
   }
 
   return <div className={cellClassName}>{media}</div>;
-}
+};

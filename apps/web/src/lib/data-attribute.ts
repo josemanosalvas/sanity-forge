@@ -14,10 +14,10 @@ export const sanityDataAttribute = ({
   path: string;
 }): string =>
   createDataAttribute({
-    id,
-    type,
-    path,
     baseUrl: env.NEXT_PUBLIC_SANITY_STUDIO_URL,
-    projectId: env.NEXT_PUBLIC_SANITY_PROJECT_ID,
     dataset: env.NEXT_PUBLIC_SANITY_DATASET,
+    id,
+    path,
+    projectId: env.NEXT_PUBLIC_SANITY_PROJECT_ID,
+    type,
   }).toString();

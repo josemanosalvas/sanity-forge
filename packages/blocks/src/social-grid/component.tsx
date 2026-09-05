@@ -37,17 +37,17 @@ export interface SocialGridProps {
 type IconProps = Readonly<{ className?: string }>;
 
 const PLATFORM_ICONS: Record<string, ComponentType<IconProps>> = {
+  facebook: FacebookIcon,
+  github: GithubIcon,
+  instagram: InstagramBrandIcon,
+  linkedin: LinkedinBrandIcon,
   reddit: RedditBrandIcon,
+  slack: SlackIcon,
   x: XLogoIcon,
   youtube: YoutubeIcon,
-  github: GithubIcon,
-  linkedin: LinkedinBrandIcon,
-  facebook: FacebookIcon,
-  instagram: InstagramBrandIcon,
-  slack: SlackIcon,
 };
 
-function SocialCard({ social }: Readonly<{ social: SocialGridItem }>) {
+const SocialCard = ({ social }: Readonly<{ social: SocialGridItem }>) => {
   const { platform, label, logo, openInNewTab } = social;
   const href = sanitizeHref(social.href);
   // stegaClean: `platform` is not on the default stega denylist, so in
@@ -122,14 +122,14 @@ function SocialCard({ social }: Readonly<{ social: SocialGridItem }>) {
   }
 
   return card;
-}
+};
 
-export function SocialGrid({
+export const SocialGrid = ({
   eyebrow,
   title,
   subtitle,
   socials,
-}: Readonly<SocialGridProps>) {
+}: Readonly<SocialGridProps>) => {
   if (!(Array.isArray(socials) && socials.length > 0)) {
     return null;
   }
@@ -152,4 +152,4 @@ export function SocialGrid({
       </div>
     </section>
   );
-}
+};

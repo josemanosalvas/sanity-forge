@@ -13,7 +13,7 @@ import {
  * resolving; the poster keeps the full image shape so it renders through
  * SanityImage.
  */
-const videoVariantFields = /* groq */ `
+const videoVariantFields = `
   mediaType,
   mux {
     ${muxVideoFields}
@@ -26,7 +26,7 @@ const videoVariantFields = /* groq */ `
   }
 ` as const;
 
-const heroVideoFragment = /* groq */ `
+const heroVideoFragment = `
   video {
     light {
       ${videoVariantFields}
@@ -37,7 +37,7 @@ const heroVideoFragment = /* groq */ `
   }
 ` as const;
 
-export const heroGroqProjection = /* groq */ `
+export const heroGroqProjection = `
   _type == "hero" => {
     ...,
     ${heroVideoFragment},

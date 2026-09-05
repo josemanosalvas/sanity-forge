@@ -18,7 +18,7 @@ export const capitalize = (str: string) =>
   str.charAt(0).toUpperCase() + str.slice(1);
 
 export const getTitleCase = (name: string) => {
-  const titleTemp = name.replaceAll(/([A-Z])/g, " $1");
+  const titleTemp = name.replaceAll(/(?<upper>[A-Z])/gu, " $<upper>");
   return titleTemp.charAt(0).toUpperCase() + titleTemp.slice(1);
 };
 

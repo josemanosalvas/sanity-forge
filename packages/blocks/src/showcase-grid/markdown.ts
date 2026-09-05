@@ -2,10 +2,10 @@ import { headingToMarkdown, joinSections, mdLink } from "../internal/markdown";
 import type { MarkdownBlock, MarkdownOptions } from "../internal/markdown";
 import { escapeMarkdown } from "../internal/portable-text-to-markdown";
 
-export function showcaseGridToMarkdown(
+export const showcaseGridToMarkdown = (
   block: MarkdownBlock,
   options: MarkdownOptions
-): string {
+): string => {
   const items = (block.items ?? [])
     .map((item) => {
       const name = (item.siteName ?? "").trim();
@@ -25,4 +25,4 @@ export function showcaseGridToMarkdown(
     description ? escapeMarkdown(description) : "",
     items.length > 0 ? items.join("\n") : "",
   ]);
-}
+};

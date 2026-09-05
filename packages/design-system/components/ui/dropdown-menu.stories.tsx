@@ -25,10 +25,11 @@ import {
  * triggered by a button.
  */
 const meta = {
-  title: "ui/DropdownMenu",
-  component: DropdownMenu,
-  tags: ["autodocs"],
   argTypes: {},
+  component: DropdownMenu,
+  parameters: {
+    layout: "centered",
+  },
   render: (args) => (
     <DropdownMenu {...args}>
       <DropdownMenuTrigger render={<Button variant="outline" />}>
@@ -44,9 +45,8 @@ const meta = {
       </DropdownMenuContent>
     </DropdownMenu>
   ),
-  parameters: {
-    layout: "centered",
-  },
+  tags: ["autodocs"],
+  title: "ui/DropdownMenu",
 } satisfies Meta<typeof DropdownMenu>;
 
 export default meta;

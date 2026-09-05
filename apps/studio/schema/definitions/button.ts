@@ -6,45 +6,35 @@ import { capitalize, createRadioListLayout } from "../../lib/helpers";
 const buttonVariants = ["default", "secondary", "outline", "link"];
 
 export const button = defineType({
-  name: "button",
-  type: "object",
-  title: "Button",
-  icon: Command,
   fields: [
     defineField({
-      name: "variant",
-      type: "string",
       description:
         "Choose the button's visual style - default is solid, secondary is the accent color, outline has a border, and link looks like regular text",
       initialValue: () => "default",
+      name: "variant",
       options: createRadioListLayout(buttonVariants, {
         direction: "horizontal",
       }),
+      type: "string",
     }),
     defineField({
-      name: "text",
-      type: "string",
-      title: "Button Text",
       description:
         "The text that appears on the button, like 'Learn More' or 'Get Started'",
+      name: "text",
+      title: "Button Text",
+      type: "string",
     }),
     defineField({
-      name: "url",
-      type: "customUrl",
-      title: "URL",
       description:
         "Where the button links to - can be an internal page or external website",
+      name: "url",
+      title: "URL",
+      type: "customUrl",
     }),
   ],
+  icon: Command,
+  name: "button",
   preview: {
-    select: {
-      title: "text",
-      variant: "variant",
-      externalUrl: "url.external",
-      urlType: "url.type",
-      internalUrl: "url.internal.slug.current",
-      openInNewTab: "url.openInNewTab",
-    },
     prepare: ({
       title,
       variant,
@@ -57,9 +47,19 @@ export const button = defineType({
       const newTabIndicator = openInNewTab ? " ↗" : "";
 
       return {
-        title: title || "Untitled Button",
         subtitle: `${capitalize(variant ?? "default")} • ${url}${newTabIndicator}`,
+        title: title || "Untitled Button",
       };
     },
+    select: {
+      externalUrl: "url.external",
+      internalUrl: "url.internal.slug.current",
+      openInNewTab: "url.openInNewTab",
+      title: "text",
+      urlType: "url.type",
+      variant: "variant",
+    },
   },
+  title: "Button",
+  type: "object",
 });

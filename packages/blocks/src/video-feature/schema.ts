@@ -7,27 +7,23 @@ import {
 } from "../internal/schema-fields";
 
 export const videoFeatureSchema = defineType({
-  name: "videoFeature",
-  type: "object",
-  title: "Video",
-  icon: Play,
   fields: [
     defineField({
-      name: "eyebrow",
-      type: "string",
-      title: "Eyebrow",
       description:
         "The smaller text that sits above the title to provide context",
+      name: "eyebrow",
+      title: "Eyebrow",
+      type: "string",
     }),
     defineField({
-      name: "title",
-      type: "string",
-      title: "Title",
       description: "The large text shown above the video",
+      name: "title",
+      title: "Title",
+      type: "string",
     }),
     definePortableTextField(["block"], {
-      name: "richText",
       description: "The supporting paragraph shown beneath the title",
+      name: "richText",
     }),
     muxVideoEmbedField({
       // The block is the video: without one there is nothing to show but a
@@ -37,19 +33,23 @@ export const videoFeatureSchema = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "caption",
-      type: "string",
-      title: "Caption",
       description: "Optional line of text shown underneath the video",
+      name: "caption",
+      title: "Caption",
+      type: "string",
     }),
   ],
+  icon: Play,
+  name: "videoFeature",
   preview: {
+    prepare: ({ title }) => ({
+      subtitle: "Video Block",
+      title: title || "Video",
+    }),
     select: {
       title: "title",
     },
-    prepare: ({ title }) => ({
-      title: title || "Video",
-      subtitle: "Video Block",
-    }),
   },
+  title: "Video",
+  type: "object",
 });

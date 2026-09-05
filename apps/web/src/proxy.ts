@@ -29,12 +29,12 @@ export const proxy: NextProxy = (request) => {
   }
 
   return applySecurityHeaders(response, {
-    frameAncestors: [studioOrigin],
     csp: {
+      connectSrc: ["https://stream.mux.com", "https://inferred.litix.io"],
       imgSrc: ["https://image.mux.com"],
       mediaSrc: ["https://stream.mux.com"],
-      connectSrc: ["https://stream.mux.com", "https://inferred.litix.io"],
     },
+    frameAncestors: [studioOrigin],
   });
 };
 

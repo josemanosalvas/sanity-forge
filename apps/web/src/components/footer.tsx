@@ -16,21 +16,21 @@ import { Fragment } from "react";
 import { Logo } from "@/components/logo";
 import type { FooterData, SiteContext } from "@/types";
 
-function SocialLinks({
+const SocialLinks = ({
   data,
 }: {
   data: NonNullable<SettingsQueryResult>["socialLinks"];
-}) {
+}) => {
   if (!data) {
     return null;
   }
   const links = [
-    { url: data.instagram, Icon: InstagramBrandIcon, label: "Instagram" },
-    { url: data.facebook, Icon: FacebookIcon, label: "Facebook" },
-    { url: data.twitter, Icon: XBrandIcon, label: "X" },
-    { url: data.linkedin, Icon: LinkedinBrandIcon, label: "LinkedIn" },
-    { url: data.youtube, Icon: YoutubeIcon, label: "YouTube" },
-    { url: data.reddit, Icon: RedditBrandIcon, label: "Reddit" },
+    { Icon: InstagramBrandIcon, label: "Instagram", url: data.instagram },
+    { Icon: FacebookIcon, label: "Facebook", url: data.facebook },
+    { Icon: XBrandIcon, label: "X", url: data.twitter },
+    { Icon: LinkedinBrandIcon, label: "LinkedIn", url: data.linkedin },
+    { Icon: YoutubeIcon, label: "YouTube", url: data.youtube },
+    { Icon: RedditBrandIcon, label: "Reddit", url: data.reddit },
   ].filter((link): link is typeof link & { url: string } => Boolean(link.url));
 
   if (!links.length) {
@@ -54,9 +54,9 @@ function SocialLinks({
       ))}
     </ul>
   );
-}
+};
 
-export async function Footer({
+export const Footer = async ({
   context,
   footer,
   settings,
@@ -64,7 +64,7 @@ export async function Footer({
   context: SiteContext;
   footer: FooterData;
   settings: SettingsQueryResult;
-}) {
+}) => {
   const t = await getTranslations("footer");
   const siteName = settings?.siteTitle ?? context.site.name;
   const year = new Date().getFullYear();
@@ -118,14 +118,14 @@ export async function Footer({
         ) : null}
       </div>
       <div className="border-border text-muted-foreground container flex flex-col gap-4 border-t py-6 text-sm sm:flex-row sm:items-center sm:justify-between">
-        <p>{footer?.copyright ?? t("copyright", { year, siteName })}</p>
+        <p>{footer?.copyright ?? t("copyright", { siteName, year })}</p>
         {footer?.credits?.length ? (
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             {footer.credits.map((credit, index) => {
               const logoHeight = normalizedLogoHeight(credit.logo, {
                 base: 34,
-                min: 11,
                 max: 18,
+                min: 11,
               });
               const content = (
                 <span className="flex items-center gap-1 whitespace-nowrap">
@@ -170,4 +170,4 @@ export async function Footer({
       </div>
     </footer>
   );
-}
+};

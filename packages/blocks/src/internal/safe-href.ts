@@ -1,6 +1,6 @@
 const ALLOWED_PROTOCOLS = new Set(["http:", "https:", "mailto:", "tel:"]);
 
-export function isSafeHref(href: string): boolean {
+export const isSafeHref = (href: string): boolean => {
   if (href.startsWith("/") || href.startsWith("#")) {
     return true;
   }
@@ -9,17 +9,17 @@ export function isSafeHref(href: string): boolean {
   } catch {
     return false;
   }
-}
+};
 
-export function sanitizeHref(
+export const sanitizeHref = (
   href?: string | null | undefined
-): string | undefined {
+): string | undefined => {
   const trimmed = href?.trim();
   if (!trimmed) {
     return undefined;
   }
   return isSafeHref(trimmed) ? trimmed : undefined;
-}
+};
 
 /**
  * Narrow a caller-supplied redirect target to a same-origin path, or `/`.
@@ -31,10 +31,10 @@ export function sanitizeHref(
  * and leaves the browser as `//evil.com`. Delegating to the same parser the
  * browser uses covers those without enumerating them.
  */
-export function internalPathOnly(
+export const internalPathOnly = (
   path: string | null | undefined,
   base: string | URL
-): string {
+): string => {
   if (!path) {
     return "/";
   }
@@ -47,4 +47,4 @@ export function internalPathOnly(
   } catch {
     return "/";
   }
-}
+};

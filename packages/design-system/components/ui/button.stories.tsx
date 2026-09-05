@@ -7,25 +7,12 @@ import { Button } from "./button";
  * Displays a button or a component that looks like a button.
  */
 const meta = {
-  title: "ui/Button",
-  component: Button,
-  tags: ["autodocs"],
   argTypes: {
     children: {
       control: "text",
     },
-    variant: {
-      options: [
-        "default",
-        "outline",
-        "secondary",
-        "ghost",
-        "destructive",
-        "link",
-      ],
-      control: { type: "select" },
-    },
     size: {
+      control: { type: "select" },
       options: [
         "default",
         "xs",
@@ -36,17 +23,30 @@ const meta = {
         "icon-sm",
         "icon-lg",
       ],
+    },
+    variant: {
       control: { type: "select" },
+      options: [
+        "default",
+        "outline",
+        "secondary",
+        "ghost",
+        "destructive",
+        "link",
+      ],
     },
   },
+  args: {
+    children: "Button",
+    size: "default",
+    variant: "default",
+  },
+  component: Button,
   parameters: {
     layout: "centered",
   },
-  args: {
-    variant: "default",
-    size: "default",
-    children: "Button",
-  },
+  tags: ["autodocs"],
+  title: "ui/Button",
 } satisfies Meta<typeof Button>;
 
 export default meta;
@@ -83,28 +83,28 @@ export const Link: Story = {
 
 /** Disable the button while an action is in progress and show a spinner. */
 export const Loading: Story = {
+  args: {
+    ...Outline.args,
+    disabled: true,
+  },
   render: (args) => (
     <Button {...args}>
       <Loader2 className="animate-spin" />
       Button
     </Button>
   ),
-  args: {
-    ...Outline.args,
-    disabled: true,
-  },
 };
 
 /** Add an icon to reinforce the action. */
 export const WithIcon: Story = {
+  args: {
+    ...Secondary.args,
+  },
   render: (args) => (
     <Button {...args}>
       <Mail /> Login with Email
     </Button>
   ),
-  args: {
-    ...Secondary.args,
-  },
 };
 
 /** Use `sm` for compact interfaces. */
@@ -121,8 +121,8 @@ export const Large: Story = {
 export const Icon: Story = {
   args: {
     ...Secondary.args,
-    size: "icon",
     children: <Mail />,
+    size: "icon",
   },
 };
 

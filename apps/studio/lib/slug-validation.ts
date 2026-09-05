@@ -24,7 +24,7 @@ export interface SlugValidationOptions {
   customValidators?: ((slug: string) => string[])[];
 }
 
-const SEGMENT_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const SEGMENT_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u;
 const MIN_LEN = 3;
 const MAX_LEN = 60;
 
@@ -36,26 +36,25 @@ const RESERVED_PREFIXES = [
 ] as const;
 
 const SLUG_ERROR_MESSAGES = {
-  REQUIRED: "Slug must have a value",
+  CONSECUTIVE_HYPHENS: "Use only one hyphen between words.",
   INVALID_CHARACTERS:
     "Only lowercase letters, numbers, and hyphens are allowed.",
   INVALID_START_END: "Slug can't start or end with a hyphen.",
-  CONSECUTIVE_HYPHENS: "Use only one hyphen between words.",
+  MISSING_LEADING_SLASH: "URL path must start with a forward slash (/)",
+  MULTIPLE_SLASHES: "Multiple consecutive slashes (//) are not allowed.",
   NO_SPACES: "No spaces. Use hyphens instead.",
   NO_UNDERSCORES: "Underscores aren't allowed. Use hyphens instead.",
-  MULTIPLE_SLASHES: "Multiple consecutive slashes (//) are not allowed.",
-  MISSING_LEADING_SLASH: "URL path must start with a forward slash (/)",
+  REQUIRED: "Slug must have a value",
   TRAILING_SLASH: "URL path must not end with a forward slash (/)",
 } as const;
 
 const SLUG_WARNING_MESSAGES = {
-  TOO_SHORT: `Slug must be at least ${MIN_LEN} characters long.`,
   TOO_LONG: `Slug can't be longer than ${MAX_LEN} characters.`,
+  TOO_SHORT: `Slug must be at least ${MIN_LEN} characters long.`,
 } as const;
 
 const CONFIGS: Record<string, SlugValidationOptions> = {
   page: {
-    documentType: "Page",
     allowRoot: true,
     customValidators: [
       (slug) =>
@@ -74,10 +73,11 @@ const CONFIGS: Record<string, SlugValidationOptions> = {
           : [];
       },
     ],
+    documentType: "Page",
   },
 };
 
-function validateSegment(seg: string): SlugValidationResult {
+const validateSegment = (seg: string): SlugValidationResult => {
   const errors: string[] = [];
   const warnings: string[] = [];
 
@@ -105,9 +105,9 @@ function validateSegment(seg: string): SlugValidationResult {
   }
 
   return { errors, warnings };
-}
+};
 
-function validatePathStructure(slug: string): string[] {
+const validatePathStructure = (slug: string): string[] => {
   const errors: string[] = [];
 
   if (!slug.startsWith("/")) {
@@ -121,12 +121,12 @@ function validatePathStructure(slug: string): string[] {
   }
 
   return errors;
-}
+};
 
-function validateSlug(
+const validateSlug = (
   slug: string | undefined | null,
   options: SlugValidationOptions = {}
-): SlugValidationResult {
+): SlugValidationResult => {
   if (!slug?.trim()) {
     return { errors: [SLUG_ERROR_MESSAGES.REQUIRED], warnings: [] };
   }
@@ -155,33 +155,33 @@ function validateSlug(
   }
 
   return { errors: [...new Set(errors)], warnings: [...new Set(warnings)] };
-}
+};
 
-export function getDocumentTypeConfig(docType: string): SlugValidationOptions {
-  return CONFIGS[docType]
-    ? { ...CONFIGS[docType] }
-    : { documentType: "Document" };
-}
+export const getDocumentTypeConfig = (
+  docType: string
+): SlugValidationOptions =>
+  CONFIGS[docType] ? { ...CONFIGS[docType] } : { documentType: "Document" };
 
-export function createSlugErrorValidator(
-  options: SlugValidationOptions
-): (slug: { current?: string } | undefined) => string | true {
-  return (slug) => {
+export const createSlugErrorValidator =
+  (
+    options: SlugValidationOptions
+  ): ((slug: { current?: string } | undefined) => string | true) =>
+  (slug) => {
     const { errors } = validateSlug(slug?.current, options);
     return errors.length > 0 ? errors.join("; ") : true;
   };
-}
 
 /**
  * Reject a slug already used by another document of the same site and
  * language. The document's own draft and published ids are excluded so
  * re-saving an unchanged document doesn't flag itself.
  */
-export function createSlugUniqueValidator(): (
-  slug: { current?: string } | undefined,
-  context: ValidationContext
-) => Promise<string | true> {
-  return async (slug, context) => {
+export const createSlugUniqueValidator =
+  (): ((
+    slug: { current?: string } | undefined,
+    context: ValidationContext
+  ) => Promise<string | true>) =>
+  async (slug, context) => {
     const current = slug?.current;
     if (!(current && context.getClient)) {
       return true;
@@ -189,47 +189,46 @@ export function createSlugUniqueValidator(): (
     const document = context.document as
       | { _id?: string; _type?: string; site?: string; language?: string }
       | undefined;
-    const id = (document?._id ?? "").replace(/^drafts\./, "");
+    const id = (document?._id ?? "").replace(/^drafts\./u, "");
     const taken = await context
       .getClient({ apiVersion: API_VERSION })
       .fetch<number>(
         `count(*[_type == $type && site == $site && language == $language && slug.current == $slug && !(_id in [$draft, $published])])`,
         {
-          type: document?._type,
-          site: document?.site ?? null,
-          language: document?.language ?? null,
-          slug: current,
           draft: `drafts.${id}`,
+          language: document?.language ?? null,
           published: id,
+          site: document?.site ?? null,
+          slug: current,
+          type: document?._type,
         }
       );
     return taken > 0
       ? `“${current}” is already used by another document on this site in this language. URLs must be unique.`
       : true;
   };
-}
 
-export function createSlugWarningValidator(
-  options: SlugValidationOptions
-): (slug: { current?: string } | undefined) => string | true {
-  return (slug) => {
+export const createSlugWarningValidator =
+  (
+    options: SlugValidationOptions
+  ): ((slug: { current?: string } | undefined) => string | true) =>
+  (slug) => {
     const { warnings } = validateSlug(slug?.current, options);
     return warnings.length > 0 ? warnings.join("; ") : true;
   };
-}
 
-function cleanSlug(slug: string): string {
+const cleanSlug = (slug: string): string => {
   if (!slug) {
     return "";
   }
   return slugify(slug, { lower: true, strict: true });
-}
+};
 
 /** Generate a slug from a document title, keeping any parent path of the current slug. */
-export function generateSlugFromTitle(
+export const generateSlugFromTitle = (
   title: string,
   currentSlug?: string
-): string {
+): string => {
   if (!title?.trim()) {
     return "";
   }
@@ -246,4 +245,4 @@ export function generateSlugFromTitle(
     }
   }
   return `/${clean}`;
-}
+};

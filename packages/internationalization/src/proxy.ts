@@ -55,12 +55,12 @@ export const rewriteToSiteRoute = (
     const url = request.nextUrl.clone();
     url.pathname = localizePath(site, defaultLocale, parsed.pathname);
     return {
+      context: { locale: defaultLocale, site: site.key },
       response: NextResponse.redirect(url, 308),
-      context: { site: site.key, locale: defaultLocale },
     };
   }
 
-  const context: SiteContext = { site: site.key, locale: parsed.locale };
+  const context: SiteContext = { locale: parsed.locale, site: site.key };
   const url = request.nextUrl.clone();
   const internalPath = parsed.pathname === "/" ? "" : parsed.pathname;
   url.pathname = `${internalPrefix(context)}${internalPath}`;
@@ -71,7 +71,7 @@ export const rewriteToSiteRoute = (
   headers.set(LOCALE_HEADER, context.locale);
 
   return {
-    response: NextResponse.rewrite(url, { request: { headers } }),
     context,
+    response: NextResponse.rewrite(url, { request: { headers } }),
   };
 };

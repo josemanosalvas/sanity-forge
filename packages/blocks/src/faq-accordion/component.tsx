@@ -49,7 +49,7 @@ const DISCLOSURE_BASE_CLASS =
 const DISCLOSURE_ANIMATION_CLASS =
   "fade-in slide-in-from-bottom-2 animate-in fill-mode-both animation-duration-300 ease-out motion-reduce:animate-none";
 
-function FaqDisclosure({
+const FaqDisclosure = ({
   animationDelay,
   faq,
   isOpen,
@@ -59,7 +59,7 @@ function FaqDisclosure({
   faq: FaqItem;
   isOpen: boolean;
   onToggle: () => void;
-}>) {
+}>) => {
   const { detailsRef, contentRef } = useDisclosureAnimation(isOpen);
   // Captured once: the native `open` attribute only seeds the first render.
   // oxlint-disable-next-line react/hook-use-state -- the setter is intentionally unused
@@ -107,9 +107,9 @@ function FaqDisclosure({
       ) : null}
     </details>
   );
-}
+};
 
-function FaqList({ faqs }: Readonly<{ faqs: FaqItem[] }>) {
+const FaqList = ({ faqs }: Readonly<{ faqs: FaqItem[] }>) => {
   const defaultFaq = faqs.find((faq) => faq?.title);
   const defaultOpenId = defaultFaq
     ? (defaultFaq._key ?? defaultFaq._id)
@@ -139,9 +139,9 @@ function FaqList({ faqs }: Readonly<{ faqs: FaqItem[] }>) {
       })}
     </div>
   );
-}
+};
 
-function CategoryTabs({
+const CategoryTabs = ({
   categories,
   activeIndex,
   onSelect,
@@ -149,81 +149,75 @@ function CategoryTabs({
   categories: FaqCategory[];
   activeIndex: number;
   onSelect: (index: number) => void;
-}>) {
-  return (
-    <div className="flex h-full flex-col gap-6">
-      <ul className="grid gap-1">
-        {categories.map((category, index) => {
-          const isActive = index === activeIndex;
-          const number = String(index + 1).padStart(2, "0");
-          return (
-            <li key={`faq-category-${category._key ?? index}`}>
-              <button
-                aria-pressed={isActive}
-                className="focus-ring group flex w-full items-center gap-2 rounded-none px-1 py-0.5 text-left"
-                onClick={() => onSelect(index)}
-                type="button"
+}>) => (
+  <div className="flex h-full flex-col gap-6">
+    <ul className="grid gap-1">
+      {categories.map((category, index) => {
+        const isActive = index === activeIndex;
+        const number = String(index + 1).padStart(2, "0");
+        return (
+          <li key={`faq-category-${category._key ?? index}`}>
+            <button
+              aria-pressed={isActive}
+              className="focus-ring group flex w-full items-center gap-2 rounded-none px-1 py-0.5 text-left"
+              onClick={() => onSelect(index)}
+              type="button"
+            >
+              <span
+                className={cn(
+                  "shrink-0 px-1 py-px font-mono text-sm leading-5 font-light tracking-[0.28px] uppercase",
+                  isActive
+                    ? "bg-highlight text-highlight-foreground"
+                    : "text-muted-foreground group-hover:bg-foreground group-hover:text-background"
+                )}
               >
-                <span
-                  className={cn(
-                    "shrink-0 px-1 py-px font-mono text-sm leading-5 font-light tracking-[0.28px] uppercase",
-                    isActive
-                      ? "bg-highlight text-highlight-foreground"
-                      : "text-muted-foreground group-hover:bg-foreground group-hover:text-background"
-                  )}
-                >
-                  {number}
-                </span>
-                <span
-                  className={cn(
-                    "font-mono text-sm leading-5 font-light tracking-[0.28px] uppercase",
-                    isActive
-                      ? "text-zinc-900 dark:text-zinc-100"
-                      : "text-muted-foreground group-hover:text-foreground"
-                  )}
-                >
-                  {category.title}
-                </span>
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-      <div
-        aria-hidden="true"
-        className="bg-grid-dots hidden w-full max-w-[149px] flex-1 text-zinc-800 lg:block dark:text-zinc-50"
-      />
-    </div>
-  );
-}
+                {number}
+              </span>
+              <span
+                className={cn(
+                  "font-mono text-sm leading-5 font-light tracking-[0.28px] uppercase",
+                  isActive
+                    ? "text-zinc-900 dark:text-zinc-100"
+                    : "text-muted-foreground group-hover:text-foreground"
+                )}
+              >
+                {category.title}
+              </span>
+            </button>
+          </li>
+        );
+      })}
+    </ul>
+    <div
+      aria-hidden="true"
+      className="bg-grid-dots hidden w-full max-w-[149px] flex-1 text-zinc-800 lg:block dark:text-zinc-50"
+    />
+  </div>
+);
 
-function FaqHeader({
+const FaqHeader = ({
   eyebrow,
   title,
   subtitle,
-}: Readonly<Pick<FaqAccordionProps, "eyebrow" | "title" | "subtitle">>) {
-  return (
-    <div className="flex flex-col items-start gap-6">
-      <BlockEyebrow eyebrow={eyebrow} />
-      {(title || subtitle) && (
-        <div className="flex flex-col gap-5">
-          {title && (
-            <h2 className="text-foreground text-4xl leading-tight font-normal tracking-[-0.24px] md:text-5xl">
-              {title}
-            </h2>
-          )}
-          {subtitle && (
-            <p className="body-text text-muted-foreground max-w-xl">
-              {subtitle}
-            </p>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
+}: Readonly<Pick<FaqAccordionProps, "eyebrow" | "title" | "subtitle">>) => (
+  <div className="flex flex-col items-start gap-6">
+    <BlockEyebrow eyebrow={eyebrow} />
+    {(title || subtitle) && (
+      <div className="flex flex-col gap-5">
+        {title && (
+          <h2 className="text-foreground text-4xl leading-tight font-normal tracking-[-0.24px] md:text-5xl">
+            {title}
+          </h2>
+        )}
+        {subtitle && (
+          <p className="body-text text-muted-foreground max-w-xl">{subtitle}</p>
+        )}
+      </div>
+    )}
+  </div>
+);
 
-function FaqContactLink({ link }: Readonly<{ link: FaqLink }>) {
+const FaqContactLink = ({ link }: Readonly<{ link: FaqLink }>) => {
   if (!(link.href && (link.description || link.title))) {
     return null;
   }
@@ -254,16 +248,16 @@ function FaqContactLink({ link }: Readonly<{ link: FaqLink }>) {
       </Link>
     </div>
   );
-}
+};
 
-export function FaqAccordion({
+export const FaqAccordion = ({
   _key,
   categories,
   eyebrow,
   title,
   subtitle,
   link,
-}: Readonly<FaqAccordionProps>) {
+}: Readonly<FaqAccordionProps>) => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   const validCategories = (categories ?? []).filter((category) =>
@@ -308,4 +302,4 @@ export function FaqAccordion({
       </div>
     </section>
   );
-}
+};

@@ -8,7 +8,7 @@ import { BlockEyebrow } from "./block-eyebrow";
  * children so each block keeps its exact markup (RichText, a subtitle
  * paragraph, etc.) while the wrapper structure stays in one place.
  */
-export function BlockHeader({
+export const BlockHeader = ({
   eyebrow,
   title,
   children,
@@ -16,14 +16,12 @@ export function BlockHeader({
   eyebrow?: string | null;
   title?: string | null;
   children?: ReactNode;
-}>) {
-  return (
-    <div className="flex flex-col items-start gap-6">
-      <BlockEyebrow eyebrow={eyebrow} />
-      <div className="flex flex-col items-start gap-5">
-        {title ? <h2 className="block-title max-w-2xl">{title}</h2> : null}
-        {children}
-      </div>
+}>) => (
+  <div className="flex flex-col items-start gap-6">
+    <BlockEyebrow eyebrow={eyebrow} />
+    <div className="flex flex-col items-start gap-5">
+      {title ? <h2 className="block-title max-w-2xl">{title}</h2> : null}
+      {children}
     </div>
-  );
-}
+  </div>
+);

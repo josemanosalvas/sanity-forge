@@ -13,13 +13,10 @@ import type { PresentationPluginOptions } from "sanity/presentation";
 
 import { previewOrigin } from "../lib/site";
 
-const originToSiteKey = (origin: string) => {
-  try {
-    return resolveSiteFromHost(new URL(origin).host)?.key;
-  } catch {
-    return undefined;
-  }
-};
+const originToSiteKey = (origin: string) =>
+  URL.canParse(origin)
+    ? resolveSiteFromHost(new URL(origin).host)?.key
+    : undefined;
 
 /** Where a page lives on its own site, in its own language. */
 const pageHref = (doc: {
@@ -34,45 +31,45 @@ const pageHref = (doc: {
 
 const locations: PresentationPluginOptions["resolve"] = {
   locations: {
+    footer: defineLocations({
+      resolve: (doc) => ({
+        locations: [{ href: pageHref({ ...doc, slug: "/" }), title: "Home" }],
+        message: "The footer is shown on every page of this site",
+        tone: "positive",
+      }),
+      select: { language: "language", site: "site" },
+    }),
+    navigation: defineLocations({
+      resolve: (doc) => ({
+        locations: [{ href: pageHref({ ...doc, slug: "/" }), title: "Home" }],
+        message: "The navigation is shown on every page of this site",
+        tone: "positive",
+      }),
+      select: { language: "language", site: "site" },
+    }),
     page: defineLocations({
-      select: {
-        title: "title",
-        slug: "slug.current",
-        site: "site",
-        language: "language",
-      },
       resolve: (doc) => ({
         locations: [
           {
-            title: doc?.title || "Untitled",
             href: pageHref(doc ?? {}),
+            title: doc?.title || "Untitled",
           },
         ],
       }),
-    }),
-    navigation: defineLocations({
-      select: { site: "site", language: "language" },
-      resolve: (doc) => ({
-        message: "The navigation is shown on every page of this site",
-        tone: "positive",
-        locations: [{ title: "Home", href: pageHref({ ...doc, slug: "/" }) }],
-      }),
-    }),
-    footer: defineLocations({
-      select: { site: "site", language: "language" },
-      resolve: (doc) => ({
-        message: "The footer is shown on every page of this site",
-        tone: "positive",
-        locations: [{ title: "Home", href: pageHref({ ...doc, slug: "/" }) }],
-      }),
+      select: {
+        language: "language",
+        site: "site",
+        slug: "slug.current",
+        title: "title",
+      },
     }),
     settings: defineLocations({
-      select: { site: "site" },
       resolve: (doc) => ({
+        locations: [{ href: pageHref({ ...doc, slug: "/" }), title: "Home" }],
         message: "Site settings apply to every page of this site",
         tone: "positive",
-        locations: [{ title: "Home", href: pageHref({ ...doc, slug: "/" }) }],
       }),
+      select: { site: "site" },
     }),
   },
 };
@@ -85,23 +82,18 @@ const locations: PresentationPluginOptions["resolve"] = {
 export const createPresentationConfig = (
   site: Site
 ): PresentationPluginOptions => ({
+  allowOrigins: getAllSiteOrigins(),
   name: "presentation",
-  title: "Preview",
   previewUrl: {
     initial: previewOrigin(site),
     previewMode: {
       enable: "/api/draft-mode/enable",
     },
   },
-  allowOrigins: getAllSiteOrigins(),
   resolve: {
     ...locations,
     mainDocuments: defineDocuments([
       {
-        // Any path on any site: the site comes from the preview origin and
-        // the language from the path, so the resolved document is always the
-        // one the visitor would see there.
-        route: "/:path*",
         resolve: ({ origin, path }) => {
           const resolved = getSiteOrDefault(originToSiteKey(origin));
           const [, first = "", ...rest] = path.split("/");
@@ -112,13 +104,18 @@ export const createPresentationConfig = (
             filter:
               '_type == "page" && site == $site && language == $locale && slug.current == $slug',
             params: {
-              site: resolved.key,
               locale,
+              site: resolved.key,
               slug: slug === "" ? "/" : slug,
             },
           };
         },
+        // Any path on any site: the site comes from the preview origin and
+        // the language from the path, so the resolved document is always the
+        // one the visitor would see there.
+        route: "/:path*",
       },
     ]),
   },
+  title: "Preview",
 });

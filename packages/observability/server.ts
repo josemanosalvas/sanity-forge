@@ -14,8 +14,8 @@ export const initializeObservability = (): void => {
   init({
     dsn,
     enableLogs: true,
-    tracesSampleRate: 1,
     includeLocalVariables: true,
     integrations: [consoleLoggingIntegration({ levels: ["error", "warn"] })],
+    tracesSampleRate: 1,
   });
 };

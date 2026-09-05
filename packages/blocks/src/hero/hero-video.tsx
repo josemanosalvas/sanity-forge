@@ -46,29 +46,27 @@ export interface HeroVideoData {
 const BACKGROUND_CLASS =
   "pointer-events-none size-full object-cover object-[50%_45%] transition-opacity duration-700 ease-out";
 
-function hasFiles(variant?: HeroVideoVariant | null): boolean {
-  return Boolean(variant?.webm || variant?.hevc || variant?.mobileWebm);
-}
+const hasFiles = (variant?: HeroVideoVariant | null): boolean =>
+  Boolean(variant?.webm || variant?.hevc || variant?.mobileWebm);
 
 /** Whether the path this variant selected has something to play. */
-function hasSource(variant?: HeroVideoVariant | null): boolean {
-  return isMuxPath(mediaTypeOf(variant))
+const hasSource = (variant?: HeroVideoVariant | null): boolean =>
+  isMuxPath(mediaTypeOf(variant))
     ? Boolean(muxPlaybackId(variant?.mux))
     : hasFiles(variant);
-}
 
 /**
  * Identifies the clip on screen. A theme toggle mounts a fresh element, so
  * readiness has to expire with the source it was earned for.
  */
-function sourceKeyOf(variant?: HeroVideoVariant | null): string | null {
+const sourceKeyOf = (variant?: HeroVideoVariant | null): string | null => {
   if (isMuxPath(mediaTypeOf(variant))) {
     return muxPlaybackId(variant?.mux);
   }
   return (
     stegaClean(variant?.webm ?? variant?.hevc ?? variant?.mobileWebm) ?? null
   );
-}
+};
 
 /** The resolutions every path picks between. */
 export type DeliveryRung = "1080p" | "720p" | "480p";
@@ -85,15 +83,18 @@ interface Connection {
  * decides. `saveData` and `effectiveType` are Chromium-only, so Safari and
  * Firefox fall through to the width, which is the answer they had before.
  */
-export function rungFor(width: number, connection?: Connection): DeliveryRung {
+export const rungFor = (
+  width: number,
+  connection?: Connection
+): DeliveryRung => {
   if (
     connection?.saveData ||
-    /(^|-)2g$/.test(connection?.effectiveType ?? "")
+    /(?:^|-)2g$/u.test(connection?.effectiveType ?? "")
   ) {
     return "480p";
   }
   return width >= 1280 ? "1080p" : "720p";
-}
+};
 
 /**
  * Read once, at mount. Deliberately not reactive: `key` is the source URL, so
@@ -101,17 +102,17 @@ export function rungFor(width: number, connection?: Connection): DeliveryRung {
  * worse than leaving an already-buffered loop alone. Safe to call during render
  * because `HeroVideo` renders nothing until it has mounted.
  */
-function deliveryRung(): DeliveryRung {
+const deliveryRung = (): DeliveryRung => {
   const { connection } = navigator as Navigator & { connection?: Connection };
   return rungFor(window.innerWidth, connection);
-}
+};
 
 /**
  * The clips for this viewport. Only the WebM has a smaller version; anything
  * that cannot decode it drops to the desktop HEVC, still the smallest file in
  * the set.
  */
-function pickSources(variant: HeroVideoVariant | null, rung: DeliveryRung) {
+const pickSources = (variant: HeroVideoVariant | null, rung: DeliveryRung) => {
   // Only two encodes exist, so anything below the desktop rung takes the
   // smaller one — including a wide screen on a metered connection.
   const webm =
@@ -120,12 +121,11 @@ function pickSources(variant: HeroVideoVariant | null, rung: DeliveryRung) {
     hevc: stegaClean(variant?.hevc) ?? undefined,
     webm: stegaClean(webm) ?? undefined,
   };
-}
+};
 
 /** Tracks the reduced-motion preference; treated as reduced until the browser answers. */
-function usePrefersReducedMotion(): boolean {
-  return useMediaQuery("(prefers-reduced-motion: reduce)") ?? true;
-}
+const usePrefersReducedMotion = (): boolean =>
+  useMediaQuery("(prefers-reduced-motion: reduce)") ?? true;
 
 type BackgroundProps = Readonly<{
   className?: string;
@@ -134,7 +134,7 @@ type BackgroundProps = Readonly<{
 }>;
 
 /** Mux: one upload, an adaptive ladder, and hls.js to drive it. */
-function MuxBackground({ className, onReady, variant }: BackgroundProps) {
+const MuxBackground = ({ className, onReady, variant }: BackgroundProps) => {
   const rung = deliveryRung();
   const playbackId = muxPlaybackId(variant.mux);
   if (!playbackId) {
@@ -175,7 +175,7 @@ function MuxBackground({ className, onReady, variant }: BackgroundProps) {
       tabIndex={-1}
     />
   );
-}
+};
 
 /**
  * Mux, delivered as one progressive MP4 instead of an adaptive ladder.
@@ -189,7 +189,7 @@ function MuxBackground({ className, onReady, variant }: BackgroundProps) {
  * link gets no step-down — it just buffers. Resolution follows the viewport,
  * matching what the hand-encoded set does across the same breakpoint.
  */
-function MuxMp4Background({ className, onReady, variant }: BackgroundProps) {
+const MuxMp4Background = ({ className, onReady, variant }: BackgroundProps) => {
   const rung = deliveryRung();
   const playbackId = muxPlaybackId(variant.mux);
   const src = muxMp4Url(playbackId, rung);
@@ -214,10 +214,10 @@ function MuxMp4Background({ className, onReady, variant }: BackgroundProps) {
       tabIndex={-1}
     />
   );
-}
+};
 
 /** Sanity: the hand-encoded set, served straight off the asset CDN. */
-function FileBackground({ className, onReady, variant }: BackgroundProps) {
+const FileBackground = ({ className, onReady, variant }: BackgroundProps) => {
   const rung = deliveryRung();
   const sources = pickSources(variant, rung);
   if (!(sources.webm || sources.hevc)) {
@@ -252,7 +252,7 @@ function FileBackground({ className, onReady, variant }: BackgroundProps) {
       )}
     </video>
   );
-}
+};
 
 /**
  * Background video for the hero, layered over the poster.
@@ -265,10 +265,10 @@ function FileBackground({ className, onReady, variant }: BackgroundProps) {
  * Which element renders is the variant's own `mediaType`, so one page can be
  * served by Mux and another by the Sanity CDN with nothing else differing.
  */
-export function HeroVideo({
+export const HeroVideo = ({
   className,
   video,
-}: Readonly<{ className?: string; video?: HeroVideoData | null }>) {
+}: Readonly<{ className?: string; video?: HeroVideoData | null }>) => {
   const { resolvedTheme } = useTheme();
   const prefersReducedMotion = usePrefersReducedMotion();
   const mounted = useMounted();
@@ -306,4 +306,4 @@ export function HeroVideo({
       return <FileBackground {...props} />;
     }
   }
-}
+};

@@ -10,10 +10,10 @@ import {
   portableTextToMarkdown,
 } from "../internal/portable-text-to-markdown";
 
-export function faqAccordionToMarkdown(
+export const faqAccordionToMarkdown = (
   block: MarkdownBlock,
   options: MarkdownOptions
-): string {
+): string => {
   const faqs = (block.categories ?? [])
     .flatMap((category) => category?.faqs ?? [])
     .filter((faq) => faq?.title)
@@ -37,4 +37,4 @@ export function faqAccordionToMarkdown(
     ...faqs,
     linkMarkdown,
   ]);
-}
+};

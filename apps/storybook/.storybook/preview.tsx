@@ -5,16 +5,13 @@ import type { Preview } from "@storybook/nextjs-vite";
 import "./globals.css";
 
 const preview: Preview = {
-  parameters: {
-    backgrounds: { disable: true },
-  },
   decorators: [
     withThemeByClassName({
-      themes: {
-        light: "light",
-        dark: "dark",
-      },
       defaultTheme: "light",
+      themes: {
+        dark: "dark",
+        light: "light",
+      },
     }),
     (Story) => (
       <DesignSystemProvider>
@@ -24,6 +21,9 @@ const preview: Preview = {
       </DesignSystemProvider>
     ),
   ],
+  parameters: {
+    backgrounds: { disable: true },
+  },
 };
 
 export default preview;

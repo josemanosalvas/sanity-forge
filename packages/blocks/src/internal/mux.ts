@@ -34,7 +34,7 @@ export interface MuxVideoData {
  * JWT this starter never mints — it would 403 in the player and the thumbnail
  * while `status` still read `ready`.
  */
-export function muxPlaybackId(video?: MuxVideoData | null): string | null {
+export const muxPlaybackId = (video?: MuxVideoData | null): string | null => {
   if (
     !video?.playbackId ||
     stegaClean(video.status) === "errored" ||
@@ -43,23 +43,23 @@ export function muxPlaybackId(video?: MuxVideoData | null): string | null {
     return null;
   }
   return stegaClean(video.playbackId);
-}
+};
 
 /** Mux's `16:9` as the `16/9` CSS `aspect-ratio` accepts. Reserves the box. */
-export function muxAspectRatio(video?: MuxVideoData | null): string {
+export const muxAspectRatio = (video?: MuxVideoData | null): string => {
   const ratio = stegaClean(video?.aspectRatio);
   return ratio ? ratio.replace(":", "/") : "16/9";
-}
+};
 
 /**
  * The generated still, standing in for a poster Sanity never holds. Honours
  * `thumbTime`, without which a clip opening on a blank plate posters blank.
  */
-export function muxThumbnailUrl(
+export const muxThumbnailUrl = (
   playbackId?: string | null,
   thumbTime?: number | null,
   width?: number
-): string | undefined {
+): string | undefined => {
   if (!playbackId) {
     return undefined;
   }
@@ -74,7 +74,7 @@ export function muxThumbnailUrl(
   }
   const query = params.size ? `?${params}` : "";
   return `https://image.mux.com/${playbackId}/thumbnail.webp${query}`;
-}
+};
 
 /** The static-rendition resolutions this starter asks Mux to keep on hand. */
 export type MuxMp4Resolution = "1080p" | "720p" | "480p" | "270p";
@@ -88,12 +88,12 @@ export type MuxMp4Resolution = "1080p" | "720p" | "480p" | "270p";
  * not a promise that the file is there: the caller has to be willing to fall
  * back. Enabling them costs Mux storage per rendition.
  */
-export function muxMp4Url(
+export const muxMp4Url = (
   playbackId?: string | null,
   resolution: MuxMp4Resolution = "1080p"
-): string | undefined {
+): string | undefined => {
   if (!playbackId) {
     return undefined;
   }
   return `https://stream.mux.com/${playbackId}/${resolution}.mp4`;
-}
+};

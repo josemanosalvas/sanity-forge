@@ -20,10 +20,10 @@ export const faviconIcons = (
   settings: SettingsQueryResult
 ): Metadata["icons"] => ({
   icon: [
-    { url: settings?.favicon?.svg ?? "/favicon.svg", type: "image/svg+xml" },
+    { type: "image/svg+xml", url: settings?.favicon?.svg ?? "/favicon.svg" },
     {
-      url: settings?.favicon?.ico ?? "/favicon.ico",
       sizes: "16x16 32x32 48x48",
+      url: settings?.favicon?.ico ?? "/favicon.ico",
     },
   ],
 });
@@ -40,21 +40,21 @@ export const pageMetadata = (
   settings: SettingsQueryResult
 ): Metadata =>
   createMetadata({
+    description: page.seoDescription ?? page.description,
+    icons: faviconIcons(settings),
+    image: page.ogImage ?? settings?.ogImage,
+    noIndex: page.seoNoIndex,
+    ogDescription: page.ogDescription,
+    ogTitle: page.ogTitle,
     route: {
-      site: context.site,
+      alternates: toAlternates(page.translations),
       locale: context.locale,
       path: page.slug ?? "/",
-      alternates: toAlternates(page.translations),
+      site: context.site,
     },
     siteName: settings?.siteTitle ?? context.site.name,
     title: page.seoTitle ?? page.title,
-    description: page.seoDescription ?? page.description,
-    ogTitle: page.ogTitle,
-    ogDescription: page.ogDescription,
-    image: page.ogImage ?? settings?.ogImage,
-    noIndex: page.seoNoIndex,
     twitterHandle: twitterHandle(settings),
-    icons: faviconIcons(settings),
   });
 
 /** Metadata for routes without a CMS document (404, errors): site defaults only. */
@@ -63,11 +63,11 @@ export const siteMetadata = (
   settings: SettingsQueryResult
 ): Metadata => ({
   ...createMetadata({
-    route: { site: context.site, locale: context.locale, path: "/" },
-    siteName: settings?.siteTitle ?? context.site.name,
     description: settings?.siteDescription,
-    image: settings?.ogImage,
     icons: faviconIcons(settings),
+    image: settings?.ogImage,
+    route: { locale: context.locale, path: "/", site: context.site },
+    siteName: settings?.siteTitle ?? context.site.name,
   }),
   alternates: undefined,
 });

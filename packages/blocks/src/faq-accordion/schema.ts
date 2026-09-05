@@ -2,89 +2,74 @@ import { MessageCircle } from "lucide-react";
 import { defineArrayMember, defineField, defineType } from "sanity";
 
 export const faqAccordionSchema = defineType({
-  name: "faqAccordion",
-  type: "object",
-  icon: MessageCircle,
   fields: [
     defineField({
-      name: "eyebrow",
-      type: "string",
-      title: "Eyebrow",
       description:
         "The smaller text that sits above the title to provide context",
+      name: "eyebrow",
+      title: "Eyebrow",
+      type: "string",
     }),
     defineField({
-      name: "title",
-      type: "string",
-      title: "Title",
       description: "The large text that is the primary focus of the block",
+      name: "title",
+      title: "Title",
+      type: "string",
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "subtitle",
-      type: "string",
-      title: "Subtitle",
       description: "Additional context below the main title",
+      name: "subtitle",
+      title: "Subtitle",
+      type: "string",
     }),
     defineField({
-      name: "link",
-      type: "object",
-      title: "Link",
       description: "Optional link for additional content or actions",
       fields: [
         defineField({
-          name: "title",
-          type: "string",
-          title: "Link Title",
           description: "The text to display for the link",
-        }),
-        defineField({
-          name: "description",
+          name: "title",
+          title: "Link Title",
           type: "string",
-          title: "Link Description",
-          description: "A brief description of where the link leads to",
         }),
         defineField({
-          name: "url",
-          type: "customUrl",
-          title: "URL",
+          description: "A brief description of where the link leads to",
+          name: "description",
+          title: "Link Description",
+          type: "string",
+        }),
+        defineField({
           description: "The destination URL for the link",
+          name: "url",
+          title: "URL",
+          type: "customUrl",
         }),
       ],
+      name: "link",
+      title: "Link",
+      type: "object",
     }),
     defineField({
-      name: "categories",
-      type: "array",
-      title: "Categories",
       description:
         "Groups of questions shown as a switchable list. The first category is shown by default; visitors click a category to reveal its questions.",
+      name: "categories",
       of: [
         defineArrayMember({
-          name: "faqCategory",
-          type: "object",
-          title: "Category",
           fields: [
             defineField({
-              name: "title",
-              type: "string",
-              title: "Category Title",
               description:
                 'The label shown in the left-hand category list (for example "Components" or "Pricing")',
+              name: "title",
+              title: "Category Title",
+              type: "string",
               validation: (Rule) => Rule.required(),
             }),
             defineField({
-              name: "faqs",
-              type: "array",
-              title: "FAQs",
               description:
                 "Choose the questions and answers shown when this category is selected. Add them in the order you want visitors to see them.",
+              name: "faqs",
               of: [
                 defineArrayMember({
-                  type: "reference",
-                  to: [{ type: "faq" }],
-                  // Weak so a category can reference draft/unpublished FAQ docs
-                  // without failing mutations or triggering a strength mismatch.
-                  weak: true,
                   options: {
                     disableNew: true,
                     // FAQs are localized per document: only offer the ones
@@ -99,34 +84,49 @@ export const faqAccordionSchema = defineType({
                         : {};
                     },
                   },
+                  to: [{ type: "faq" }],
+                  type: "reference",
+                  // Weak so a category can reference draft/unpublished FAQ docs
+                  // without failing mutations or triggering a strength mismatch.
+                  weak: true,
                 }),
               ],
+              title: "FAQs",
+              type: "array",
               validation: (Rule) => [Rule.required(), Rule.unique()],
             }),
           ],
+          name: "faqCategory",
           preview: {
-            select: {
-              title: "title",
-              faqs: "faqs",
-            },
             prepare: ({ title, faqs }) => ({
-              title: title ?? "Untitled category",
               subtitle: `${faqs?.length ?? 0} FAQ${
                 faqs?.length === 1 ? "" : "s"
               }`,
+              title: title ?? "Untitled category",
             }),
+            select: {
+              faqs: "faqs",
+              title: "title",
+            },
           },
+          title: "Category",
+          type: "object",
         }),
       ],
+      title: "Categories",
+      type: "array",
     }),
   ],
+  icon: MessageCircle,
+  name: "faqAccordion",
   preview: {
+    prepare: ({ title }) => ({
+      subtitle: "FAQ Accordion",
+      title: title ?? "Untitled",
+    }),
     select: {
       title: "title",
     },
-    prepare: ({ title }) => ({
-      title: title ?? "Untitled",
-      subtitle: "FAQ Accordion",
-    }),
   },
+  type: "object",
 });

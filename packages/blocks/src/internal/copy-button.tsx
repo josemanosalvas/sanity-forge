@@ -12,7 +12,7 @@ import {
   useCopyToClipboard,
 } from "./use-copy";
 
-export function CopyButton({ code }: Readonly<{ code: string }>) {
+export const CopyButton = ({ code }: Readonly<{ code: string }>) => {
   const { status, copy } = useCopyToClipboard(() => code);
   const copied = status === "copied";
 
@@ -48,4 +48,4 @@ export function CopyButton({ code }: Readonly<{ code: string }>) {
       <output className="sr-only">{copied ? "Copied to clipboard" : ""}</output>
     </button>
   );
-}
+};

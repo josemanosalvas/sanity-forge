@@ -4,13 +4,8 @@ import { paragraph, paragraphs } from "../internal/testing/fixtures";
 import { RichTextBlock } from "./component";
 
 const meta = {
-  title: "blocks/Rich Text",
-  component: RichTextBlock,
-  tags: ["autodocs"],
-  parameters: { layout: "fullscreen" },
   args: {
     eyebrow: "Guide",
-    title: "Adding a site",
     richText: [
       ...(paragraphs(
         "Register the site in the host registry, add a Studio workspace and deploy. The proxy maps the hostname to the site key on every request.",
@@ -20,7 +15,12 @@ const meta = {
       ...(paragraph("Add the site key, name, locales and production domain.") ??
         []),
     ],
+    title: "Adding a site",
   },
+  component: RichTextBlock,
+  parameters: { layout: "fullscreen" },
+  tags: ["autodocs"],
+  title: "blocks/Rich Text",
 } satisfies Meta<typeof RichTextBlock>;
 
 export default meta;

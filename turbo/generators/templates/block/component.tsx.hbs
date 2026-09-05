@@ -8,14 +8,19 @@ export interface {{ pascalCase name }}Props {
   title?: string | null;
 }
 
-export function {{ pascalCase name }}({ eyebrow, richText, title }: Readonly<{{ pascalCase name }}Props>) {
-  return (
-    <section className="block-section" id="{{ name }}">
-      <div className="container">
-        <BlockHeader eyebrow={eyebrow} title={title}>
-          <RichText className="body-text max-w-2xl text-muted-foreground" richText={richText} />
-        </BlockHeader>
-      </div>
-    </section>
-  );
-}
+export const {{ pascalCase name }} = ({
+  eyebrow,
+  richText,
+  title,
+}: Readonly<{{ pascalCase name }}Props>) => (
+  <section className="block-section" id="{{ name }}">
+    <div className="container">
+      <BlockHeader eyebrow={eyebrow} title={title}>
+        <RichText
+          className="body-text max-w-2xl text-muted-foreground"
+          richText={richText}
+        />
+      </BlockHeader>
+    </div>
+  </section>
+);

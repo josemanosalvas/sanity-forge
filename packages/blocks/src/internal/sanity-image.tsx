@@ -33,7 +33,7 @@ const ImageWrapper = <T extends ElementType = "img">(
 ) => <BaseSanityImage baseUrl={SANITY_BASE_URL} {...props} />;
 
 // A well-formed Sanity image asset id: `image-<assetId>-<width>x<height>-<format>`.
-const SANITY_ASSET_ID = /^image-[a-zA-Z0-9]+-\d+x\d+-\w+$/;
+const SANITY_ASSET_ID = /^image-[a-zA-Z0-9]+-\d+x\d+-\w+$/u;
 
 // Build the URL for the ORIGINAL SVG asset on the CDN, or null when the id
 // isn't an SVG. The `sanity-image` lib emits width-based `?w=…` srcsets, which
@@ -42,13 +42,13 @@ const SANITY_ASSET_ID = /^image-[a-zA-Z0-9]+-\d+x\d+-\w+$/;
 // <img> at the untransformed file: `image-<hash>-<w>x<h>-svg` →
 // `${SANITY_BASE_URL}<hash>-<w>x<h>.svg` (drop the `image-` prefix, swap the
 // trailing `-svg` for `.svg`).
-export function svgUrlFromAssetId(id: string | null): string | null {
+export const svgUrlFromAssetId = (id: string | null): string | null => {
   if (!id?.endsWith("-svg")) {
     return null;
   }
-  const filename = `${id.replace(/^image-/, "").replace(/-svg$/, "")}.svg`;
+  const filename = `${id.replace(/^image-/u, "").replace(/-svg$/u, "")}.svg`;
   return `${SANITY_BASE_URL}${filename}`;
-}
+};
 
 // Normalize a Sanity image ref to its canonical asset id, or null when it's
 // missing/malformed. Selecting an asset via the media library can prepend a
@@ -56,57 +56,57 @@ export function svgUrlFromAssetId(id: string | null): string | null {
 // reject anything that still isn't a full `image-…` ref so a malformed value
 // degrades to nothing instead of throwing "Could not parse image ID". Exported
 // so callers gate on the exact same validity as SanityImage.
-export function resolveAssetId(
-  image: SanityImageData | null | undefined
-): string | null {
+export const resolveAssetId = (
+  image?: SanityImageData | null
+): string | null => {
   if (!image?.id || typeof image.id !== "string") {
     return null;
   }
-  const id = image.id.replace(/^drafts\./, "");
+  const id = image.id.replace(/^drafts\./u, "");
   return SANITY_ASSET_ID.test(id) ? id : null;
-}
+};
 
 // Extract the pixel dimensions Sanity encodes in an asset id
 // (`image-<hash>-<width>x<height>-<format>`). Returns null when the id is
 // missing/malformed. Used to normalize logo sizing by aspect ratio so a wide
 // wordmark and a square icon read as the same visual weight (the "logo soup"
 // problem) without any extra CMS fields.
-export function getImageDimensions(
+export const getImageDimensions = (
   image: SanityImageData | null | undefined
-): { width: number; height: number; aspectRatio: number } | null {
+): { width: number; height: number; aspectRatio: number } | null => {
   const id = resolveAssetId(image);
   if (!id) {
     return null;
   }
-  const match = /-(\d+)x(\d+)-/.exec(id);
+  const match = /-(?<width>\d+)x(?<height>\d+)-/u.exec(id);
   if (!match) {
     return null;
   }
-  const width = Number(match[1]);
-  const height = Number(match[2]);
+  const width = Number(match.groups?.width);
+  const height = Number(match.groups?.height);
   if (!(width > 0 && height > 0)) {
     return null;
   }
-  return { width, height, aspectRatio: width / height };
-}
+  return { aspectRatio: width / height, height, width };
+};
 
 const HOTSPOT_KEYS = ["x", "y"] as const;
 const CROP_KEYS = ["top", "bottom", "left", "right"] as const;
 
 // A half-filled hotspot/crop reaches `sanity-image` as NaN and yields a broken
 // transform, so anything not fully numeric is dropped.
-function isFiniteAll(
+const isFiniteAll = (
   value: unknown,
   fields: readonly string[]
-): value is Record<string, number> {
+): value is Record<string, number> => {
   if (!value || typeof value !== "object") {
     return false;
   }
   const record = value as Record<string, unknown>;
   return fields.every((field) => Number.isFinite(record[field]));
-}
+};
 
-export function SanityImage({ image, ...props }: SanityImageProps) {
+export const SanityImage = ({ image, ...props }: SanityImageProps) => {
   const id = resolveAssetId(image);
   if (!(id && image)) {
     return null;
@@ -135,12 +135,12 @@ export function SanityImage({ image, ...props }: SanityImageProps) {
   }
 
   const processedData = {
-    id,
     alt: props.alt ?? image.alt ?? "",
+    id,
     ...(image.preview && { preview: image.preview }),
     ...(isFiniteAll(image.hotspot, HOTSPOT_KEYS) && { hotspot: image.hotspot }),
     ...(isFiniteAll(image.crop, CROP_KEYS) && { crop: image.crop }),
   };
 
   return <ImageWrapper {...props} {...processedData} />;
-}
+};

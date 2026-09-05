@@ -37,17 +37,16 @@ export interface HeroMediaSelection {
  */
 const PATHS = new Set<HeroMediaType>(["mux", "mux-mp4", "sanity"]);
 
-export function mediaTypeOf(
+export const mediaTypeOf = (
   variant?: HeroMediaSelection | null
-): HeroMediaType {
+): HeroMediaType => {
   const explicit = stegaClean(variant?.mediaType) as HeroMediaType;
   if (PATHS.has(explicit)) {
     return explicit;
   }
   return muxPlaybackId(variant?.mux) ? "mux" : "sanity";
-}
+};
 
 /** Whether this path plays a Mux asset, however it is delivered. */
-export function isMuxPath(type: HeroMediaType): boolean {
-  return type === "mux" || type === "mux-mp4";
-}
+export const isMuxPath = (type: HeroMediaType): boolean =>
+  type === "mux" || type === "mux-mp4";

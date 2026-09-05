@@ -8,18 +8,18 @@ import { Textarea } from "./textarea";
  * Displays a form textarea or a component that looks like a textarea.
  */
 const meta = {
-  title: "ui/Textarea",
-  component: Textarea,
-  tags: ["autodocs"],
   argTypes: {},
   args: {
     className: "w-96",
-    placeholder: "Type your message here.",
     disabled: false,
+    placeholder: "Type your message here.",
   },
+  component: Textarea,
   parameters: {
     layout: "centered",
   },
+  tags: ["autodocs"],
+  title: "ui/Textarea",
 } satisfies Meta<typeof Textarea>;
 
 export default meta;

@@ -81,6 +81,7 @@ const components: Partial<PortableTextReactComponents> = {
       );
     },
   },
+  hardBreak: () => <br />,
   marks: {
     code: ({ children }) => (
       <code className="border-border text-foreground rounded-none border bg-zinc-200 px-1.5 py-0.5 font-mono text-[0.85em] before:content-none after:content-none lg:whitespace-nowrap dark:bg-zinc-800">
@@ -157,7 +158,6 @@ const components: Partial<PortableTextReactComponents> = {
       />
     ),
   },
-  hardBreak: () => <br />,
 };
 
 // GROQ projections type block children as optional even though a real
@@ -170,13 +170,13 @@ type LooseRichTextBlock = Omit<PortableTextBlock, "children" | "markDefs"> & {
 
 export type RichTextValue = LooseRichTextBlock[] | null | undefined;
 
-export function RichText<T extends RichTextValue>({
+export const RichText = <T extends RichTextValue>({
   richText,
   className,
 }: Readonly<{
   richText?: T | null;
   className?: string;
-}>) {
+}>) => {
   if (!richText) {
     return null;
   }
@@ -203,4 +203,4 @@ export function RichText<T extends RichTextValue>({
       />
     </div>
   );
-}
+};

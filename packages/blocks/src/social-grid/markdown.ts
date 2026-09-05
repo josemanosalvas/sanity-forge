@@ -7,10 +7,10 @@ import {
 import type { MarkdownBlock, MarkdownOptions } from "../internal/markdown";
 import { escapeMarkdown } from "../internal/portable-text-to-markdown";
 
-export function socialGridToMarkdown(
+export const socialGridToMarkdown = (
   block: MarkdownBlock,
   options: MarkdownOptions
-): string {
+): string => {
   const socials = (block.socials ?? [])
     .map((social) => {
       const label = (social.label ?? social.platform ?? "").trim();
@@ -29,4 +29,4 @@ export function socialGridToMarkdown(
     subtitle ? escapeMarkdown(subtitle) : "",
     socials.length > 0 ? socials.join("\n") : "",
   ]);
-}
+};

@@ -24,10 +24,10 @@ import { useState } from "react";
 import { MenuLink } from "@/components/menu-link";
 import type { NavigationData } from "@/types";
 
-export function MobileMenu({
+export const MobileMenu = ({
   navigation,
   siteName,
-}: Pick<NavigationData, "navigation"> & { siteName: string }) {
+}: Pick<NavigationData, "navigation"> & { siteName: string }) => {
   const t = useTranslations("common");
   const pathname = usePathname();
   // The pathname the menu was opened on: navigating away closes it without an effect.
@@ -115,4 +115,4 @@ export function MobileMenu({
       </SheetContent>
     </Sheet>
   );
-}
+};

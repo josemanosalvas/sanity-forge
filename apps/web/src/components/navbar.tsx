@@ -23,11 +23,11 @@ import { MenuLink } from "@/components/menu-link";
 import { MobileMenu } from "@/components/mobile-menu";
 import type { NavigationData } from "@/types";
 
-export function Navbar({
+export const Navbar = ({
   navigation,
   settings,
   siteName,
-}: NavigationData & { siteName: string }) {
+}: NavigationData & { siteName: string }) => {
   const t = useTranslations("common");
   const pathname = useUnlocalizedPathname();
   const { columns, buttons } = navigation ?? {};
@@ -113,4 +113,4 @@ export function Navbar({
       </div>
     </header>
   );
-}
+};

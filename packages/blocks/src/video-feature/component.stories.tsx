@@ -4,19 +4,19 @@ import { MUX_SAMPLE, paragraph } from "../internal/testing/fixtures";
 import { VideoFeature } from "./component";
 
 const meta = {
-  title: "blocks/Video Feature",
-  component: VideoFeature,
-  tags: ["autodocs"],
-  parameters: { layout: "fullscreen" },
   args: {
+    caption: "Recorded on the demo dataset.",
     eyebrow: "Watch",
-    title: "Editing a page in Presentation",
     richText: paragraph(
       "Click any block on the site to jump to its field in the Studio."
     ),
-    caption: "Recorded on the demo dataset.",
+    title: "Editing a page in Presentation",
     video: { asset: MUX_SAMPLE, autoPlay: false, loop: false },
   },
+  component: VideoFeature,
+  parameters: { layout: "fullscreen" },
+  tags: ["autodocs"],
+  title: "blocks/Video Feature",
 } satisfies Meta<typeof VideoFeature>;
 
 export default meta;

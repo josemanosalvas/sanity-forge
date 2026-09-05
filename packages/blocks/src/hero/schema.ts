@@ -51,9 +51,6 @@ const showFor =
  */
 const videoVariantFields = () => [
   defineField({
-    name: "mediaType",
-    type: "string",
-    title: "Video Source",
     description:
       "Where this background is served from. Mux encodes one upload for every device. Sanity serves the files you upload below, exactly as encoded.",
     // Measured: the hand-encoded set is smaller and sharper than either Mux
@@ -61,6 +58,7 @@ const videoVariantFields = () => [
     // and ships no player. Mux earns its place on video blocks an editor
     // uploads to often, not on the one clip that autoplays on every visit.
     initialValue: "sanity",
+    name: "mediaType",
     options: {
       layout: "radio",
       list: [
@@ -75,45 +73,47 @@ const videoVariantFields = () => [
         { title: "Sanity — your own encoded files", value: "sanity" },
       ],
     },
+    title: "Video Source",
+    type: "string",
     validation: (Rule) => Rule.required(),
   }),
   muxVideoField({
+    hidden: showFor("mux", "mux-mp4"),
     name: "mux",
     title: "Video",
-    hidden: showFor("mux", "mux-mp4"),
   }),
   defineField({
-    name: "webm",
-    type: "file",
-    title: "Video For Computers",
     description:
       "The .webm file, encoded as AV1. Most people see this one. The AV1 codec is declared to the browser so Safari skips it and takes the .mp4 instead — upload a VP9 .webm here and this hero may fall back to the .mp4 or just the poster image.",
+    hidden: showFor("sanity"),
+    name: "webm",
     options: { accept: "video/webm" },
-    hidden: showFor("sanity"),
+    title: "Video For Computers",
+    type: "file",
   }),
   defineField({
-    name: "hevc",
-    type: "file",
-    title: "Video For Apple Devices",
     description: "The .mp4 file. Macs, iPhones and iPads need this one.",
-    options: { accept: "video/mp4" },
     hidden: showFor("sanity"),
+    name: "hevc",
+    options: { accept: "video/mp4" },
+    title: "Video For Apple Devices",
+    type: "file",
   }),
   defineField({
-    name: "mobileWebm",
-    type: "file",
-    title: "Video For Phones",
     description:
       "A smaller .webm, so phones do not have to download the big file. AV1, like the one above.",
-    options: { accept: "video/webm" },
     hidden: showFor("sanity"),
+    name: "mobileWebm",
+    options: { accept: "video/webm" },
+    title: "Video For Phones",
+    type: "file",
   }),
   defineField({
-    name: "poster",
-    type: "image",
-    title: "Picture",
     description:
       "Optional. Shown while the video loads, or on its own if you add no video.",
+    name: "poster",
+    title: "Picture",
+    type: "image",
   }),
 ];
 
@@ -138,68 +138,68 @@ const checkVariant = (value: unknown): true | string => {
 };
 
 export const heroVideoField = defineField({
-  name: "video",
-  type: "object",
-  title: "Background",
   description: "Add a video. If you have no video, add a picture instead.",
-  options: { collapsible: true, collapsed: true },
   fields: [
     defineField({
-      name: "light",
-      type: "object",
-      title: "Light Mode",
       description: "Shown in light mode.",
-      options: { collapsible: true, collapsed: false },
       fields: videoVariantFields(),
+      name: "light",
+      options: { collapsed: false, collapsible: true },
+      title: "Light Mode",
+      type: "object",
       validation: (Rule) => Rule.custom(checkVariant).warning(),
     }),
     defineField({
-      name: "dark",
-      type: "object",
-      title: "Dark Mode",
       description: "Optional. Leave empty to reuse the light mode background.",
-      options: { collapsible: true, collapsed: false },
       fields: videoVariantFields(),
+      name: "dark",
+      options: { collapsed: false, collapsible: true },
+      title: "Dark Mode",
+      type: "object",
       validation: (Rule) => Rule.custom(checkVariant).warning(),
     }),
   ],
+  name: "video",
+  options: { collapsed: true, collapsible: true },
+  title: "Background",
+  type: "object",
 });
 
 export const heroSchema = defineType({
-  name: "hero",
-  type: "object",
-  title: "Hero",
-  icon: Star,
   fields: [
     defineField({
-      name: "badge",
-      type: "string",
-      title: "Badge",
       description:
         "Optional badge text displayed above the title, useful for highlighting new features or promotions",
+      name: "badge",
+      title: "Badge",
+      type: "string",
     }),
     defineField({
-      name: "title",
-      type: "string",
-      title: "Title",
       description:
         "The main heading text for the hero section that captures attention",
+      name: "title",
+      title: "Title",
+      type: "string",
     }),
     definePortableTextField(["block"], {
-      name: "richText",
       description:
         "The supporting paragraph shown beneath the title, introducing the page in a sentence or two",
+      name: "richText",
     }),
     heroVideoField,
     buttonsField,
   ],
+  icon: Star,
+  name: "hero",
   preview: {
+    prepare: ({ title }) => ({
+      subtitle: "Hero Block",
+      title,
+    }),
     select: {
       title: "title",
     },
-    prepare: ({ title }) => ({
-      title,
-      subtitle: "Hero Block",
-    }),
   },
+  title: "Hero",
+  type: "object",
 });

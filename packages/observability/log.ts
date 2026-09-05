@@ -38,9 +38,9 @@ const prefixed =
 /** A logger bound to a scope, e.g. `createLogger("revalidate")`. */
 export const createLogger = (scope: string): Logger => ({
   debug: prefixed(scope, "debug"),
+  error: prefixed(scope, "error"),
   info: prefixed(scope, "info"),
   warn: prefixed(scope, "warn"),
-  error: prefixed(scope, "error"),
 });
 
 export const log = createLogger("app");

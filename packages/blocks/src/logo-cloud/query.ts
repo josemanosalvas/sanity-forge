@@ -1,6 +1,6 @@
 import { imageFragment, urlFragment } from "../internal/groq-fragments";
 
-export const logoCloudGroqProjection = /* groq */ `
+export const logoCloudGroqProjection = `
   _type == "logoCloud" => {
     ...,
     "logos": array::compact(logos[]{

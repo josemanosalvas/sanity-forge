@@ -24,8 +24,8 @@ const sitemap = async ({
   }
   const site = getSite(siteKey);
   const pages = await sanityFetchStatic({
-    query: sitemapQuery,
     params: { site: siteKey },
+    query: sitemapQuery,
   });
 
   return pages.flatMap((page) => {
@@ -34,17 +34,17 @@ const sitemap = async ({
     }
     return [
       sitemapEntry({
+        lastModified: page.lastModified,
         route: {
-          site,
-          locale: page.language,
-          path: page.slug,
           alternates: (page.translations ?? []).flatMap((translation) =>
             isLocale(translation.language) && translation.slug
               ? [{ locale: translation.language, path: translation.slug }]
               : []
           ),
+          locale: page.language,
+          path: page.slug,
+          site,
         },
-        lastModified: page.lastModified,
       }),
     ];
   });

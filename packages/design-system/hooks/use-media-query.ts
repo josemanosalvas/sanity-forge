@@ -19,7 +19,7 @@ const canMatchMedia = () => typeof globalThis.matchMedia === "function";
 // One MediaQueryList per query, shared by subscribe and getSnapshot.
 const mediaQueryCache = new Map<string, MediaQueryListLike>();
 
-function getMediaQueryList(query: string): MediaQueryListLike | null {
+const getMediaQueryList = (query: string): MediaQueryListLike | null => {
   if (!canMatchMedia()) {
     return null;
   }
@@ -29,14 +29,14 @@ function getMediaQueryList(query: string): MediaQueryListLike | null {
     mediaQueryCache.set(query, media);
   }
   return media;
-}
+};
 
 // undefined on the server and during the first hydration render, so the tree
 // matches the server output before the client-only matchMedia read kicks in.
 const SERVER_SNAPSHOT = undefined;
 const getServerSnapshot = () => SERVER_SNAPSHOT;
 
-export function useMediaQuery(query: string): boolean | undefined {
+export const useMediaQuery = (query: string): boolean | undefined => {
   const subscribe = useCallback(
     (onStoreChange: () => void) => {
       const media = getMediaQueryList(query);
@@ -54,4 +54,4 @@ export function useMediaQuery(query: string): boolean | undefined {
   const getSnapshot = () => getMediaQueryList(query)?.matches;
 
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-}
+};

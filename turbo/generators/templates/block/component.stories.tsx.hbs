@@ -3,22 +3,22 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { {{ pascalCase name }} } from "./component";
 
 const meta = {
-  title: "blocks/{{ titleCase name }}",
-  component: {{ pascalCase name }},
-  tags: ["autodocs"],
-  parameters: { layout: "fullscreen" },
   args: {
     eyebrow: "Eyebrow",
-    title: "{{ titleCase name }}",
     richText: [
       {
-        _type: "block",
         _key: "block-1",
-        style: "normal",
+        _type: "block",
         children: [{ _type: "span", text: "Supporting copy for this section." }],
+        style: "normal",
       },
     ],
+    title: "{{ titleCase name }}",
   },
+  component: {{ pascalCase name }},
+  parameters: { layout: "fullscreen" },
+  tags: ["autodocs"],
+  title: "blocks/{{ titleCase name }}",
 } satisfies Meta<typeof {{ pascalCase name }}>;
 
 export default meta;

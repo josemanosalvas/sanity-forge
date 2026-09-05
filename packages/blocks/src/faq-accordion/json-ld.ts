@@ -21,8 +21,8 @@ export interface FaqAccordionInput {
   categories?: FaqCategoryInput[] | null;
 }
 
-function extractPlainText(richText: RichTextBlock[]): string {
-  return richText
+const extractPlainText = (richText: RichTextBlock[]): string =>
+  richText
     .filter((block) => block._type === "block" && Array.isArray(block.children))
     .map((block) =>
       (block.children ?? [])
@@ -32,7 +32,6 @@ function extractPlainText(richText: RichTextBlock[]): string {
     )
     .join(" ")
     .trim();
-}
 
 /**
  * Builds FAQPage JSON-LD from a faqAccordion block's data.
@@ -43,9 +42,9 @@ function extractPlainText(richText: RichTextBlock[]): string {
  * characters into the emitted JSON-LD. The app boundary
  * (page-builder-json-ld.tsx) owns the cleaning.
  */
-export function faqAccordionToJsonLd(
+export const faqAccordionToJsonLd = (
   block: FaqAccordionInput
-): WithContext<FAQPage> | null {
+): WithContext<FAQPage> | null => {
   // Serialize every question across all categories (that's what the UI shows).
   const sourceFaqs = (block.categories ?? []).flatMap(
     (category) => category?.faqs ?? []
@@ -63,11 +62,11 @@ export function faqAccordionToJsonLd(
     "@type": "FAQPage",
     mainEntity: validFaqs.map((faq): Question => ({
       "@type": "Question",
-      name: faq.title,
       acceptedAnswer: {
         "@type": "Answer",
         text: extractPlainText(faq.richText),
       } as Answer,
+      name: faq.title,
     })),
   };
-}
+};

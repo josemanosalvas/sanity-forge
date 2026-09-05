@@ -3,11 +3,11 @@ import type { Template } from "sanity";
 import { SITE_SCOPED_TYPES } from "../lib/constants";
 import { templateIds } from "./index";
 
-const siteParameter = { name: "site", type: "string", title: "Site" } as const;
+const siteParameter = { name: "site", title: "Site", type: "string" } as const;
 const languageParameter = {
   name: "language",
-  type: "string",
   title: "Language",
+  type: "string",
 } as const;
 
 interface SiteLanguageParams {
@@ -31,54 +31,54 @@ export const createTemplates = (previous: Template[]): Template[] => [
   ),
   {
     id: templateIds.page,
-    title: "Page",
-    schemaType: "page",
     parameters: [
       siteParameter,
       languageParameter,
       { name: "slug", type: "string" },
       { name: "title", type: "string" },
     ],
+    schemaType: "page",
+    title: "Page",
     value: ({ site, language, slug, title }: SiteLanguageParams) => ({
-      site,
       language,
-      ...(slug ? { slug: { current: slug, _type: "slug" } } : {}),
+      site,
+      ...(slug ? { slug: { _type: "slug", current: slug } } : {}),
       ...(title ? { title } : {}),
     }),
   },
   {
     id: templateIds.navigation,
-    title: "Navigation",
-    schemaType: "navigation",
     parameters: [siteParameter, languageParameter],
-    value: ({ site, language }: SiteLanguageParams) => ({ site, language }),
+    schemaType: "navigation",
+    title: "Navigation",
+    value: ({ site, language }: SiteLanguageParams) => ({ language, site }),
   },
   {
     id: templateIds.footer,
-    title: "Footer",
-    schemaType: "footer",
     parameters: [siteParameter, languageParameter],
-    value: ({ site, language }: SiteLanguageParams) => ({ site, language }),
+    schemaType: "footer",
+    title: "Footer",
+    value: ({ site, language }: SiteLanguageParams) => ({ language, site }),
   },
   {
     id: templateIds.settings,
-    title: "Site settings",
-    schemaType: "settings",
     parameters: [siteParameter],
+    schemaType: "settings",
+    title: "Site settings",
     value: ({ site }: { site: string }) => ({ site }),
   },
   {
     id: templateIds.redirect,
-    title: "Redirect",
-    schemaType: "redirect",
     parameters: [siteParameter],
+    schemaType: "redirect",
+    title: "Redirect",
     value: ({ site }: { site: string }) => ({ site }),
   },
   {
     id: templateIds.faq,
-    title: "FAQ",
-    schemaType: "faq",
     parameters: [languageParameter],
+    schemaType: "faq",
+    title: "FAQ",
     value: ({ language }: { language: string }) => ({ language }),
   },
 ];

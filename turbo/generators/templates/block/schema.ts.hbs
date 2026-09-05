@@ -4,34 +4,34 @@ import { defineField, defineType } from "sanity";
 import { definePortableTextField } from "../internal/schema-fields";
 
 export const {{ camelCase name }}Schema = defineType({
-  name: "{{ camelCase name }}",
-  type: "object",
-  title: "{{ titleCase name }}",
   description: "{{ description }}",
-  icon: LayoutTemplate,
   fields: [
     defineField({
-      name: "eyebrow",
-      type: "string",
-      title: "Eyebrow",
       description: "Short label shown above the title",
+      name: "eyebrow",
+      title: "Eyebrow",
+      type: "string",
     }),
     defineField({
       name: "title",
-      type: "string",
       title: "Title",
+      type: "string",
       validation: (rule) => rule.required(),
     }),
     definePortableTextField(["block"], {
-      name: "richText",
       description: "Supporting copy shown beneath the title",
+      name: "richText",
     }),
   ],
+  icon: LayoutTemplate,
+  name: "{{ camelCase name }}",
   preview: {
-    select: { title: "title" },
     prepare: ({ title }) => ({
-      title: title || "Untitled",
       subtitle: "{{ titleCase name }}",
+      title: title || "Untitled",
     }),
+    select: { title: "title" },
   },
+  title: "{{ titleCase name }}",
+  type: "object",
 });

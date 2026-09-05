@@ -17,11 +17,11 @@ export const sitemapEntry = ({
   changeFrequency = "weekly",
   priority,
 }: SitemapEntryOptions): MetadataRoute.Sitemap[number] => ({
-  url: canonicalUrl(route),
-  lastModified: lastModified ? new Date(lastModified) : undefined,
-  changeFrequency,
-  priority: priority ?? (route.path === "/" ? 1 : 0.7),
   alternates: {
     languages: languageAlternates(route),
   },
+  changeFrequency,
+  lastModified: lastModified ? new Date(lastModified) : undefined,
+  priority: priority ?? (route.path === "/" ? 1 : 0.7),
+  url: canonicalUrl(route),
 });

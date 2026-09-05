@@ -40,22 +40,19 @@ const VALID_VARIANTS = [
   "link",
 ] as const;
 
-function isValidVariant(
+const isValidVariant = (
   v: string | null | undefined
-): v is Exclude<ButtonVariant, null | undefined> {
-  return (
-    typeof v === "string" && (VALID_VARIANTS as readonly string[]).includes(v)
-  );
-}
+): v is Exclude<ButtonVariant, null | undefined> =>
+  typeof v === "string" && (VALID_VARIANTS as readonly string[]).includes(v);
 
-function SanityButton({
+const SanityButton = ({
   text,
   href,
   variant = "default",
   openInNewTab,
   className,
   size,
-}: Readonly<SanityButtonRenderProps>) {
+}: Readonly<SanityButtonRenderProps>) => {
   const safeHref = sanitizeHref(href);
   if (!safeHref) {
     return <Button>Link Broken</Button>;
@@ -80,14 +77,14 @@ function SanityButton({
       ) : null}
     </Button>
   );
-}
+};
 
-export function SanityButtons({
+export const SanityButtons = ({
   buttons,
   className,
   buttonClassName,
   size = "default",
-}: Readonly<SanityButtonsProps>) {
+}: Readonly<SanityButtonsProps>) => {
   if (!buttons?.length) {
     return null;
   }
@@ -107,4 +104,4 @@ export function SanityButtons({
       ))}
     </div>
   );
-}
+};

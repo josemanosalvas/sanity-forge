@@ -53,19 +53,19 @@ export const parsePathname = (
   const remainder = `/${rest.join("/")}`;
 
   if (siteSupportsLocale(site, first)) {
-    return { locale: first, pathname: remainder, hadPrefix: true };
+    return { hadPrefix: true, locale: first, pathname: remainder };
   }
 
   if (knownLocales.includes(first)) {
     return {
+      hadPrefix: false,
       locale: getDefaultLocale(site),
       pathname,
-      hadPrefix: false,
       unsupportedLocale: first,
     };
   }
 
-  return { locale: getDefaultLocale(site), pathname, hadPrefix: false };
+  return { hadPrefix: false, locale: getDefaultLocale(site), pathname };
 };
 
 /** Absolute URL for a path on a site's canonical (production) origin. */

@@ -8,8 +8,8 @@ const appId = process.env.SANITY_STUDIO_APP_ID || undefined;
 
 export default defineCliConfig({
   api: {
-    projectId,
     dataset,
+    projectId,
   },
   deployment: {
     appId,

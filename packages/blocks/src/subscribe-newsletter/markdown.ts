@@ -9,10 +9,10 @@ import {
   portableTextToMarkdown,
 } from "../internal/portable-text-to-markdown";
 
-export function subscribeNewsletterToMarkdown(
+export const subscribeNewsletterToMarkdown = (
   block: MarkdownBlock,
   options: MarkdownOptions
-): string {
+): string => {
   const { testimonial } = block;
   const attribution = [testimonial?.authorName, testimonial?.authorRole]
     .map((value) => value?.trim())
@@ -28,4 +28,4 @@ export function subscribeNewsletterToMarkdown(
     portableTextToMarkdown(testimonial?.quote, options),
     attribution ? `— ${attribution}` : "",
   ]);
-}
+};

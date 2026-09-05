@@ -7,13 +7,8 @@ import type { NextConfig } from "next";
  * stays in each app's `next.config.ts`.
  */
 export const baseConfig = {
-  reactStrictMode: true,
-  poweredByHeader: false,
   // Next 16 caching model: static shells + `'use cache'` boundaries.
   cacheComponents: true,
-  // Stable in Next 16; needs `babel-plugin-react-compiler` in the app.
-  reactCompiler: true,
-  typedRoutes: true,
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 31_536_000,
@@ -21,14 +16,19 @@ export const baseConfig = {
   logging: {
     fetches: {},
   },
+  poweredByHeader: false,
+  // Stable in Next 16; needs `babel-plugin-react-compiler` in the app.
+  reactCompiler: true,
+  reactStrictMode: true,
+  typedRoutes: true,
 } satisfies NextConfig;
 
 /** `images.remotePatterns` entry for a Sanity project's image CDN. */
 export const sanityImageRemotePattern = (projectId: string) =>
   ({
-    protocol: "https",
     hostname: "cdn.sanity.io",
     pathname: `/images/${projectId}/**`,
+    protocol: "https",
   }) as const;
 
 /**
@@ -38,9 +38,9 @@ export const sanityImageRemotePattern = (projectId: string) =>
 export const createNextConfig = (overrides: NextConfig = {}): NextConfig => ({
   ...baseConfig,
   ...overrides,
-  images: { ...baseConfig.images, ...overrides.images },
-  experimental: { ...overrides.experimental },
   cacheLife: { ...overrides.cacheLife },
+  experimental: { ...overrides.experimental },
+  images: { ...baseConfig.images, ...overrides.images },
 });
 
 /** Wraps a config with `@next/bundle-analyzer`; enable with `ANALYZE=true`. */

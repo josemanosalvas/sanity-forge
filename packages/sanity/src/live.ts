@@ -14,13 +14,13 @@ import { client } from "./client";
 const token = keys().SANITY_API_READ_TOKEN;
 
 const live = defineLive({
+  // Shared with the browser only for validated Draft Mode sessions.
+  browserToken: token ?? false,
   client,
   // Server-only: lets sanityFetch read drafts/releases and stega-encode when
   // the perspective is not `published`. Without a token the site is
   // published-only and draft mode stays off.
   serverToken: token ?? false,
-  // Shared with the browser only for validated Draft Mode sessions.
-  browserToken: token ?? false,
   // Every fetch names its perspective and stega explicitly, because
   // draftMode()/cookies() cannot be read inside a `'use cache'` boundary.
   strict: true,
@@ -103,7 +103,7 @@ export const getDynamicFetchOptions =
       resolvePerspectiveFromCookies({ cookies: jar }),
       resolveVariantFromCookies({ cookies: jar }),
     ]);
-    return { perspective: perspective ?? "drafts", variant, stega: true };
+    return { perspective: perspective ?? "drafts", stega: true, variant };
   };
 
 /** For generateStaticParams, sitemaps and robots: always published, never stega. */
@@ -116,9 +116,9 @@ export const sanityFetchStatic = async <const Q extends string>({
 }) => {
   "use cache";
   const { data } = await sanityFetch({
-    query,
     params,
     perspective: "published",
+    query,
     stega: false,
   });
   return data;
@@ -136,9 +136,9 @@ export const sanityFetchMetadata = async <const Q extends string>({
 }) => {
   "use cache";
   const { data } = await sanityFetch({
-    query,
     params,
     perspective,
+    query,
     stega: false,
   });
   return data;

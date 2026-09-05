@@ -4,22 +4,22 @@ import { placeholderImage } from "../internal/testing/fixtures";
 import { LogoCloud } from "./component";
 
 const meta = {
-  title: "blocks/Logo Cloud",
-  component: LogoCloud,
-  tags: ["autodocs"],
-  parameters: { layout: "fullscreen" },
   args: {
     logos: [1, 2, 3, 4, 5, 6].map((seed) => ({
       _key: `logo-${seed}`,
-      image: placeholderImage(seed, {
-        width: seed % 2 ? 320 : 120,
-        height: 80,
-        alt: `Customer ${seed}`,
-      }),
       href: seed % 2 ? "https://example.com" : null,
+      image: placeholderImage(seed, {
+        alt: `Customer ${seed}`,
+        height: 80,
+        width: seed % 2 ? 320 : 120,
+      }),
       openInNewTab: true,
     })),
   },
+  component: LogoCloud,
+  parameters: { layout: "fullscreen" },
+  tags: ["autodocs"],
+  title: "blocks/Logo Cloud",
 } satisfies Meta<typeof LogoCloud>;
 
 export default meta;

@@ -8,18 +8,18 @@ import {
 import { CTABlock } from "./component";
 
 const meta = {
-  title: "blocks/CTA",
-  component: CTABlock,
-  tags: ["autodocs"],
-  parameters: { layout: "fullscreen" },
   args: {
+    buttons,
     eyebrow: "Ready when you are",
-    title: "Launch your next site on the Forge",
     richText: paragraph(
       "Clone the template, point it at a Sanity project and add a site to the registry. Everything else is already wired."
     ),
-    buttons,
+    title: "Launch your next site on the Forge",
   },
+  component: CTABlock,
+  parameters: { layout: "fullscreen" },
+  tags: ["autodocs"],
+  title: "blocks/CTA",
 } satisfies Meta<typeof CTABlock>;
 
 export default meta;
@@ -31,16 +31,16 @@ export const Default: Story = {};
 export const WithLogos: Story = {
   args: {
     usedByTeams: {
-      title: "Trusted by teams shipping every week",
       logos: [1, 2, 3, 4].map((seed) => ({
         _key: `logo-${seed}`,
-        image: placeholderImage(seed, {
-          width: 240,
-          height: 80,
-          alt: `Team ${seed}`,
-        }),
         href: "https://example.com",
+        image: placeholderImage(seed, {
+          alt: `Team ${seed}`,
+          height: 80,
+          width: 240,
+        }),
       })),
+      title: "Trusted by teams shipping every week",
     },
   },
 };

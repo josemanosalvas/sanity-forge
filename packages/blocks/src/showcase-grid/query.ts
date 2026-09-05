@@ -1,6 +1,6 @@
 import { imageFields } from "../internal/groq-fragments";
 
-export const showcaseGridGroqProjection = /* groq */ `
+export const showcaseGridGroqProjection = `
   _type == "showcaseGrid" => {
     ...,
     "items": array::compact(items[]{

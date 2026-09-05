@@ -3,7 +3,7 @@ import {
   richTextFragment,
 } from "../internal/groq-fragments";
 
-export const videoFeatureGroqProjection = /* groq */ `
+export const videoFeatureGroqProjection = `
   _type == "videoFeature" => {
     ...,
     ${richTextFragment},

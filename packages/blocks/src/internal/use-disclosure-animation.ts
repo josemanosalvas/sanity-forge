@@ -24,7 +24,7 @@ const DISCLOSURE_TIMING: KeyframeAnimationOptions = {
  * exclusively through the `open` argument (e.g. from a summary click handler
  * that calls `preventDefault`).
  */
-export function useDisclosureAnimation(open: boolean) {
+export const useDisclosureAnimation = (open: boolean) => {
   const detailsRef = useRef<HTMLDetailsElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<Animation | null>(null);
@@ -93,5 +93,5 @@ export function useDisclosureAnimation(open: boolean) {
     []
   );
 
-  return { detailsRef, contentRef };
-}
+  return { contentRef, detailsRef };
+};

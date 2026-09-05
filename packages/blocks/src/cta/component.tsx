@@ -26,27 +26,25 @@ export interface CtaBlockProps {
   usedByTeams?: CtaUsedByTeams | null;
 }
 
-function UsedByTeamsLogo({ logo }: Readonly<{ logo: CtaUsedByTeamsLogo }>) {
-  return (
-    <LogoLinkCell
-      cellClassName="flex items-center justify-center bg-background px-2 py-4"
-      height={24}
-      href={logo.href}
-      image={logo.image}
-      imageClassName="h-6 w-auto max-w-full object-contain md:h-[22px] dark:invert"
-      openInNewTab={logo.openInNewTab}
-      width={156}
-    />
-  );
-}
+const UsedByTeamsLogo = ({ logo }: Readonly<{ logo: CtaUsedByTeamsLogo }>) => (
+  <LogoLinkCell
+    cellClassName="flex items-center justify-center bg-background px-2 py-4"
+    height={24}
+    href={logo.href}
+    image={logo.image}
+    imageClassName="h-6 w-auto max-w-full object-contain md:h-[22px] dark:invert"
+    openInNewTab={logo.openInNewTab}
+    width={156}
+  />
+);
 
-export function CTABlock({
+export const CTABlock = ({
   richText,
   title,
   eyebrow,
   buttons,
   usedByTeams,
-}: Readonly<CtaBlockProps>) {
+}: Readonly<CtaBlockProps>) => {
   const logos = usedByTeams?.logos?.filter((logo) => logo.image?.id) ?? [];
   const hasLogos = logos.length > 0;
 
@@ -94,4 +92,4 @@ export function CTABlock({
       </div>
     </section>
   );
-}
+};

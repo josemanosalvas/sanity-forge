@@ -6,10 +6,10 @@ import {
 import type { MarkdownBlock, MarkdownOptions } from "../internal/markdown";
 import { portableTextToMarkdown } from "../internal/portable-text-to-markdown";
 
-export function featureCardsIconToMarkdown(
+export const featureCardsIconToMarkdown = (
   block: MarkdownBlock,
   options: MarkdownOptions
-): string {
+): string => {
   const cards = (block.cards ?? []).map((card) =>
     joinSections([
       headingToMarkdown(card.title, 3),
@@ -23,4 +23,4 @@ export function featureCardsIconToMarkdown(
     portableTextToMarkdown(block.richText, options),
     ...cards,
   ]);
-}
+};

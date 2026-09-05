@@ -17,32 +17,30 @@ export interface LogoCloudProps {
   logos?: LogoCloudLogo[] | null;
 }
 
-function Logo({ logo }: Readonly<{ logo: LogoCloudLogo }>) {
-  return (
-    <LogoLinkCell
-      cellClassName="flex shrink-0 items-center justify-center"
-      height={80}
-      href={logo.href}
-      image={logo.image}
-      imageClassName="w-auto object-contain"
-      imageStyle={{
-        height: normalizedLogoHeight(logo.image, {
-          base: 28,
-          min: 24,
-          max: 32,
-        }),
-      }}
-      openInNewTab={logo.openInNewTab}
-      width={240}
-    />
-  );
-}
+const Logo = ({ logo }: Readonly<{ logo: LogoCloudLogo }>) => (
+  <LogoLinkCell
+    cellClassName="flex shrink-0 items-center justify-center"
+    height={80}
+    href={logo.href}
+    image={logo.image}
+    imageClassName="w-auto object-contain"
+    imageStyle={{
+      height: normalizedLogoHeight(logo.image, {
+        base: 28,
+        max: 32,
+        min: 24,
+      }),
+    }}
+    openInNewTab={logo.openInNewTab}
+    width={240}
+  />
+);
 
 const HOVER_PLAYBACK_RATE = 0.6;
 
 const CYCLE_CLASS = "flex shrink-0 items-center gap-12 pr-12";
 
-export function LogoCloud({ logos }: Readonly<LogoCloudProps>) {
+export const LogoCloud = ({ logos }: Readonly<LogoCloudProps>) => {
   const trackRef = useRef<HTMLDivElement>(null);
 
   if (!(Array.isArray(logos) && logos.length > 0)) {
@@ -98,4 +96,4 @@ export function LogoCloud({ logos }: Readonly<LogoCloudProps>) {
       </div>
     </section>
   );
-}
+};

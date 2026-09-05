@@ -8,8 +8,8 @@ import type { ConditionalProperty } from "sanity";
 // Single source of truth for portable text member names
 const PORTABLE_TEXT_MEMBER_NAMES = {
   block: "block",
-  image: "image",
   code: "code",
+  image: "image",
   table: "table",
 } as const;
 
@@ -36,18 +36,18 @@ const PORTABLE_TEXT_BLOCK_STYLES = [
 const TABLE_CELL_BLOCK_STYLES = [{ title: "Normal", value: "normal" }];
 
 const customLinkAnnotation = {
-  name: "customLink",
-  type: "object",
-  title: "Internal/External Link",
-  icon: LinkIcon,
   fields: [
     defineField({
-      name: "customLink",
-      type: "customUrl",
       description:
         "Where the highlighted text takes visitors — pick a page on this site or paste a web address",
+      name: "customLink",
+      type: "customUrl",
     }),
   ],
+  icon: LinkIcon,
+  name: "customLink",
+  title: "Internal/External Link",
+  type: "object",
 };
 
 const PORTABLE_TEXT_MARK_DECORATORS = [
@@ -63,143 +63,138 @@ const PORTABLE_TEXT_MARKS = {
 
 const richTextMembers = [
   defineArrayMember({
-    name: PORTABLE_TEXT_MEMBER_NAMES.block,
-    type: "block",
-    styles: PORTABLE_TEXT_BLOCK_STYLES,
     lists: [
       { title: "Numbered", value: "number" },
       { title: "Bullet", value: "bullet" },
     ],
     marks: PORTABLE_TEXT_MARKS,
+    name: PORTABLE_TEXT_MEMBER_NAMES.block,
+    styles: PORTABLE_TEXT_BLOCK_STYLES,
+    type: "block",
   }),
   defineArrayMember({
-    name: PORTABLE_TEXT_MEMBER_NAMES.image,
-    type: "image",
-    title: "Image",
+    fields: [
+      defineField({
+        description: "Describe the image for screen readers and search engines",
+        name: "alt",
+        title: "Alternative Text",
+        type: "string",
+      }),
+      defineField({
+        description: "Optional caption shown beneath the image.",
+        name: "caption",
+        title: "Caption Text",
+        type: "string",
+      }),
+    ],
     icon: ImageIcon,
+    name: PORTABLE_TEXT_MEMBER_NAMES.image,
     options: {
       hotspot: true,
     },
-    fields: [
-      defineField({
-        name: "alt",
-        type: "string",
-        title: "Alternative Text",
-        description: "Describe the image for screen readers and search engines",
-      }),
-      defineField({
-        name: "caption",
-        type: "string",
-        title: "Caption Text",
-        description: "Optional caption shown beneath the image.",
-      }),
-    ],
+    title: "Image",
+    type: "image",
   }),
   defineArrayMember({
-    name: PORTABLE_TEXT_MEMBER_NAMES.code,
-    type: "object",
-    title: "Code Block",
     description:
       "A multi-line code snippet with preserved indentation. Use this for code examples instead of the inline Code style.",
-    icon: CodeBlockIcon,
     fields: [
       defineField({
-        name: "code",
-        type: "text",
-        title: "Code",
         description: "The code snippet. Indentation and line breaks are kept.",
+        name: "code",
         rows: 8,
+        title: "Code",
+        type: "text",
         validation: (rule) => rule.required(),
       }),
       defineField({
-        name: "language",
-        type: "string",
-        title: "Language",
         description: "Optional language label shown in the code block header.",
+        name: "language",
         options: {
           list: CODE_LANGUAGES,
         },
+        title: "Language",
+        type: "string",
       }),
       defineField({
-        name: "filename",
-        type: "string",
-        title: "Filename",
         description: "Optional filename shown in the code block header.",
+        name: "filename",
+        title: "Filename",
+        type: "string",
       }),
     ],
+    icon: CodeBlockIcon,
+    name: PORTABLE_TEXT_MEMBER_NAMES.code,
     preview: {
-      select: {
-        filename: "filename",
-        language: "language",
-        code: "code",
-      },
       prepare({ filename, language, code }) {
         const firstLine = (code ?? "").split("\n")[0]?.trim();
         return {
-          title: filename || firstLine || "Code Block",
           subtitle: language ?? "Code",
+          title: filename || firstLine || "Code Block",
         };
       },
+      select: {
+        code: "code",
+        filename: "filename",
+        language: "language",
+      },
     },
+    title: "Code Block",
+    type: "object",
   }),
   defineArrayMember({
-    name: PORTABLE_TEXT_MEMBER_NAMES.table,
-    type: "object",
-    title: "Table",
+    fields: [
+      defineField({
+        description: "How many rows at the top of the table are headers.",
+        name: "headerRows",
+        title: "Header Rows",
+        type: "number",
+      }),
+      defineField({
+        name: "rows",
+        of: [
+          defineArrayMember({
+            fields: [
+              defineField({
+                name: "cells",
+                of: [
+                  defineArrayMember({
+                    fields: [
+                      defineField({
+                        name: "value",
+                        of: [
+                          defineArrayMember({
+                            marks: PORTABLE_TEXT_MARKS,
+                            styles: TABLE_CELL_BLOCK_STYLES,
+                            type: "block",
+                          }),
+                        ],
+                        type: "array",
+                      }),
+                    ],
+                    name: "cell",
+                    type: "object",
+                  }),
+                ],
+                title: "Cells",
+                type: "array",
+              }),
+            ],
+            name: "row",
+            type: "object",
+          }),
+        ],
+        title: "Rows",
+        type: "array",
+      }),
+    ],
     // The Portable Text table plugin (bundled with `sanity` v6.6+, enabled
     // in sanity.config.ts) strips fields the schema doesn't declare — omitting
     // `headerRows` would silently break the header-row toggle, so it's
     // required here even though the editor UI manages it directly.
     icon: ThLargeIcon,
-    fields: [
-      defineField({
-        name: "headerRows",
-        type: "number",
-        title: "Header Rows",
-        description: "How many rows at the top of the table are headers.",
-      }),
-      defineField({
-        name: "rows",
-        type: "array",
-        title: "Rows",
-        of: [
-          defineArrayMember({
-            name: "row",
-            type: "object",
-            fields: [
-              defineField({
-                name: "cells",
-                type: "array",
-                title: "Cells",
-                of: [
-                  defineArrayMember({
-                    name: "cell",
-                    type: "object",
-                    fields: [
-                      defineField({
-                        name: "value",
-                        type: "array",
-                        of: [
-                          defineArrayMember({
-                            type: "block",
-                            styles: TABLE_CELL_BLOCK_STYLES,
-                            marks: PORTABLE_TEXT_MARKS,
-                          }),
-                        ],
-                      }),
-                    ],
-                  }),
-                ],
-              }),
-            ],
-          }),
-        ],
-      }),
-    ],
+    name: PORTABLE_TEXT_MEMBER_NAMES.table,
     preview: {
-      select: {
-        rows: "rows",
-      },
       prepare({ rows }) {
         const rowCount = Array.isArray(rows) ? rows.length : 0;
         const columnCount = Array.isArray(rows?.[0]?.cells)
@@ -212,7 +207,12 @@ const richTextMembers = [
               : "Table",
         };
       },
+      select: {
+        rows: "rows",
+      },
     },
+    title: "Table",
+    type: "object",
   }),
 ];
 
@@ -254,10 +254,10 @@ export const definePortableTextField = (
 
   return defineField({
     ...options,
-    name,
-    type: "array",
     description,
     hidden,
+    name,
     of: selectedMembers,
+    type: "array",
   });
 };

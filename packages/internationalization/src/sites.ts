@@ -22,22 +22,22 @@ export interface SiteDefinition {
 
 export const sites = {
   "brand-a": {
-    key: "brand-a",
-    name: "Brand A",
-    locales: ["en", "de", "fr"],
     domains: {
-      production: "brand-a.example",
       development: "brand-a.localhost:3000",
+      production: "brand-a.example",
     },
+    key: "brand-a",
+    locales: ["en", "de", "fr"],
+    name: "Brand A",
   },
   "brand-b": {
-    key: "brand-b",
-    name: "Brand B",
-    locales: ["en", "de"],
     domains: {
-      production: "brand-b.example",
       development: "brand-b.localhost:3000",
+      production: "brand-b.example",
     },
+    key: "brand-b",
+    locales: ["en", "de"],
+    name: "Brand B",
   },
 } as const satisfies Record<string, SiteDefinition>;
 
@@ -116,9 +116,12 @@ export const getSiteOrigin = (
 };
 
 /** Every origin Presentation and CORS should trust, across sites and environments. */
+const siteEnvironments: readonly SiteEnvironment[] = [
+  "production",
+  "development",
+];
+
 export const getAllSiteOrigins = (): string[] =>
   siteList.flatMap((site) =>
-    (Object.keys(site.domains) as SiteEnvironment[]).map((environment) =>
-      getSiteOrigin(site, environment)
-    )
+    siteEnvironments.map((environment) => getSiteOrigin(site, environment))
   );

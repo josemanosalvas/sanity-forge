@@ -10,10 +10,10 @@ import {
   portableTextToMarkdown,
 } from "../internal/portable-text-to-markdown";
 
-export function videoFeatureToMarkdown(
+export const videoFeatureToMarkdown = (
   block: MarkdownBlock,
   options: MarkdownOptions
-): string {
+): string => {
   // `||`, not `??`: Sanity keeps "" for a cleared field, which would win.
   const still = muxVideoToMarkdown(
     block.video?.asset,
@@ -30,4 +30,4 @@ export function videoFeatureToMarkdown(
     // only when there is no still.
     caption && !still ? `_${escapeMarkdown(caption)}_` : "",
   ]);
-}
+};

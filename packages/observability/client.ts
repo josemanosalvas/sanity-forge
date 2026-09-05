@@ -19,13 +19,13 @@ export const initializeObservability = (): void => {
   init({
     dsn,
     enableLogs: true,
-    tracesSampleRate: 1,
-    replaysOnErrorSampleRate: 1,
-    replaysSessionSampleRate: 0.1,
     integrations: [
-      replayIntegration({ maskAllText: true, blockAllMedia: true }),
+      replayIntegration({ blockAllMedia: true, maskAllText: true }),
       consoleLoggingIntegration({ levels: ["error", "warn"] }),
     ],
+    replaysOnErrorSampleRate: 1,
+    replaysSessionSampleRate: 0.1,
+    tracesSampleRate: 1,
   });
 };
 

@@ -4,13 +4,13 @@ import { Button } from "@repo/design-system/components/ui/button";
 import { captureException } from "@repo/observability/error";
 import { useEffect } from "react";
 
-export default function ErrorBoundary({
+const ErrorBoundary = ({
   error,
   retry,
 }: {
   error: Error & { digest?: string };
   retry: () => void;
-}) {
+}) => {
   useEffect(() => {
     captureException(error);
   }, [error]);
@@ -30,4 +30,6 @@ export default function ErrorBoundary({
       </div>
     </section>
   );
-}
+};
+
+export default ErrorBoundary;

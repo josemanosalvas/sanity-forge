@@ -11,13 +11,13 @@ interface LogoProps {
   priority?: boolean;
 }
 
-export function Logo({
+export const Logo = ({
   image,
   imageDark,
   alt,
   className,
   priority = true,
-}: LogoProps) {
+}: LogoProps) => {
   if (!image?.id) {
     return (
       <Link className="focus-ring inline-block text-lg font-semibold" href="/">
@@ -59,4 +59,4 @@ export function Logo({
       )}
     </Link>
   );
-}
+};

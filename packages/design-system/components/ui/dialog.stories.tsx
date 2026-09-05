@@ -17,10 +17,11 @@ import {
  * inert.
  */
 const meta = {
-  title: "ui/Dialog",
-  component: Dialog,
-  tags: ["autodocs"],
   argTypes: {},
+  component: Dialog,
+  parameters: {
+    layout: "centered",
+  },
   render: (args) => (
     <Dialog {...args}>
       <DialogTrigger render={<Button variant="outline" />}>Open</DialogTrigger>
@@ -39,9 +40,8 @@ const meta = {
       </DialogContent>
     </Dialog>
   ),
-  parameters: {
-    layout: "centered",
-  },
+  tags: ["autodocs"],
+  title: "ui/Dialog",
 } satisfies Meta<typeof Dialog>;
 
 export default meta;

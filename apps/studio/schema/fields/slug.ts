@@ -23,14 +23,14 @@ export const documentSlugField = (
   } = options;
 
   return defineField({
-    name: "slug",
-    type: "slug",
-    title,
-    description,
-    group,
     components: {
       field: PathnameFieldComponent,
     },
+    description,
+    group,
+    name: "slug",
+    title,
+    type: "slug",
     validation: (rule) => {
       const config = getDocumentTypeConfig(documentType);
       return [

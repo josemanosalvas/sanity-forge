@@ -6,22 +6,22 @@ import type { FieldGroupDefinition } from "sanity";
 export const API_VERSION = "2026-09-01";
 
 export const GROUP = {
-  SEO: "seo",
   MAIN_CONTENT: "main-content",
   OG: "og",
+  SEO: "seo",
 };
 
 export const GROUPS: FieldGroupDefinition[] = [
   {
-    name: GROUP.MAIN_CONTENT,
-    icon: ComposeIcon,
-    title: "Content",
     default: true,
+    icon: ComposeIcon,
+    name: GROUP.MAIN_CONTENT,
+    title: "Content",
   },
-  { name: GROUP.SEO, icon: SearchIcon, title: "SEO" },
+  { icon: SearchIcon, name: GROUP.SEO, title: "SEO" },
   {
-    name: GROUP.OG,
     icon: InsertAboveIcon,
+    name: GROUP.OG,
     title: "Open Graph",
   },
 ];

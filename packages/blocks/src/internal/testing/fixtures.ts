@@ -22,62 +22,61 @@ const svgPreview = (color: string, width: number, height: number) =>
     `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><rect width="${width}" height="${height}" fill="${color}"/></svg>`
   )}`;
 
-export function placeholderImage(
+export const placeholderImage = (
   seed: number,
   { width = 1200, height = 800, alt = `Placeholder ${seed}` } = {}
-): SanityImageData {
+): SanityImageData => {
   const color = PALETTE[seed % PALETTE.length] ?? "#6366f1";
   // Asset ids carry a hex hash; the image library rejects anything else.
   const hash = seed.toString(16).padStart(40, "a");
   return {
-    id: `image-${hash}-${width}x${height}-png`,
     alt,
+    id: `image-${hash}-${width}x${height}-png`,
     preview: svgPreview(color, width, height),
   };
-}
+};
 
 let blockCounter = 0;
 
-export function paragraph(text: string, style = "normal"): RichTextValue {
+export const paragraph = (text: string, style = "normal"): RichTextValue => {
   blockCounter += 1;
   return [
     {
-      _type: "block",
       _key: `block-${blockCounter}`,
-      style,
-      markDefs: [],
+      _type: "block",
       children: [
-        { _type: "span", _key: `span-${blockCounter}`, text, marks: [] },
+        { _key: `span-${blockCounter}`, _type: "span", marks: [], text },
       ],
+      markDefs: [],
+      style,
     },
   ];
-}
+};
 
-export function paragraphs(...texts: string[]): RichTextValue {
-  return texts.flatMap((text) => paragraph(text) ?? []);
-}
+export const paragraphs = (...texts: string[]): RichTextValue =>
+  texts.flatMap((text) => paragraph(text) ?? []);
 
 export const buttons: ButtonProps[] = [
   {
     _key: "btn-1",
+    href: "/get-started",
     text: "Get started",
     variant: "default",
-    href: "/get-started",
   },
   {
     _key: "btn-2",
-    text: "View on GitHub",
-    variant: "outline",
     href: "https://github.com",
     openInNewTab: true,
+    text: "View on GitHub",
+    variant: "outline",
   },
 ];
 
 /** Mux's public sample clip, used in their own documentation. */
 export const MUX_SAMPLE = {
-  playbackId: "DS00Spx1CV902MCtPj5WknGlR102V5HFkDe",
-  status: "ready",
-  policy: "public",
   aspectRatio: "16:9",
+  playbackId: "DS00Spx1CV902MCtPj5WknGlR102V5HFkDe",
+  policy: "public",
+  status: "ready",
   title: "Sample clip",
 } as const;

@@ -15,7 +15,7 @@ import { defineQuery } from "next-sanity";
 
 /** A field-level localized value with fallback to the site's default locale. */
 const localized = <const Field extends string>(field: Field) =>
-  /* groq */ `coalesce(
+  `coalesce(
   ${field}[language == $locale][0].value,
   ${field}[language == $defaultLocale][0].value
 )` as const;
@@ -25,7 +25,7 @@ const localized = <const Field extends string>(field: Field) =>
  * `translation.metadata` document that @sanity/document-internationalization
  * maintains. Drives hreflang alternates and the language switcher.
  */
-const translationsFragment = /* groq */ `
+const translationsFragment = `
   "translations": *[_type == "translation.metadata" && references(^._id)][0]
     .translations[defined(value)]{
       language,
@@ -33,7 +33,7 @@ const translationsFragment = /* groq */ `
     }
 ` as const;
 
-const seoFragment = /* groq */ `
+const seoFragment = `
   seoTitle,
   seoDescription,
   seoNoIndex,

@@ -1,38 +1,42 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { expect, test } from "vitest";
+import { describe, expect, test } from "vitest";
 
 import { FeatureCardsWithIcon } from "./component";
 
-test("FeatureCardsWithIcon renders the card list", () => {
-  const html = renderToStaticMarkup(
-    <FeatureCardsWithIcon
-      title="Highlights"
-      cards={[
-        {
-          _key: "card-1",
-          icon: "boxes",
-          title: "Reusable",
-          richText: [
-            {
-              _type: "block",
-              _key: "block-1",
-              children: [{ _type: "span", text: "One shared implementation." }],
-            },
-          ],
-        },
-      ]}
-    />
-  );
+describe(FeatureCardsWithIcon, () => {
+  test("FeatureCardsWithIcon renders the card list", () => {
+    const html = renderToStaticMarkup(
+      <FeatureCardsWithIcon
+        title="Highlights"
+        cards={[
+          {
+            _key: "card-1",
+            icon: "boxes",
+            richText: [
+              {
+                _key: "block-1",
+                _type: "block",
+                children: [
+                  { _type: "span", text: "One shared implementation." },
+                ],
+              },
+            ],
+            title: "Reusable",
+          },
+        ]}
+      />
+    );
 
-  expect(html).toMatch(/Highlights/);
-  expect(html).toMatch(/Reusable/);
-  expect(html).toMatch(/One shared implementation/);
-});
+    expect(html).toMatch(/Highlights/u);
+    expect(html).toMatch(/Reusable/u);
+    expect(html).toMatch(/One shared implementation/u);
+  });
 
-test("FeatureCardsWithIcon renders with no cards", () => {
-  const html = renderToStaticMarkup(
-    <FeatureCardsWithIcon title="No cards yet" />
-  );
+  test("FeatureCardsWithIcon renders with no cards", () => {
+    const html = renderToStaticMarkup(
+      <FeatureCardsWithIcon title="No cards yet" />
+    );
 
-  expect(html).toMatch(/No cards yet/);
+    expect(html).toMatch(/No cards yet/u);
+  });
 });

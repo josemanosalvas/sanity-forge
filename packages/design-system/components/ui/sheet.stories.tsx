@@ -17,17 +17,18 @@ import {
  * content of the screen.
  */
 const meta = {
-  title: "ui/Sheet",
-  component: SheetContent,
-  tags: ["autodocs"],
   argTypes: {
     side: {
-      options: ["top", "bottom", "left", "right"],
       control: { type: "radio" },
+      options: ["top", "bottom", "left", "right"],
     },
   },
   args: {
     side: "right",
+  },
+  component: SheetContent,
+  parameters: {
+    layout: "centered",
   },
   render: (args) => (
     <Sheet>
@@ -47,9 +48,8 @@ const meta = {
       </SheetContent>
     </Sheet>
   ),
-  parameters: {
-    layout: "centered",
-  },
+  tags: ["autodocs"],
+  title: "ui/Sheet",
 } satisfies Meta<typeof SheetContent>;
 
 export default meta;

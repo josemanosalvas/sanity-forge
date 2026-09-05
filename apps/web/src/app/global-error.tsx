@@ -3,13 +3,13 @@
 import { captureException } from "@repo/observability/error";
 import { useEffect } from "react";
 
-export default function GlobalError({
+const GlobalError = ({
   error,
   retry,
 }: {
   error: Error & { digest?: string };
   retry: () => void;
-}) {
+}) => {
   useEffect(() => {
     captureException(error);
   }, [error]);
@@ -31,4 +31,6 @@ export default function GlobalError({
       </body>
     </html>
   );
-}
+};
+
+export default GlobalError;

@@ -16,12 +16,12 @@ import { locale as localeParam, site as siteParam } from "next/root-params";
  */
 const readRouteContext = async () => {
   try {
-    return { site: await siteParam(), locale: await localeParam() };
+    return { locale: await localeParam(), site: await siteParam() };
   } catch {
     const requestHeaders = await headers();
     return {
-      site: requestHeaders.get(SITE_HEADER) ?? undefined,
       locale: requestHeaders.get(LOCALE_HEADER) ?? undefined,
+      site: requestHeaders.get(SITE_HEADER) ?? undefined,
     };
   }
 };
@@ -35,5 +35,5 @@ export default getRequestConfig(async ({ locale }) => {
     notFound();
   }
 
-  return createRequestConfig({ site, locale: resolved });
+  return createRequestConfig({ locale: resolved, site });
 });

@@ -1,13 +1,13 @@
 import type { ComponentProps } from "react";
 
-export default function Link({
+const Link = ({
   href,
   children,
   ...props
-}: ComponentProps<"a"> & { href?: string }) {
-  return (
-    <a href={href} {...props}>
-      {children}
-    </a>
-  );
-}
+}: ComponentProps<"a"> & { href?: string }) => (
+  <a href={href} {...props}>
+    {children}
+  </a>
+);
+
+export default Link;

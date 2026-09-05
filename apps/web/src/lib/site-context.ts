@@ -23,7 +23,7 @@ export const getSiteContext = async (): Promise<SiteContext> => {
   if (!siteSupportsLocale(site, locale)) {
     notFound();
   }
-  return { site, locale, defaultLocale: getDefaultLocale(site) };
+  return { defaultLocale: getDefaultLocale(site), locale, site };
 };
 
 /** The query parameters for a site context. */
@@ -32,7 +32,7 @@ export const toQueryParams = ({
   locale,
   defaultLocale,
 }: SiteContext): SiteQueryParams => ({
-  site: site.key,
-  locale,
   defaultLocale,
+  locale,
+  site: site.key,
 });

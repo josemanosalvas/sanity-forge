@@ -16,10 +16,10 @@ import type { MarkdownBlock, MarkdownOptions } from "./markdown";
 export { imageToMarkdown } from "./markdown";
 export type { MarkdownBlock } from "./markdown";
 
-function blockToMarkdown(
+const blockToMarkdown = (
   block: MarkdownBlock,
   options: MarkdownOptions
-): string {
+): string => {
   switch (block?._type) {
     case "hero": {
       return heroToMarkdown(block, options);
@@ -55,12 +55,12 @@ function blockToMarkdown(
       return "";
     }
   }
-}
+};
 
-export function pageBuilderToMarkdown(
-  blocks: MarkdownBlock[] | null | undefined,
+export const pageBuilderToMarkdown = (
+  blocks?: MarkdownBlock[] | null,
   options: MarkdownOptions = {}
-): string {
+): string => {
   if (!Array.isArray(blocks)) {
     return "";
   }
@@ -69,4 +69,4 @@ export function pageBuilderToMarkdown(
     .map((block) => blockToMarkdown(block, options))
     .filter((markdown) => markdown.trim())
     .join("\n\n");
-}
+};

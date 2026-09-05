@@ -28,7 +28,7 @@ export const TranslationsProvider = ({ children }: { children: ReactNode }) => {
     []
   );
   const value = useMemo(
-    () => ({ translations, register: setTranslations }),
+    () => ({ register: setTranslations, translations }),
     [translations]
   );
   return (

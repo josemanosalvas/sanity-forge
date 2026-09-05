@@ -14,10 +14,11 @@ import {
  * A collection of links for navigating websites.
  */
 const meta = {
-  title: "ui/NavigationMenu",
-  component: NavigationMenu,
-  tags: ["autodocs"],
   argTypes: {},
+  component: NavigationMenu,
+  parameters: {
+    layout: "centered",
+  },
   render: (args) => (
     <NavigationMenu {...args}>
       <NavigationMenuList>
@@ -60,9 +61,8 @@ const meta = {
       </NavigationMenuList>
     </NavigationMenu>
   ),
-  parameters: {
-    layout: "centered",
-  },
+  tags: ["autodocs"],
+  title: "ui/NavigationMenu",
 } satisfies Meta<typeof NavigationMenu>;
 
 export default meta;

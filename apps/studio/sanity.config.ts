@@ -53,47 +53,8 @@ const createWorkspace = (site: Site): WorkspaceOptions => {
   const languages = languageOptions(site.locales);
 
   return {
-    name: site.key,
-    title: `${env.SANITY_STUDIO_TITLE} · ${site.name}`,
-    subtitle: site.domains.production,
     basePath: `/${site.key}`,
-    icon: Logo,
-    projectId,
     dataset,
-    releases: {
-      enabled: true,
-    },
-    plugins: [
-      presentationTool(createPresentationConfig(site)),
-      structureTool({
-        structure: createStructure(site),
-      }),
-      documentInternationalization({
-        supportedLanguages: languages,
-        schemaTypes: [...TRANSLATED_TYPES],
-        languageField: "language",
-        apiVersion: API_VERSION,
-        // The Structure ships its own site-aware templates.
-        addTemplates: false,
-      }),
-      internationalizedArray({
-        apiVersion: API_VERSION,
-        languages,
-        defaultLanguages: [site.locales[0]],
-        fieldTypes: ["string", "text"],
-        languageDisplay: "titleAndCode",
-        restoreOrder: false,
-        languageFilter: {
-          documentTypes: [...FIELD_LEVEL_TYPES],
-          defaultLanguages: [site.locales[0]],
-        },
-      }),
-      visionTool({ defaultApiVersion: API_VERSION }),
-      lucideIconPicker(),
-      media(),
-      muxInput(),
-      assist(),
-    ],
     document: {
       newDocumentOptions: (prev, { creationContext }) => {
         if (creationContext.type === "global") {
@@ -122,10 +83,49 @@ const createWorkspace = (site: Site): WorkspaceOptions => {
         },
       },
     },
-    schema: {
-      types: schemaTypes,
-      templates: createTemplates,
+    icon: Logo,
+    name: site.key,
+    plugins: [
+      presentationTool(createPresentationConfig(site)),
+      structureTool({
+        structure: createStructure(site),
+      }),
+      documentInternationalization({
+        // The Structure ships its own site-aware templates.
+        addTemplates: false,
+        apiVersion: API_VERSION,
+        languageField: "language",
+        schemaTypes: [...TRANSLATED_TYPES],
+        supportedLanguages: languages,
+      }),
+      internationalizedArray({
+        apiVersion: API_VERSION,
+        defaultLanguages: [site.locales[0]],
+        fieldTypes: ["string", "text"],
+        languageDisplay: "titleAndCode",
+        languageFilter: {
+          defaultLanguages: [site.locales[0]],
+          documentTypes: [...FIELD_LEVEL_TYPES],
+        },
+        languages,
+        restoreOrder: false,
+      }),
+      visionTool({ defaultApiVersion: API_VERSION }),
+      lucideIconPicker(),
+      media(),
+      muxInput(),
+      assist(),
+    ],
+    projectId,
+    releases: {
+      enabled: true,
     },
+    schema: {
+      templates: createTemplates,
+      types: schemaTypes,
+    },
+    subtitle: site.domains.production,
+    title: `${env.SANITY_STUDIO_TITLE} · ${site.name}`,
   };
 };
 

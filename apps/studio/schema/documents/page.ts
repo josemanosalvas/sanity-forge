@@ -13,33 +13,28 @@ import {
 } from "../fields";
 
 export const page = defineType({
-  name: "page",
-  type: "document",
-  title: "Page",
   description:
     "A page of a site, like 'About us' or the home page (slug '/'). Each language is its own document, linked through the Translations menu, so it can have its own slug and be published independently.",
-  icon: File,
-  groups: GROUPS,
   fields: [
     { ...siteField, group: GROUP.MAIN_CONTENT },
     languageField,
     defineField({
-      name: "title",
-      type: "string",
-      title: "Title",
       description:
         "The main heading that appears at the top of your page and in browser tabs",
       group: GROUP.MAIN_CONTENT,
+      name: "title",
+      title: "Title",
+      type: "string",
       validation: (rule) => rule.required().error("A page title is required"),
     }),
     defineField({
-      name: "description",
-      type: "text",
-      title: "Description",
       description:
         "A brief summary of what this page is about. This text helps search engines understand your page and may appear in search results.",
-      rows: 3,
       group: GROUP.MAIN_CONTENT,
+      name: "description",
+      rows: 3,
+      title: "Description",
+      type: "text",
       validation: (rule) => [
         rule
           .min(140)
@@ -57,25 +52,19 @@ export const page = defineType({
       group: GROUP.MAIN_CONTENT,
     }),
     imageWithAltField({
-      title: "Image",
       description:
         "A main picture for this page that can be used when sharing on social media or in search results",
       group: GROUP.MAIN_CONTENT,
+      title: "Image",
     }),
     pageBuilderField,
     ...seoFields,
     ...ogFields,
   ],
+  groups: GROUPS,
+  icon: File,
+  name: "page",
   preview: {
-    select: {
-      title: "title",
-      slug: "slug.current",
-      media: "image",
-      isPrivate: "seoNoIndex",
-      hasPageBuilder: "pageBuilder",
-      language: "language",
-      site: "site",
-    },
     prepare: ({
       title,
       slug,
@@ -91,10 +80,21 @@ export const page = defineType({
         : "🏗️";
 
       return {
-        title: `${title || "Untitled Page"}`,
-        subtitle: `${site ?? "no site"} · ${(language ?? "??").toUpperCase()} · ${statusEmoji} ${builderEmoji} · ${slug || "no-slug"}`,
         media,
+        subtitle: `${site ?? "no site"} · ${(language ?? "??").toUpperCase()} · ${statusEmoji} ${builderEmoji} · ${slug || "no-slug"}`,
+        title: `${title || "Untitled Page"}`,
       };
     },
+    select: {
+      hasPageBuilder: "pageBuilder",
+      isPrivate: "seoNoIndex",
+      language: "language",
+      media: "image",
+      site: "site",
+      slug: "slug.current",
+      title: "title",
+    },
   },
+  title: "Page",
+  type: "document",
 });

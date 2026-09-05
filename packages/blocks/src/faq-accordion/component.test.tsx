@@ -1,103 +1,106 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { expect, test } from "vitest";
+import { describe, expect, test } from "vitest";
 
 import { FaqAccordion } from "./component";
 
-test("FaqAccordion renders questions and optional link", () => {
-  const html = renderToStaticMarkup(
+describe(FaqAccordion, () => {
+  test("FaqAccordion renders questions and optional link", () => {
+    const html = renderToStaticMarkup(
+      <FaqAccordion
+        title="FAQs"
+        link={{
+          href: "https://example.com",
+          title: "All questions",
+        }}
+        categories={[
+          {
+            _key: "cat-1",
+            faqs: [
+              {
+                _id: "faq-1",
+                title: "How do I import schemas?",
+              },
+            ],
+            title: "General",
+          },
+        ]}
+      />
+    );
+
+    expect(html).toMatch(/FAQs/u);
+    expect(html).toMatch(/How do I import schemas\?/u);
+    expect(html).toMatch(/All questions/u);
+  });
+
+  test("FaqAccordion renders subtitle and faq trigger titles", () => {
+    const html = renderToStaticMarkup(
+      <FaqAccordion
+        subtitle="Helpful answers"
+        categories={[
+          {
+            _key: "cat-1",
+            faqs: [
+              {
+                _id: "faq-2",
+                richText: [
+                  {
+                    _key: "block-1",
+                    _type: "block",
+                    children: [
+                      { _type: "span", text: "Inside the shared package." },
+                    ],
+                  },
+                ],
+                title: "Where do the answers render?",
+              },
+            ],
+            title: "General",
+          },
+        ]}
+      />
+    );
+
+    expect(html).toMatch(/Helpful answers/u);
+    // Accordion trigger title is always rendered (even when closed)
+    expect(html).toMatch(/Where do the answers render\?/u);
+  });
+
+  const twoCategories = renderToStaticMarkup(
     <FaqAccordion
       title="FAQs"
-      link={{
-        title: "All questions",
-        href: "https://example.com",
-      }}
       categories={[
         {
           _key: "cat-1",
-          title: "General",
-          faqs: [
-            {
-              _id: "faq-1",
-              title: "How do I import schemas?",
-            },
-          ],
-        },
-      ]}
-    />
-  );
-
-  expect(html).toMatch(/FAQs/);
-  expect(html).toMatch(/How do I import schemas\?/);
-  expect(html).toMatch(/All questions/);
-});
-
-test("FaqAccordion renders subtitle and faq trigger titles", () => {
-  const html = renderToStaticMarkup(
-    <FaqAccordion
-      subtitle="Helpful answers"
-      categories={[
-        {
-          _key: "cat-1",
-          title: "General",
-          faqs: [
-            {
-              _id: "faq-2",
-              title: "Where do the answers render?",
-              richText: [
-                {
-                  _type: "block",
-                  _key: "block-1",
-                  children: [
-                    { _type: "span", text: "Inside the shared package." },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-      ]}
-    />
-  );
-
-  expect(html).toMatch(/Helpful answers/);
-  // Accordion trigger title is always rendered (even when closed)
-  expect(html).toMatch(/Where do the answers render\?/);
-});
-
-test("FaqAccordion defaults to the first category", () => {
-  const html = renderToStaticMarkup(
-    <FaqAccordion
-      title="FAQs"
-      categories={[
-        {
-          _key: "cat-1",
-          title: "First Category",
           faqs: [{ _id: "faq-1", title: "First question" }],
+          title: "First Category",
         },
         {
           _key: "cat-2",
-          title: "Second Category",
           faqs: [{ _id: "faq-2", title: "Second question" }],
+          title: "Second Category",
         },
       ]}
     />
   );
 
-  // Both category tabs are listed.
-  expect(html).toMatch(/First Category/);
-  expect(html).toMatch(/Second Category/);
-  // Every category is also rendered into the inert measurement layer (it
-  // reserves the tallest category's height), so assert the visible list only.
-  const [visible] = html.split('inert=""');
-  expect(visible).toMatch(/First question/);
-  expect(visible).not.toMatch(/Second question/);
-  // The first category tab is marked active, the second inactive.
-  expect(html).toMatch(/aria-pressed="true"/);
-  expect(html).toMatch(/aria-pressed="false"/);
-});
+  test("FaqAccordion lists every category tab with the first one active", () => {
+    expect(twoCategories).toMatch(/First Category/u);
+    expect(twoCategories).toMatch(/Second Category/u);
+    expect(twoCategories).toMatch(/aria-pressed="true"/u);
+    expect(twoCategories).toMatch(/aria-pressed="false"/u);
+  });
 
-test("FaqAccordion renders with no categories", () => {
-  const html = renderToStaticMarkup(<FaqAccordion title="No items yet" />);
+  test("FaqAccordion shows only the first category's questions", () => {
+    // Every category is also rendered into the inert measurement layer (it
+    // reserves the tallest category's height), so assert the visible list only.
+    const [visible] = twoCategories.split('inert=""');
+    expect(visible).toMatch(/First question/u);
+    expect(visible).not.toMatch(/Second question/u);
+  });
 
-  expect(html).toMatch(/No items yet/);
+  test("FaqAccordion renders with no categories", () => {
+    const html = renderToStaticMarkup(<FaqAccordion title="No items yet" />);
+
+    expect(html).toMatch(/No items yet/u);
+  });
 });

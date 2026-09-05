@@ -8,9 +8,9 @@ import type { PageBuilderBlock, PagebuilderType } from "@/types";
  * One FAQPage for the whole page: search engines read a single FAQPage per
  * URL, so every FAQ block's questions are merged.
  */
-export function PageBuilderJsonLd({
+export const PageBuilderJsonLd = ({
   pageBuilder,
-}: Readonly<{ pageBuilder?: PageBuilderBlock[] | null }>) {
+}: Readonly<{ pageBuilder?: PageBuilderBlock[] | null }>) => {
   if (!pageBuilder?.length) {
     return null;
   }
@@ -39,4 +39,4 @@ export function PageBuilderJsonLd({
       id="faq-json-ld"
     />
   );
-}
+};

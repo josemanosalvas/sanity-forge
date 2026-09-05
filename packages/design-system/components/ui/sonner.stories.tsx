@@ -8,16 +8,16 @@ import { Toaster } from "./sonner";
  * An opinionated toast component for React.
  */
 const meta = {
-  title: "ui/Sonner",
-  component: Toaster,
-  tags: ["autodocs"],
   argTypes: {},
   args: {
     position: "bottom-right",
   },
+  component: Toaster,
   parameters: {
     layout: "fullscreen",
   },
+  tags: ["autodocs"],
+  title: "ui/Sonner",
 } satisfies Meta<typeof Toaster>;
 
 export default meta;
@@ -31,11 +31,11 @@ export const Default: Story = {
       <Button
         onClick={() =>
           toast("Event has been created", {
-            description: new Date().toLocaleString(),
             action: {
               label: "Undo",
               onClick: () => toast.dismiss(),
             },
+            description: new Date().toLocaleString(),
           })
         }
         variant="outline"

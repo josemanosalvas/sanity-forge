@@ -8,20 +8,20 @@ import { z } from "zod";
  */
 export const keys = () =>
   createEnv({
-    skipValidation: process.env.SKIP_ENV_VALIDATION === "true",
-    server: {
-      SENTRY_ORG: z.string().optional(),
-      SENTRY_PROJECT: z.string().optional(),
-      SENTRY_AUTH_TOKEN: z.string().optional(),
-    },
     client: {
       NEXT_PUBLIC_SENTRY_DSN: z.url().optional(),
     },
+    emptyStringAsUndefined: true,
     runtimeEnv: {
+      NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
+      SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
       SENTRY_ORG: process.env.SENTRY_ORG,
       SENTRY_PROJECT: process.env.SENTRY_PROJECT,
-      SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
-      NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
     },
-    emptyStringAsUndefined: true,
+    server: {
+      SENTRY_AUTH_TOKEN: z.string().optional(),
+      SENTRY_ORG: z.string().optional(),
+      SENTRY_PROJECT: z.string().optional(),
+    },
+    skipValidation: process.env.SKIP_ENV_VALIDATION === "true",
   });

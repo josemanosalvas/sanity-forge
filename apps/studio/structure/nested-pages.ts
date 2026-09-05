@@ -74,15 +74,15 @@ const processDocumentIntoStructure = (
   }
 
   folderStructure[firstSegment] ??= {
-    title: getTitleCase(firstSegment),
-    path: firstSegment,
+    children: {},
     count: 0,
     documents: [],
-    children: {},
+    path: firstSegment,
+    title: getTitleCase(firstSegment),
   };
   const first = folderStructure[firstSegment];
 
-  first.count++;
+  first.count += 1;
 
   if (segments.length === 1) {
     first.documents.push(doc);
@@ -92,7 +92,7 @@ const processDocumentIntoStructure = (
   let currentLevel = first.children;
   let currentPath = firstSegment;
 
-  for (let i = 1; i < segments.length; i++) {
+  for (let i = 1; i < segments.length; i += 1) {
     const segment = segments[i];
     if (!segment) {
       continue;
@@ -100,15 +100,15 @@ const processDocumentIntoStructure = (
     currentPath = `${currentPath}/${segment}`;
 
     currentLevel[segment] ??= {
-      title: getTitleCase(segment),
-      path: currentPath,
+      children: {},
       count: 0,
       documents: [],
-      children: {},
+      path: currentPath,
+      title: getTitleCase(segment),
     };
     const node = currentLevel[segment];
 
-    node.count++;
+    node.count += 1;
 
     if (i === segments.length - 1) {
       node.documents.push(doc);
@@ -196,19 +196,19 @@ const createFolderListItem = (
         .items(listItems)
         .menuItems([
           {
-            title: "Add page",
             intent: {
-              type: "create",
               params: [
-                { type: "page", template: templateId },
+                { template: templateId, type: "page" },
                 {
-                  site,
                   language,
+                  site,
                   slug: `/${folder.path}/${pageSlug}`,
                   title: `${folder.title} > ${pageTitle}`,
                 },
               ],
+              type: "create",
             },
+            title: "Add page",
           },
         ])
     );
@@ -333,13 +333,13 @@ export const createPagesByPathList = (
     .title("Pages by path")
     .items([])
     .child(async () => {
-      const context: FolderContext = { site, language, templateId };
+      const context: FolderContext = { language, site, templateId };
       try {
         const client = S.context.getClient({ apiVersion: API_VERSION });
         const documents = await client.fetch<DocumentData[]>(DOCUMENTS_QUERY, {
+          language,
           schemaType,
           site,
-          language,
         });
         const uniqueDocuments = deduplicateDocuments(documents);
         const folderStructure = buildFolderStructure(uniqueDocuments);
@@ -366,13 +366,13 @@ export const createPagesByPathList = (
               folders.push(
                 processFolderItem({
                   S,
-                  key,
-                  folder,
-                  depth,
-                  parentPath,
-                  schemaType,
                   context,
                   createListItemsFromStructure,
+                  depth,
+                  folder,
+                  key,
+                  parentPath,
+                  schemaType,
                 })
               );
             } else if (onlyDocument) {

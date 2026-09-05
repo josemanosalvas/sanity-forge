@@ -12,19 +12,19 @@ import type {
 export { definePortableTextField } from "./sanity-rich-text";
 
 export const buttonsField = defineField({
-  name: "buttons",
-  type: "array",
   description:
     "Add one or more clickable buttons that visitors can use to navigate your website",
+  name: "buttons",
   of: [defineArrayMember({ type: "button" })],
+  type: "array",
 });
 
 export const iconField = defineField({
-  name: "icon",
-  type: "lucide-icon",
-  title: "Icon",
   description:
     "Choose a small picture symbol to represent this item, like a home icon or shopping cart",
+  name: "icon",
+  title: "Icon",
+  type: "lucide-icon",
 });
 
 interface Props {
@@ -43,22 +43,14 @@ export const imageWithAltField = ({
   validation,
 }: Props = {}) =>
   defineField({
-    name,
-    type: "image",
-    title,
     description,
-    group,
-    validation,
-    options: {
-      hotspot: true,
-    },
     fields: [
       defineField({
-        name: "alt",
-        type: "string",
-        title: "Alt Text",
         description:
           "The text that describes the image for screen readers and search engines",
+        name: "alt",
+        title: "Alt Text",
+        type: "string",
         validation: (Rule) =>
           Rule.custom((value, context) => {
             const parent = context.parent as { asset?: unknown };
@@ -68,6 +60,14 @@ export const imageWithAltField = ({
           }),
       }),
     ],
+    group,
+    name,
+    options: {
+      hotspot: true,
+    },
+    title,
+    type: "image",
+    validation,
   });
 
 /**
@@ -76,41 +76,41 @@ export const imageWithAltField = ({
  */
 export const logoLinkItem = (name: string) =>
   defineArrayMember({
-    name,
-    type: "object",
-    icon: Images,
     fields: [
       imageWithAltField({
-        title: "Logo",
         description:
           "The partner or brand logo to display. Use a transparent PNG or SVG for the cleanest result",
+        title: "Logo",
       }),
       defineField({
-        name: "url",
-        type: "customUrl",
-        title: "Link URL",
         description:
           "Optional link opened when a visitor clicks this logo, for example the brand's website",
+        name: "url",
+        title: "Link URL",
+        type: "customUrl",
       }),
     ],
+    icon: Images,
+    name,
     preview: {
-      select: {
-        media: "image",
-        alt: "image.alt",
-        externalUrl: "url.external",
-        internalUrl: "url.internal.slug.current",
-        urlType: "url.type",
-      },
       prepare: ({ media, alt, externalUrl, internalUrl, urlType }) => {
         const url = urlType === "external" ? externalUrl : internalUrl;
 
         return {
-          title: alt || "Logo",
-          subtitle: url || "No link",
           media,
+          subtitle: url || "No link",
+          title: alt || "Logo",
         };
       },
+      select: {
+        alt: "image.alt",
+        externalUrl: "url.external",
+        internalUrl: "url.internal.slug.current",
+        media: "image",
+        urlType: "url.type",
+      },
     },
+    type: "object",
   });
 
 /** A bare Mux clip. The plugin encodes it for every device on upload. */
@@ -131,14 +131,14 @@ export const muxVideoField = ({
   validation?: ValidationBuilder<Rule>;
 } = {}) =>
   defineField({
-    name,
-    type: "mux.video",
-    title,
     description,
     group,
     hidden,
-    validation,
+    name,
     options: { collapsible: false },
+    title,
+    type: "mux.video",
+    validation,
   });
 
 /**
@@ -160,13 +160,7 @@ export const muxVideoEmbedField = ({
   validation?: ValidationBuilder<ObjectRule, Record<string, unknown>>;
 } = {}) =>
   defineField({
-    name,
-    type: "object",
-    title,
     description,
-    group,
-    validation,
-    options: { collapsible: false },
     fields: [
       muxVideoField({
         name: "asset",
@@ -174,19 +168,25 @@ export const muxVideoEmbedField = ({
         validation: (Rule) => Rule.required(),
       }),
       defineField({
-        name: "autoPlay",
-        type: "boolean",
-        title: "Play automatically",
         description:
           "Starts the video without sound as soon as the page loads. Leave it off and visitors see the opening frame with a play button.",
         initialValue: false,
+        name: "autoPlay",
+        title: "Play automatically",
+        type: "boolean",
       }),
       defineField({
-        name: "loop",
-        type: "boolean",
-        title: "Repeat",
         description: "Starts again from the beginning when it reaches the end.",
         initialValue: false,
+        name: "loop",
+        title: "Repeat",
+        type: "boolean",
       }),
     ],
+    group,
+    name,
+    options: { collapsible: false },
+    title,
+    type: "object",
+    validation,
   });

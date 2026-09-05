@@ -52,6 +52,18 @@ const createDirectives = ({
 >): CspDirectives =>
   ({
     ...base,
+    connectSrc: [
+      ...base.connectSrc,
+      ...sanitySources.connectSrc,
+      ...(csp.connectSrc ?? []),
+    ],
+    fontSrc: [...base.fontSrc, ...(csp.fontSrc ?? [])],
+    frameAncestors: frameAncestors.length
+      ? ["'self'", ...frameAncestors]
+      : base.frameAncestors,
+    frameSrc: csp.frameSrc?.length ? [...csp.frameSrc] : base.frameSrc,
+    imgSrc: [...base.imgSrc, ...sanitySources.imgSrc, ...(csp.imgSrc ?? [])],
+    mediaSrc: [...base.mediaSrc, "blob:", ...(csp.mediaSrc ?? [])],
     // Next.js and its analytics/theme scripts inject inline bootstrap
     // code; nonces would force every page to render dynamically.
     scriptSrc: [
@@ -61,20 +73,8 @@ const createDirectives = ({
       ...(csp.scriptSrc ?? []),
     ],
     styleSrc: ["'self'", "'unsafe-inline'", ...(csp.styleSrc ?? [])],
-    connectSrc: [
-      ...base.connectSrc,
-      ...sanitySources.connectSrc,
-      ...(csp.connectSrc ?? []),
-    ],
-    imgSrc: [...base.imgSrc, ...sanitySources.imgSrc, ...(csp.imgSrc ?? [])],
-    fontSrc: [...base.fontSrc, ...(csp.fontSrc ?? [])],
-    mediaSrc: [...base.mediaSrc, "blob:", ...(csp.mediaSrc ?? [])],
-    workerSrc: [...base.workerSrc, "blob:", ...(csp.workerSrc ?? [])],
-    frameSrc: csp.frameSrc?.length ? [...csp.frameSrc] : base.frameSrc,
-    frameAncestors: frameAncestors.length
-      ? ["'self'", ...frameAncestors]
-      : base.frameAncestors,
     upgradeInsecureRequests: !isDevelopment,
+    workerSrc: [...base.workerSrc, "blob:", ...(csp.workerSrc ?? [])],
   }) as CspDirectives;
 
 export const createSecurityOptions = ({
@@ -86,18 +86,18 @@ export const createSecurityOptions = ({
   const options: Options = {
     ...defaults,
     contentSecurityPolicy: contentSecurityPolicy
-      ? { directives: createDirectives({ frameAncestors, csp }) }
+      ? { directives: createDirectives({ csp, frameAncestors }) }
       : false,
     // The strict isolation defaults break the Studio iframe and CDN assets.
     crossOriginEmbedderPolicy: false,
     crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
     crossOriginResourcePolicy: { policy: "cross-origin" },
-    // frame-ancestors supersedes X-Frame-Options; SAMEORIGIN would block a cross-origin Studio.
-    xFrameOptions: frameAncestors.length ? false : { action: "sameorigin" },
     referrerPolicy: { policy: ["strict-origin-when-cross-origin"] },
     strictTransportSecurity: isDevelopment
       ? false
-      : { maxAge: 63_072_000, includeSubDomains: true, preload: false },
+      : { includeSubDomains: true, maxAge: 63_072_000, preload: false },
+    // frame-ancestors supersedes X-Frame-Options; SAMEORIGIN would block a cross-origin Studio.
+    xFrameOptions: frameAncestors.length ? false : { action: "sameorigin" },
   };
 
   return vercelToolbar ? withVercelToolbar(options) : options;

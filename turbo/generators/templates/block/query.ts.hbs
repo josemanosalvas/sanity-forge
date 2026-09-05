@@ -1,7 +1,7 @@
 import { richTextFragment } from "../internal/groq-fragments";
 
 /** Projection for the `{{ camelCase name }}` block inside `pageBuilder[]`. */
-export const {{ camelCase name }}GroqProjection = /* groq */ `
+export const {{ camelCase name }}GroqProjection =`
   _type == "{{ camelCase name }}" => {
     ...,
     ${richTextFragment}

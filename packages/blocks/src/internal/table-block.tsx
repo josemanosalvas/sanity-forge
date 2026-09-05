@@ -19,7 +19,7 @@ export interface TableBlockValue {
   rows?: TableRowValue[] | null;
 }
 
-function TableCell({
+const TableCell = ({
   cell,
   isHeader,
   cellComponents,
@@ -27,7 +27,7 @@ function TableCell({
   cell: TableCellValue;
   isHeader: boolean;
   cellComponents: Partial<PortableTextReactComponents>;
-}>) {
+}>) => {
   const CellTag = isHeader ? "th" : "td";
   return (
     <CellTag
@@ -39,9 +39,9 @@ function TableCell({
       ) : null}
     </CellTag>
   );
-}
+};
 
-function TableRow({
+const TableRow = ({
   row,
   isHeader,
   cellComponents,
@@ -49,22 +49,20 @@ function TableRow({
   row: TableRowValue;
   isHeader: boolean;
   cellComponents: Partial<PortableTextReactComponents>;
-}>) {
-  return (
-    <tr>
-      {(row.cells ?? []).map((cell) => (
-        <TableCell
-          cell={cell}
-          cellComponents={cellComponents}
-          isHeader={isHeader}
-          key={cell._key}
-        />
-      ))}
-    </tr>
-  );
-}
+}>) => (
+  <tr>
+    {(row.cells ?? []).map((cell) => (
+      <TableCell
+        cell={cell}
+        cellComponents={cellComponents}
+        isHeader={isHeader}
+        key={cell._key}
+      />
+    ))}
+  </tr>
+);
 
-export function TableBlock({
+export const TableBlock = ({
   headerRows,
   rows,
   cellComponents,
@@ -72,7 +70,7 @@ export function TableBlock({
   TableBlockValue & {
     cellComponents: Partial<PortableTextReactComponents>;
   }
->) {
+>) => {
   if (!Array.isArray(rows) || rows.length === 0) {
     return null;
   }
@@ -109,4 +107,4 @@ export function TableBlock({
       </table>
     </div>
   );
-}
+};

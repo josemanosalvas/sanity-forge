@@ -1,6 +1,6 @@
-export function BlockEyebrow({
+export const BlockEyebrow = ({
   eyebrow,
-}: Readonly<{ eyebrow?: string | null }>) {
+}: Readonly<{ eyebrow?: string | null }>) => {
   if (!eyebrow) {
     return null;
   }
@@ -10,4 +10,4 @@ export function BlockEyebrow({
       {eyebrow}
     </span>
   );
-}
+};

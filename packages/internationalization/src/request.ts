@@ -16,8 +16,8 @@ export const formats = {
 export type AppFormats = typeof formats;
 
 const loaders: Record<Locale, () => Promise<{ default: Messages }>> = {
-  en: () => import("../messages/en.json"),
   de: () => import("../messages/de.json"),
+  en: () => import("../messages/en.json"),
   fr: () => import("../messages/fr.json"),
 };
 
@@ -44,8 +44,8 @@ export const createRequestConfig = async ({
   site: Site;
   locale: Locale;
 }): Promise<RequestConfig> => ({
+  formats,
   locale,
   messages: await loadMessages(locale),
   timeZone,
-  formats,
 });

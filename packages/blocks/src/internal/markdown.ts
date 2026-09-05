@@ -127,27 +127,26 @@ export interface MarkdownBlock {
 }
 
 /** Joins defined, non-empty sections with a blank line between them. */
-export function joinSections(sections: (string | null | undefined)[]): string {
-  return sections.filter((section) => section?.trim()).join("\n\n");
-}
+export const joinSections = (sections: (string | null | undefined)[]): string =>
+  sections.filter((section) => section?.trim()).join("\n\n");
 
-export function eyebrowToMarkdown(eyebrow?: string | null): string {
-  const text = eyebrow?.trim().replaceAll(/\s+/g, " ");
+export const eyebrowToMarkdown = (eyebrow?: string | null): string => {
+  const text = eyebrow?.trim().replaceAll(/\s+/gu, " ");
   return text ? `**${escapeMarkdown(text)}**` : "";
-}
+};
 
-export function headingToMarkdown(
+export const headingToMarkdown = (
   title: string | null | undefined,
   level: 2 | 3
-): string {
-  const text = title?.trim().replaceAll(/\s+/g, " ");
+): string => {
+  const text = title?.trim().replaceAll(/\s+/gu, " ");
   return text ? `${"#".repeat(level)} ${escapeMarkdown(text)}` : "";
-}
+};
 
-export function buttonsToMarkdown(
+export const buttonsToMarkdown = (
   buttons?: MarkdownButton[] | null,
   options: MarkdownOptions = {}
-): string {
+): string => {
   if (!Array.isArray(buttons)) {
     return "";
   }
@@ -164,12 +163,12 @@ export function buttonsToMarkdown(
     })
     .filter(Boolean)
     .join("\n");
-}
+};
 
-export function imageToMarkdown(
+export const imageToMarkdown = (
   image: MarkdownImage | null | undefined,
   options: MarkdownOptions
-): string {
+): string => {
   const alt = (image?.alt ?? "").trim();
   const caption = (image?.caption ?? "").trim();
   const url = image?.id ? options.resolveImageUrl?.(image) : undefined;
@@ -181,16 +180,16 @@ export function imageToMarkdown(
       : img;
   }
   return escapeMarkdown(caption || alt);
-}
+};
 
 /** Enough for a reader; a source-resolution still would be pointless here. */
 const STILL_WIDTH = 1200;
 
 /** Mux holds no still in Sanity, so its generated thumbnail is the only one. */
-export function muxVideoToMarkdown(
+export const muxVideoToMarkdown = (
   video: MuxVideoData | null | undefined,
   alt?: string | null
-): string {
+): string => {
   const url = muxThumbnailUrl(
     muxPlaybackId(video),
     video?.thumbTime,
@@ -201,15 +200,14 @@ export function muxVideoToMarkdown(
   }
   const label = (alt ?? video?.title ?? "").trim();
   return `![${escapeMarkdown(label)}](${formatUrl(url)})`;
-}
+};
 
 /** A Markdown link, or plain escaped text when the href is missing or `#`. */
-export function mdLink(
+export const mdLink = (
   label: string,
-  href: string | null | undefined,
+  href?: string | null,
   options: MarkdownOptions = {}
-): string {
-  return href && href !== "#"
+): string =>
+  href && href !== "#"
     ? `[${escapeMarkdown(label)}](${formatUrl(absolutizeUrl(href, options.baseUrl))})`
     : escapeMarkdown(label);
-}

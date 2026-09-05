@@ -8,8 +8,8 @@ import { defineType } from "sanity";
 // redefining them (notably the code block and table) here.
 export const richText = defineType({
   name: "richText",
-  type: "array",
   of: definePortableTextField(portableTextMemberTypes).of,
+  type: "array",
 });
 
 export {

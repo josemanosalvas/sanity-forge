@@ -1,6 +1,6 @@
 import { richTextFragment } from "../internal/groq-fragments";
 
-export const featureCardsIconGroqProjection = /* groq */ `
+export const featureCardsIconGroqProjection = `
   _type == "featureCardsIcon" => {
     ...,
     ${richTextFragment},

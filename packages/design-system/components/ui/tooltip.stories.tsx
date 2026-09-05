@@ -14,22 +14,20 @@ import {
  * receives keyboard focus or the mouse hovers over it.
  */
 const meta = {
-  title: "ui/Tooltip",
-  component: TooltipContent,
-  tags: ["autodocs"],
   argTypes: {
-    side: {
-      options: ["top", "bottom", "left", "right"],
-      control: { type: "radio" },
-    },
     children: {
       control: "text",
     },
+    side: {
+      control: { type: "radio" },
+      options: ["top", "bottom", "left", "right"],
+    },
   },
   args: {
-    side: "top",
     children: "Add to library",
+    side: "top",
   },
+  component: TooltipContent,
   parameters: {
     layout: "centered",
   },
@@ -45,6 +43,8 @@ const meta = {
       </Tooltip>
     </TooltipProvider>
   ),
+  tags: ["autodocs"],
+  title: "ui/Tooltip",
 } satisfies Meta<typeof TooltipContent>;
 
 export default meta;

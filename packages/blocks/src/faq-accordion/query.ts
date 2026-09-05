@@ -1,6 +1,6 @@
 import { richTextFragment, urlFragment } from "../internal/groq-fragments";
 
-export const faqAccordionGroqProjection = /* groq */ `
+export const faqAccordionGroqProjection = `
   _type == "faqAccordion" => {
     ...,
     "eyebrow": coalesce(eyebrow, null),

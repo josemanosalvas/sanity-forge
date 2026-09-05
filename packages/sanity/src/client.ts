@@ -10,12 +10,12 @@ const env = keys();
  * `stega.studioUrl` matter here.
  */
 export const client = createClient({
-  projectId: env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-  dataset: env.NEXT_PUBLIC_SANITY_DATASET,
   apiVersion: env.NEXT_PUBLIC_SANITY_API_VERSION,
-  useCdn: true,
+  dataset: env.NEXT_PUBLIC_SANITY_DATASET,
   perspective: "published",
+  projectId: env.NEXT_PUBLIC_SANITY_PROJECT_ID,
   stega: {
     studioUrl: env.NEXT_PUBLIC_SANITY_STUDIO_URL,
   },
+  useCdn: true,
 });

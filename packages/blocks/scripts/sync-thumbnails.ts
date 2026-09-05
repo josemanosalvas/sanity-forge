@@ -30,7 +30,7 @@ if (typeof rawFilePrefix !== "string" || rawFilePrefix.trim() === "") {
 }
 
 const filePrefix = rawFilePrefix.trim();
-if (/[/\\]/.test(filePrefix) || filePrefix.includes("..")) {
+if (/[/\\]/u.test(filePrefix) || filePrefix.includes("..")) {
   throw new Error(
     'sync-thumbnails --file-prefix must not contain path separators or ".."'
   );
@@ -71,8 +71,8 @@ const syncThumbnails = async () => {
       .map(async (entry) => {
         if (
           entry.name.trim() === "" ||
-          /[/\\]/.test(entry.name) ||
-          /^\.+$/.test(entry.name)
+          /[/\\]/u.test(entry.name) ||
+          /^\.+$/u.test(entry.name)
         ) {
           return;
         }

@@ -41,12 +41,12 @@ export interface MuxVideoProps {
  *
  * Background video goes through `hero-video` instead — no chrome, theme-aware.
  */
-export function MuxVideo({
+export const MuxVideo = ({
   className,
   options,
   title,
   video,
-}: Readonly<MuxVideoProps>) {
+}: Readonly<MuxVideoProps>) => {
   const autoPlay = Boolean(options?.autoPlay);
   // Derived, not seeded: Presentation keeps the instance mounted across edits,
   // so state initialised at mount would ignore the editor's toggle.
@@ -109,4 +109,4 @@ export function MuxVideo({
       )}
     </div>
   );
-}
+};

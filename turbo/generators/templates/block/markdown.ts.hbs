@@ -6,13 +6,12 @@ import {
 import type { MarkdownBlock, MarkdownOptions } from "../internal/markdown";
 import { portableTextToMarkdown } from "../internal/portable-text-to-markdown";
 
-export function {{ camelCase name }}ToMarkdown(
+export const {{ camelCase name }}ToMarkdown = (
   block: MarkdownBlock,
   options: MarkdownOptions
-): string {
-  return joinSections([
+): string =>
+  joinSections([
     eyebrowToMarkdown(block.eyebrow),
     headingToMarkdown(block.title, 2),
     portableTextToMarkdown(block.richText, options),
   ]);
-}

@@ -2,7 +2,7 @@ import { Button } from "@repo/design-system/components/ui/button";
 import { Link } from "@repo/internationalization/navigation";
 import { getTranslations } from "next-intl/server";
 
-export default async function NotFound() {
+const NotFound = async () => {
   const t = await getTranslations("notFound");
 
   return (
@@ -24,4 +24,6 @@ export default async function NotFound() {
       </div>
     </section>
   );
-}
+};
+
+export default NotFound;

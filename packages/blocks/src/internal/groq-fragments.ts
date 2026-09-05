@@ -1,4 +1,4 @@
-export const imageFields = /* groq */ `
+export const imageFields = `
   "id": asset._ref,
   "preview": asset->metadata.lqip,
   "alt": coalesce(
@@ -20,7 +20,7 @@ export const imageFields = /* groq */ `
   }
 ` as const;
 
-export const imageFragment = /* groq */ `
+export const imageFragment = `
   image {
     ${imageFields}
   }
@@ -33,13 +33,13 @@ export const imageFragment = /* groq */ `
  * Queries using it must pass `$defaultLocale`.
  */
 export const localizedInternalHref = <const Ref extends string>(ref: Ref) =>
-  /* groq */ `select(
+  `select(
   ${ref}->language == $defaultLocale => ${ref}->slug.current,
   ${ref}->slug.current == "/" => "/" + ${ref}->language,
   "/" + ${ref}->language + ${ref}->slug.current
 )` as const;
 
-const customLinkFragment = /* groq */ `
+const customLinkFragment = `
   ...customLink{
     openInNewTab,
     "href": select(
@@ -50,14 +50,14 @@ const customLinkFragment = /* groq */ `
   }
 ` as const;
 
-export const markDefsFragment = /* groq */ `
+export const markDefsFragment = `
   markDefs[]{
     ...,
     ${customLinkFragment}
   }
 ` as const;
 
-export const richTextFragment = /* groq */ `
+export const richTextFragment = `
   richText[]{
     ...,
     _type == "block" => {
@@ -87,7 +87,7 @@ export const richTextFragment = /* groq */ `
   }
 ` as const;
 
-export const buttonsFragment = /* groq */ `
+export const buttonsFragment = `
   buttons[]{
     text,
     variant,
@@ -102,7 +102,7 @@ export const buttonsFragment = /* groq */ `
   }
 ` as const;
 
-export const urlFragment = /* groq */ `
+export const urlFragment = `
   "openInNewTab": url.openInNewTab,
   "href": select(
     url.type == "internal" => ${localizedInternalHref("url.internal")},
@@ -112,7 +112,7 @@ export const urlFragment = /* groq */ `
 ` as const;
 
 /** `mux.video` holds only a reference; everything playable is on the asset. */
-export const muxVideoFields = /* groq */ `
+export const muxVideoFields = `
   "playbackId": asset->playbackId,
   "policy": asset->data.playback_ids[0].policy,
   "aspectRatio": asset->data.aspect_ratio,
@@ -122,7 +122,7 @@ export const muxVideoFields = /* groq */ `
 ` as const;
 
 /** The `muxVideoEmbedField` shape: the clip, plus how the editor wants it played. */
-export const muxVideoEmbedFields = /* groq */ `
+export const muxVideoEmbedFields = `
   asset {
     ${muxVideoFields}
   },

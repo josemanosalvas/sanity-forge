@@ -12,10 +12,10 @@ const warningTextStyle = {
   color: "var(--card-badge-caution-fg-color)",
 } as const;
 
-export function ValidationMessages({
+export const ValidationMessages = ({
   errors,
   warnings,
-}: ValidationMessagesProps) {
+}: ValidationMessagesProps) => {
   const uniqueErrors = [...new Set(errors)];
   const uniqueWarnings = [...new Set(warnings)];
 
@@ -41,4 +41,4 @@ export function ValidationMessages({
       ))}
     </Stack>
   );
-}
+};

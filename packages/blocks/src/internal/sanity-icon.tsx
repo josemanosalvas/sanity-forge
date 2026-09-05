@@ -13,12 +13,12 @@ const ICON_SIZE = 24;
 
 const FallbackIcon = () => <TriangleAlert size={ICON_SIZE} />;
 
-export function SanityIcon({
+export const SanityIcon = ({
   icon,
   className,
   alt,
   ...props
-}: Readonly<IconProps>) {
+}: Readonly<IconProps>) => {
   if (!icon) {
     return null;
   }
@@ -35,4 +35,4 @@ export function SanityIcon({
       size={ICON_SIZE}
     />
   );
-}
+};

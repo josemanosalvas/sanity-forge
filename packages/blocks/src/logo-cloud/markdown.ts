@@ -5,10 +5,10 @@ import {
   formatUrl,
 } from "../internal/portable-text-to-markdown";
 
-export function logoCloudToMarkdown(
+export const logoCloudToMarkdown = (
   block: MarkdownBlock,
   options: MarkdownOptions
-): string {
+): string => {
   const logos = (block.logos ?? [])
     .map((logo) => {
       const media = imageToMarkdown(logo.image, options);
@@ -25,4 +25,4 @@ export function logoCloudToMarkdown(
     .filter(Boolean);
 
   return joinSections([logos.length > 0 ? logos.join("\n") : ""]);
-}
+};

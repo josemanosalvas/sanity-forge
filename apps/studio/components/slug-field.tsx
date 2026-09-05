@@ -21,7 +21,7 @@ const monoStyle = { fontFamily: "monospace" } as const;
  * Slug input that previews the public URL for the document's site and
  * language, so editors see the locale prefix without typing it.
  */
-export function PathnameFieldComponent(props: ObjectFieldProps<SlugValue>) {
+export const PathnameFieldComponent = (props: ObjectFieldProps<SlugValue>) => {
   const {
     inputProps: { onChange, value, readOnly },
     title,
@@ -70,7 +70,7 @@ export function PathnameFieldComponent(props: ObjectFieldProps<SlugValue>) {
     (newValue?: string) => {
       const patch =
         typeof newValue === "string"
-          ? set({ current: newValue, _type: "slug" })
+          ? set({ _type: "slug", current: newValue })
           : unset();
       onChange(patch);
     },
@@ -182,4 +182,4 @@ export function PathnameFieldComponent(props: ObjectFieldProps<SlugValue>) {
       </Stack>
     </Stack>
   );
-}
+};

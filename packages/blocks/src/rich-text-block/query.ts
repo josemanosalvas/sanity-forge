@@ -1,6 +1,6 @@
 import { richTextFragment } from "../internal/groq-fragments";
 
-export const richTextBlockGroqProjection = /* groq */ `
+export const richTextBlockGroqProjection = `
   _type == "richTextBlock" => {
     ...,
     ${richTextFragment}
