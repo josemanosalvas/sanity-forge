@@ -1,6 +1,8 @@
 # Sanity Forge
 
-A production-ready, multi-site and multilingual **Next.js + Sanity** template on Turborepo. One codebase, one Sanity project and one Studio serve any number of known sites, each with its own domain and set of locales.
+A **Next.js + Sanity** template for teams running related, multilingual content sites on Turborepo. One codebase, one Sanity project and one Studio serve a configured set of sites, each with its own domain and locales.
+
+The shared site registry, localized references, preview workflows and per-site SEO are the core of the template. Use it when those concerns belong to one team and deployment. Workspace filters organize editing; they do not enforce tenant permissions. Independently operated clients need an explicit Sanity access-control or dataset strategy.
 
 - **Multi-site by host.** `brand-a.example` and `brand-b.example` are resolved from the request host by a synchronous, typed site registry; public URLs never carry a site identifier.
 - **Multilingual.** Site and locale are orthogonal. The site's default locale is unprefixed (`/pricing`), the rest are prefixed (`/de/preise`), and CMS slugs are localized per document.
@@ -82,6 +84,7 @@ Dependency direction: `blocks → design-system`, `sanity → blocks` (query pro
 | `pnpm check` | Lint and format check (Ultracite: Oxlint + Oxfmt) |
 | `pnpm fix` | Apply lint and format fixes |
 | `pnpm typecheck` | TypeScript across the workspace (runs TypeGen first) |
+| `pnpm verify` | Format, lint, workspace checks, tests and typecheck |
 | `pnpm typegen` | Extract the Studio schema and regenerate GROQ result types |
 | `pnpm test` | Vitest unit and component tests |
 | `pnpm test:e2e` | Playwright smoke tests against a production build of `web` |
@@ -93,15 +96,19 @@ Dependency direction: `blocks → design-system`, `sanity → blocks` (query pro
 
 Each package owns the variables it needs in a `keys.ts` (t3-env) factory; `apps/web/src/env.ts` composes them and `apps/studio/env.ts` validates the Studio's. See `apps/web/.env.example` and `apps/studio/.env.example`. Optional vendors (Sentry, Google Analytics) activate only when their variables are set.
 
+The newsletter block supplies the UI; connect an `action` or `onSubmit` in the web renderer before accepting subscriptions. Without a handler it renders its content without a form. Markdown serializers are available per block; the template does not expose a Markdown HTTP route.
+
 ## Data fetching
 
 The web app follows Sanity's three-layer pattern for Cache Components, with the same names as the official template:
 
-1. **Page or Layout** (`Page`, `RootLayout`) awaits only `draftMode()`. Outside Draft Mode it renders the cached layer directly with `perspective="published" stega={false}`, so the whole route lands in the static shell. In Draft Mode it renders the dynamic layer inside `<Suspense>`.
+1. **Page or Layout** (`Page`, `RootLayout`) awaits only `draftMode()`. Outside Draft Mode it renders the cached layer directly with `perspective="published" stega={false}`: slugs listed by `generateStaticParams` are prerendered, any other slug renders on its first request, and a missing document is a real 404. In Draft Mode it renders the dynamic layer inside `<Suspense>`.
 2. **Dynamic** (`DynamicPage`, `DynamicHeader`, `DynamicFooter`) awaits `params` and `getDynamicFetchOptions()`, the only place that reads the preview cookies.
 3. **Cached** (`CachedPage`, `CachedHeader`, `CachedFooter`) carries `'use cache'`, takes plain props including `perspective` and `stega`, and reads through the shared `fetch*` helpers in `apps/web/src/lib/content.ts`.
 
 `@repo/sanity/live` exports `SanityLive`, `sanityFetch`, `getDynamicFetchOptions`, `sanityFetchStaticParams` (for `generateStaticParams`) and `sanityFetchMetadata` (for `generateMetadata` and metadata routes). Nothing under `app/` reads `headers()` or `cookies()` outside those helpers.
+
+For updates when no visitor has Sanity Live open, configure a GROQ-powered webhook to `https://your-site/api/revalidate`: POST, create/update/delete triggers, filter `_type in ["page", "settings", "navigation", "footer", "faq", "translation.metadata", "sanity.imageAsset", "sanity.fileAsset", "mux.videoAsset"]`, and projection `{_type}`. Use the same secret as `SANITY_REVALIDATE_SECRET` and leave draft events disabled. It invalidates all site layouts and sitemaps on their next request because shared references can affect multiple sites. Redirect edits still require a rebuild.
 
 ## Content model
 
@@ -113,7 +120,9 @@ The web app follows Sanity's three-layer pattern for Cache Components, with the 
 
 ## Continuous integration
 
-`.github/workflows/ci.yml` runs format, lint, workspace checks, typecheck, unit tests, a TypeGen freshness check, and builds the Studio and Storybook with a placeholder project. Set the `SANITY_PROJECT_ID` and `SANITY_DATASET` repository variables and the `SANITY_API_READ_TOKEN` secret to also build the web app and run the Playwright smoke tests.
+`.github/workflows/ci.yml` runs format, lint, workspace checks, typecheck, unit tests, a TypeGen freshness check, and builds the Studio and Storybook with a placeholder project. Set the `SANITY_PROJECT_ID` and `SANITY_DATASET` repository variables and the `SANITY_API_READ_TOKEN` secret to also build the web app and run the Playwright smoke tests. Fork PRs run the checks that need no secrets.
+
+The smoke suite checks both site shells, locales, 404s, robots and sitemaps even with an empty dataset. Set `E2E_HAS_CONTENT=true` locally or as a repository variable to additionally require published home pages. It uses the production server; `next dev` is not a substitute for cache and prerender verification. Presentation and release previews also need a manual check in an authenticated Studio session.
 
 ## Acknowledgements
 

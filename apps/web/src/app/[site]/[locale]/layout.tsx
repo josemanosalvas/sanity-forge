@@ -30,7 +30,7 @@ import type { SiteContext } from "@/types";
 const fontSans = Geist({ subsets: ["latin"], variable: "--font-sans" });
 const fontMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
-/** Every site × locale pair has a static shell; unknown slugs upgrade in the background. */
+/** Every site × locale pair is prerendered; a slug the page did not list renders on its first request. */
 export const generateStaticParams = () =>
   siteList.flatMap((site) =>
     site.locales.map((locale) => ({ locale, site: site.key }))
