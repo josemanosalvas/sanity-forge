@@ -10,8 +10,8 @@ A production-ready, multi-site and multilingual **Next.js + Sanity** template on
 
 ## Requirements
 
-- Node 24 (`.nvmrc`)
 - pnpm 11 (`corepack enable` or install it globally)
+- Node 24: pnpm provisions it from `devEngines.runtime` in `package.json`, so no version manager is needed (`nvm use 24` works too)
 - A Sanity project (free tier is fine) with a dataset
 
 ## Quick start
