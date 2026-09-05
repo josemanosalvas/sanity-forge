@@ -225,7 +225,7 @@ const FaqContactLink = ({ link }: Readonly<{ link: FaqLink }>) => {
         <p className="text-muted-foreground text-base">{link.title}</p>
       )}
       <Link
-        aria-label={link.description ?? link.title ?? "Learn more"}
+        aria-label={link.description || link.title || undefined}
         className="focus-ring group inline-flex items-center gap-2 rounded-full py-1.5 pr-1.5 pl-1 focus-visible:outline-offset-0!"
         href={link.href}
         rel={link.openInNewTab ? "noopener noreferrer" : undefined}

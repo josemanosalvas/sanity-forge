@@ -10,16 +10,18 @@ import {
   SWAP_SHOWN,
   useCopyToClipboard,
 } from "../hooks/use-copy";
+import { useBlockLabels } from "./block-labels";
 import { CopyIcon } from "./icons";
 
 export const CopyButton = ({ code }: Readonly<{ code: string }>) => {
   const { status, copy } = useCopyToClipboard(() => code);
   const copied = status === "copied";
+  const labels = useBlockLabels();
 
   return (
     // Keep the button name stable; announce the result through the status region.
     <button
-      aria-label="Copy code to clipboard"
+      aria-label={labels.copyCode}
       className={cn(
         "focus-ring text-muted-foreground hover:text-foreground inline-flex shrink-0 items-center justify-center rounded-none p-1 transition-colors",
         COPY_STATUS_CLASS[status]
@@ -43,7 +45,7 @@ export const CopyButton = ({ code }: Readonly<{ code: string }>) => {
           )}
         />
       </span>
-      <output className="sr-only">{copied ? "Copied to clipboard" : ""}</output>
+      <output className="sr-only">{copied ? labels.copied : ""}</output>
     </button>
   );
 };

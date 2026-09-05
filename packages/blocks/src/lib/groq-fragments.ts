@@ -34,6 +34,7 @@ export const imageFragment = `
  */
 export const localizedInternalHref = <const Ref extends string>(ref: Ref) =>
   `select(
+  ${ref}->site != $site => null,
   ${ref}->language == $defaultLocale => ${ref}->slug.current,
   ${ref}->slug.current == "/" => "/" + ${ref}->language,
   "/" + ${ref}->language + ${ref}->slug.current

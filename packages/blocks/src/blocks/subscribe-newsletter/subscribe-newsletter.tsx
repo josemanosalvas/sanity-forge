@@ -7,6 +7,7 @@ import type { ComponentProps } from "react";
 import { useFormStatus } from "react-dom";
 
 import { BlockEyebrow } from "../../components/block-eyebrow";
+import { useBlockLabels } from "../../components/block-labels";
 import type { RichTextValue } from "../../components/rich-text";
 import { RichText } from "../../components/rich-text";
 import type { SanityImageData } from "../../components/sanity-image";
@@ -32,9 +33,12 @@ export interface SubscribeNewsletterProps {
 
 const SubscribeNewsletterButton = () => {
   const { pending } = useFormStatus();
+  const { newsletter } = useBlockLabels();
   return (
     <Button
-      aria-label={pending ? "Subscribing..." : "Subscribe to newsletter"}
+      aria-label={
+        pending ? newsletter.subscribing : newsletter.subscribeToNewsletter
+      }
       className="shrink-0 rounded-none px-5 py-2.5"
       disabled={pending}
       size="sm"
@@ -49,10 +53,10 @@ const SubscribeNewsletterButton = () => {
           strokeWidth={2}
         />
       ) : (
-        "Subscribe"
+        newsletter.subscribe
       )}
       <output aria-live="polite" className="sr-only">
-        {pending ? "Subscribing…" : ""}
+        {pending ? newsletter.subscribing : ""}
       </output>
     </Button>
   );
@@ -109,6 +113,7 @@ export const SubscribeNewsletter = ({
   onSubmit,
   testimonial,
 }: Readonly<SubscribeNewsletterProps>) => {
+  const { newsletter } = useBlockLabels();
   // A cleared Sanity object is still truthy; only treat the testimonial as
   // present when it actually carries content.
   const hasTestimonialContent = Boolean(
@@ -152,10 +157,10 @@ export const SubscribeNewsletter = ({
                   onSubmit={onSubmit}
                 >
                   <input
-                    aria-label="Email address"
+                    aria-label={newsletter.emailLabel}
                     className="text-foreground placeholder:text-muted-foreground w-full min-w-0 flex-1 bg-transparent py-1.5 text-base outline-none [--autofill-bg:var(--muted)] focus-visible:ring-0 focus-visible:ring-offset-0"
                     name="email"
-                    placeholder="Enter your email address"
+                    placeholder={newsletter.emailPlaceholder}
                     required
                     type="email"
                   />

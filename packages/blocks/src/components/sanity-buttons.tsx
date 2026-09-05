@@ -1,9 +1,12 @@
+"use client";
+
 import { Button } from "@repo/ui/components/button";
 import { cn } from "cn";
 import Link from "next/link";
 import type { ComponentProps } from "react";
 
 import { sanitizeHref } from "../lib/safe-href";
+import { useBlockLabels } from "./block-labels";
 
 export interface ButtonProps {
   _key?: string | null;
@@ -53,9 +56,10 @@ const SanityButton = ({
   className,
   size,
 }: Readonly<SanityButtonRenderProps>) => {
+  const labels = useBlockLabels();
   const safeHref = sanitizeHref(href);
   if (!safeHref) {
-    return <Button>Link Broken</Button>;
+    return <Button>{labels.linkBroken}</Button>;
   }
 
   return (
@@ -73,7 +77,7 @@ const SanityButton = ({
     >
       {text}
       {openInNewTab ? (
-        <span className="sr-only"> (opens in a new tab)</span>
+        <span className="sr-only"> {labels.opensInNewTab}</span>
       ) : null}
     </Button>
   );

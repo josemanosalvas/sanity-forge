@@ -8,6 +8,7 @@ import { useState } from "react";
 
 import { muxAspectRatio, muxPlaybackId, muxThumbnailUrl } from "../lib/mux";
 import type { MuxVideoData } from "../lib/mux";
+import { useBlockLabels } from "./block-labels";
 
 const MuxPlayer = dynamic(() => import("@mux/mux-player-react"), {
   ssr: false,
@@ -35,6 +36,7 @@ export const MuxVideo = ({
   title,
   video,
 }: Readonly<MuxVideoProps>) => {
+  const labels = useBlockLabels();
   const autoPlay = Boolean(options?.autoPlay);
   // Derive autoplay from props so Presentation edits take effect without remounting.
   const [pressed, setPressed] = useState(false);
@@ -80,7 +82,7 @@ export const MuxVideo = ({
         />
       ) : (
         <button
-          aria-label={videoTitle ? `Play video: ${videoTitle}` : "Play video"}
+          aria-label={labels.playVideo(videoTitle)}
           className="group absolute inset-0 grid place-items-center"
           onClick={() => setPressed(true)}
           type="button"
