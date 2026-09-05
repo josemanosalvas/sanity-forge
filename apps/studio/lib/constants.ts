@@ -3,7 +3,7 @@ import { InsertAboveIcon } from "@sanity/icons/InsertAbove";
 import { SearchIcon } from "@sanity/icons/Search";
 import type { FieldGroupDefinition } from "sanity";
 
-export const API_VERSION = "2026-09-01";
+export { SANITY_API_VERSION as API_VERSION } from "@repo/blocks/lib/sanity-api-version";
 
 export const GROUP = {
   MAIN_CONTENT: "main-content",

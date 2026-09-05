@@ -1,8 +1,6 @@
+import { SANITY_API_VERSION } from "@repo/blocks/lib/sanity-api-version";
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
-
-/** Pin a date so `perspective` defaults to `published` (API >= 2025-02-19). */
-export const DEFAULT_SANITY_API_VERSION = "2026-09-01";
 
 /**
  * Sanity runtime configuration for Next.js consumers. The schema keeps the
@@ -15,7 +13,7 @@ export const keys = () =>
       NEXT_PUBLIC_SANITY_API_VERSION: z
         .string()
         .regex(/^\d{4}-\d{2}-\d{2}$/u)
-        .default(DEFAULT_SANITY_API_VERSION),
+        .default(SANITY_API_VERSION),
       NEXT_PUBLIC_SANITY_DATASET: z.string().min(1),
       NEXT_PUBLIC_SANITY_PROJECT_ID: z.string().min(1),
       /** Where the Studio is hosted, for edit-intent links and stega. */

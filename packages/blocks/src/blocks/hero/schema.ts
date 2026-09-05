@@ -1,6 +1,8 @@
 import { Star } from "lucide-react";
 import { defineField, defineType } from "sanity";
+import type { ValidationContext } from "sanity";
 
+import { SANITY_API_VERSION } from "../../lib/sanity-api-version";
 import {
   buttonsField,
   definePortableTextField,
@@ -12,7 +14,7 @@ export const HERO_MEDIA_TYPES = ["mux", "mux-mp4", "sanity"] as const;
 
 interface HeroVariantValue {
   mediaType?: string;
-  mux?: { asset?: unknown } | null;
+  mux?: { asset?: { _ref?: string } | null } | null;
   webm?: unknown;
   hevc?: unknown;
   mobileWebm?: unknown;
@@ -121,22 +123,61 @@ const videoVariantFields = () => [
   }),
 ];
 
+/** What the renderer's `muxPlaybackId` (`lib/mux.ts`) checks before it plays. */
+const muxAssetQuery = `*[_id == $id][0]{
+  status,
+  "policy": data.playback_ids[0].policy
+}`;
+
+interface MuxAssetState {
+  status?: string | null;
+  policy?: string | null;
+}
+
 /**
- * Flags the one mistake the toggle makes possible: content uploaded to the
- * path that is not selected. Silent otherwise — a picture with no video at all
- * is a valid background.
+ * Warns when what the editor sees is not what the site will serve.
+ *
+ * Content uploaded to the path that is not selected is the one mistake the
+ * toggle makes possible. Beyond that, the Studio only holds a reference to the
+ * Mux asset, while the site also needs its encode to have succeeded and its
+ * playback ID to be public, so those two facts are read from the asset
+ * document. Silent otherwise: a picture with no video at all is a valid
+ * background.
  */
-const checkVariant = (value: unknown): true | string => {
+export const validateHeroVariant = async (
+  value: unknown,
+  { getClient }: Pick<ValidationContext, "getClient">
+): Promise<true | string> => {
   const variant = value as HeroVariantValue | undefined;
   if (!variant) {
     return true;
   }
   const type = selected(variant);
-  if (type !== "sanity" && !variant.mux?.asset && hasFiles(variant)) {
+  const ref = variant.mux?.asset?._ref;
+  if (type !== "sanity" && !ref && hasFiles(variant)) {
     return "Set to Mux, but only uploaded files are here. Upload a Mux video, or switch the source to Sanity.";
   }
-  if (type === "sanity" && !hasFiles(variant) && variant.mux?.asset) {
+  if (type === "sanity" && !hasFiles(variant) && ref) {
     return "Set to Sanity, but only a Mux video is here. Upload the files, or switch the source to Mux.";
+  }
+  if (type === "sanity" || !ref) {
+    return true;
+  }
+  const asset = await getClient({
+    apiVersion: SANITY_API_VERSION,
+  }).fetch<MuxAssetState | null>(muxAssetQuery, { id: ref });
+  if (!asset) {
+    // A dangling reference is the Studio's own warning to give.
+    return true;
+  }
+  if (asset.status === "errored") {
+    return "Mux could not process this video, so the site shows the uploaded files or the picture instead. Upload it again, or switch the source to Sanity.";
+  }
+  if (!asset.policy) {
+    return "Mux has not issued a playback ID for this video yet, so the site shows the uploaded files or the picture until it does.";
+  }
+  if (asset.policy !== "public") {
+    return `This Mux video has a ${asset.policy} playback policy and the site only plays public ones. Upload it again with a public playback policy.`;
   }
   return true;
 };
@@ -151,7 +192,7 @@ export const heroVideoField = defineField({
       options: { collapsed: false, collapsible: true },
       title: "Light Mode",
       type: "object",
-      validation: (Rule) => Rule.custom(checkVariant).warning(),
+      validation: (Rule) => Rule.custom(validateHeroVariant).warning(),
     }),
     defineField({
       description: "Optional. Leave empty to reuse the light mode background.",
@@ -160,7 +201,7 @@ export const heroVideoField = defineField({
       options: { collapsed: false, collapsible: true },
       title: "Dark Mode",
       type: "object",
-      validation: (Rule) => Rule.custom(checkVariant).warning(),
+      validation: (Rule) => Rule.custom(validateHeroVariant).warning(),
     }),
   ],
   name: "video",
