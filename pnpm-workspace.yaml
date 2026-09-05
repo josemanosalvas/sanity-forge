@@ -10,7 +10,7 @@ catalog:
   oxlint: ^1.81.0
   sherif: ^1.13.0
   turbo: ^2.10.12
-  typescript: 5.9.3
+  typescript: 7.0.2
   ultracite: ^7.10.8
 
   # Runtime

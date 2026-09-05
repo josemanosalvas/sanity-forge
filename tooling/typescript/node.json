@@ -3,7 +3,6 @@
   "display": "Node",
   "extends": "./base.json",
   "compilerOptions": {
-    "lib": ["ES2023"],
-    "types": ["node"]
+    "lib": ["ES2023"]
   }
 }
