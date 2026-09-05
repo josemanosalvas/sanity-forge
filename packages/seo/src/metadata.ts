@@ -1,4 +1,5 @@
-import { openGraphLocales } from "@repo/internationalization/locales";
+import { localeRegions } from "@repo/internationalization/locales";
+import type { Locale } from "@repo/internationalization/locales";
 import type { Metadata } from "next";
 
 import { canonicalOrigin, canonicalUrl, languageAlternates } from "./route";
@@ -41,6 +42,10 @@ const resolveTitles = ({
   return { fullTitle, socialTitle: ogTitle?.trim() || fullTitle };
 };
 
+/** Open Graph writes the region tag with an underscore: `de-DE` becomes `de_DE`. */
+const openGraphLocale = (locale: Locale) =>
+  localeRegions[locale].replace("-", "_");
+
 export const createMetadata = ({
   route,
   title,
@@ -79,7 +84,7 @@ export const createMetadata = ({
     openGraph: {
       description: socialDescription,
       images,
-      locale: openGraphLocales[route.locale],
+      locale: openGraphLocale(route.locale),
       siteName,
       title: socialTitle,
       type,

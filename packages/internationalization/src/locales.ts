@@ -13,11 +13,16 @@ export const localeLabels: Record<Locale, string> = {
   fr: "Français",
 };
 
-/** `og:locale` values (`language_TERRITORY`) for Open Graph metadata. */
-export const openGraphLocales: Record<Locale, string> = {
-  de: "de_DE",
-  en: "en_US",
-  fr: "fr_FR",
+/**
+ * The BCP 47 region each locale is written for. Metadata such as `og:locale`
+ * derives from these. The example sites target Germany, the United States and
+ * France; change the regions here, in one place, for another market
+ * (Switzerland would be `de-CH` and `fr-CH`).
+ */
+export const localeRegions: Record<Locale, string> = {
+  de: "de-DE",
+  en: "en-US",
+  fr: "fr-FR",
 };
 
 export const isLocale = (value: unknown): value is Locale =>
