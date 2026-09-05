@@ -5,9 +5,9 @@ import { z } from "zod";
 export const DEFAULT_SANITY_API_VERSION = "2026-09-01";
 
 /**
- * Sanity runtime configuration for Next.js consumers. Only the project
- * coordinates are required; tokens stay optional so a published-only
- * deployment needs no secrets.
+ * Sanity runtime configuration for Next.js consumers. The schema keeps the
+ * token optional so `next.config.ts` and TypeGen load without secrets;
+ * `src/token.ts` enforces it wherever Sanity Live actually runs.
  */
 export const keys = () =>
   createEnv({
@@ -32,7 +32,7 @@ export const keys = () =>
       SANITY_REVALIDATE_SECRET: process.env.SANITY_REVALIDATE_SECRET,
     },
     server: {
-      /** Viewer token: draft/release perspectives, Visual Editing and preview secrets. */
+      /** Viewer token, required at runtime by `src/token.ts`. */
       SANITY_API_READ_TOKEN: z.string().min(1).optional(),
       /** Shared secret for the `/api/revalidate` webhook; the route fails closed when unset. */
       SANITY_REVALIDATE_SECRET: z.string().min(1).optional(),

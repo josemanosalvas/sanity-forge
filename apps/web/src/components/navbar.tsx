@@ -52,7 +52,8 @@ export const Navbar = ({
         >
           <NavigationMenuList className="gap-1">
             {columns?.map((column) => {
-              if (column.type === "column") {
+              // `type` is stega-branded, so narrow on the shape instead.
+              if ("links" in column) {
                 return (
                   <NavigationMenuItem key={column._key}>
                     <NavigationMenuTrigger>
@@ -76,7 +77,7 @@ export const Navbar = ({
                   </NavigationMenuItem>
                 );
               }
-              if (column.type === "link" && column.href) {
+              if ("href" in column && column.href) {
                 return (
                   <NavigationMenuItem key={column._key}>
                     <NavigationMenuLink

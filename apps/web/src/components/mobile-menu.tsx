@@ -56,7 +56,8 @@ export const MobileMenu = ({
         >
           <Accordion>
             {columns?.map((column) => {
-              if (column.type === "link") {
+              // `type` is stega-branded, so narrow on the shape instead.
+              if ("href" in column) {
                 if (!column.href) {
                   return null;
                 }
@@ -71,7 +72,7 @@ export const MobileMenu = ({
                   </Link>
                 );
               }
-              if (column.type === "column") {
+              if ("links" in column) {
                 return (
                   <AccordionItem
                     className="border-b-0"

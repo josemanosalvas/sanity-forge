@@ -81,7 +81,7 @@ jobs:
 
   web:
     name: Build web and run Playwright smoke tests
-    # Prerendering reads real content, so this needs a Sanity project.
+    # Prerendering reads real content, so this needs a Sanity project and its viewer token.
     if: ${{ vars.SANITY_PROJECT_ID != '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30

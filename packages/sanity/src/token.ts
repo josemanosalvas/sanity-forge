@@ -3,8 +3,13 @@ import { keys } from "../keys";
 
 /**
  * Viewer token for draft and release perspectives, Visual Editing and
- * preview secrets. Optional, unlike the official template: without it the
- * site is published-only and Draft Mode stays off, so a fork can deploy with
- * no secrets at all.
+ * preview secrets. Required wherever Sanity Live runs; failing here at
+ * module load beats a deployment that silently serves published content only.
  */
-export const token = keys().SANITY_API_READ_TOKEN;
+const readToken = keys().SANITY_API_READ_TOKEN;
+
+if (!readToken) {
+  throw new Error("Missing SANITY_API_READ_TOKEN");
+}
+
+export const token: string = readToken;

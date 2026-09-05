@@ -5,10 +5,11 @@ import {
   withAnalyzer,
 } from "@repo/next-config";
 import { withObservability } from "@repo/observability/next-config";
-import { client } from "@repo/sanity/client";
+import { keys } from "@repo/sanity/keys";
 import { redirectsQuery } from "@repo/sanity/queries";
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
+import { createClient } from "next-sanity";
 import { sanity as sanityCacheLife } from "next-sanity/live/cache-life";
 
 import { env } from "./src/env";
@@ -24,7 +25,16 @@ const withNextIntl = createNextIntlPlugin({
  */
 const siteRedirects = async () => {
   try {
-    const redirects = await client.fetch(redirectsQuery);
+    const sanity = keys();
+    // Build-time client for published redirects; the app's client is
+    // server-only because it carries the viewer token.
+    const buildClient = createClient({
+      apiVersion: sanity.NEXT_PUBLIC_SANITY_API_VERSION,
+      dataset: sanity.NEXT_PUBLIC_SANITY_DATASET,
+      projectId: sanity.NEXT_PUBLIC_SANITY_PROJECT_ID,
+      useCdn: true,
+    });
+    const redirects = await buildClient.fetch(redirectsQuery);
     return redirects.flatMap((redirect) => {
       const site = siteList.find(
         (candidate) => candidate.key === redirect.site

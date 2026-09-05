@@ -9,17 +9,16 @@ import {
 import { normalizedLogoHeight } from "@repo/blocks/internal/logo-height";
 import { SanityImage } from "@repo/blocks/internal/sanity-image";
 import { Link } from "@repo/internationalization/navigation";
-import type { SettingsQueryResult } from "@repo/sanity/types";
 import { getTranslations } from "next-intl/server";
 import { Fragment } from "react";
 
 import { Logo } from "@/components/logo";
-import type { FooterData, SiteContext } from "@/types";
+import type { FooterData, SettingsData, SiteContext } from "@/types";
 
 const SocialLinks = ({
   data,
 }: {
-  data: NonNullable<SettingsQueryResult>["socialLinks"];
+  data: NonNullable<SettingsData>["socialLinks"];
 }) => {
   if (!data) {
     return null;
@@ -63,7 +62,7 @@ export const Footer = async ({
 }: {
   context: SiteContext;
   footer: FooterData;
-  settings: SettingsQueryResult;
+  settings: SettingsData;
 }) => {
   const t = await getTranslations("footer");
   const siteName = settings?.siteTitle ?? context.site.name;

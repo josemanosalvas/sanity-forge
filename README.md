@@ -30,7 +30,7 @@ pnpm dev            # web on :3000, studio on :3333, storybook on :6006
 
 Local site domains are `brand-a.localhost:3000` and `brand-b.localhost:3000` (browsers resolve `*.localhost` to loopback). Plain `localhost:3000` serves the site named in `DEFAULT_SITE`.
 
-Add a viewer token as `SANITY_API_READ_TOKEN` to enable Draft Mode, Presentation and Visual Editing.
+`SANITY_API_READ_TOKEN` must be a Viewer token from the project's API settings. Sanity Live, Draft Mode, Presentation and Visual Editing all depend on it, and the app refuses to start without it.
 
 ## Sites and locales
 

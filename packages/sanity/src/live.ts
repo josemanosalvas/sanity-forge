@@ -17,10 +17,10 @@ import { token } from "./token";
  */
 export const { SanityLive, sanityFetch } = defineLive({
   // Shared with the browser only for validated Draft Mode sessions.
-  browserToken: token ?? false,
+  browserToken: token,
   client,
   // Server-only: lets sanityFetch read drafts and releases.
-  serverToken: token ?? false,
+  serverToken: token,
   // Every fetch names its perspective and stega explicitly, so cached scopes
   // never depend on cookies.
   strict: true,

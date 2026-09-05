@@ -6,12 +6,6 @@ import {
   pageQuery,
   settingsQuery,
 } from "@repo/sanity/queries";
-import type {
-  FooterQueryResult,
-  NavigationQueryResult,
-  PageQueryResult,
-  SettingsQueryResult,
-} from "@repo/sanity/types";
 
 import type { SiteQueryParams } from "@/types";
 
@@ -23,9 +17,9 @@ type Scoped = SiteQueryParams & DynamicFetchOptions;
  * from the caller, never hardcoded here, so Visual Editing and release
  * previews work through every helper.
  *
- * `stega` is a runtime flag here, which makes next-sanity type the data as
- * stega-branded; the components take the plain TypeGen types, hence the
- * casts, as in Sanity's own template.
+ * `stega` is a runtime flag here, so next-sanity brands every string in the
+ * result as possibly stega-encoded. Compare a field to a literal only through
+ * `stegaClean`; the types enforce it.
  */
 export const fetchPage = async ({
   site,
@@ -44,7 +38,7 @@ export const fetchPage = async ({
     stega,
     variant,
   });
-  return data as PageQueryResult;
+  return data;
 };
 
 export const fetchSettings = async ({
@@ -63,7 +57,7 @@ export const fetchSettings = async ({
     stega,
     variant,
   });
-  return data as SettingsQueryResult;
+  return data;
 };
 
 export const fetchNavigation = async (options: Scoped) => {
@@ -79,7 +73,7 @@ export const fetchNavigation = async (options: Scoped) => {
     }),
     fetchSettings(options),
   ]);
-  return { navigation: navigation.data as NavigationQueryResult, settings };
+  return { navigation: navigation.data, settings };
 };
 
 export const fetchFooter = async ({
@@ -98,5 +92,5 @@ export const fetchFooter = async ({
     stega,
     variant,
   });
-  return data as FooterQueryResult;
+  return data;
 };

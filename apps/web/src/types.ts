@@ -1,12 +1,14 @@
 import type { Locale } from "@repo/internationalization/locales";
 import type { Site } from "@repo/internationalization/sites";
-import type {
-  FooterQueryResult,
-  NavigationQueryResult,
-  PageQueryResult,
-  SettingsQueryResult,
-} from "@repo/sanity/types";
+import type { PageQueryResult } from "@repo/sanity/types";
 import type { FilterByType, Get } from "@sanity/codegen";
+
+import type {
+  fetchFooter,
+  fetchNavigation,
+  fetchPage,
+  fetchSettings,
+} from "@/lib/content";
 
 /** The resolved site and locale of the current request, plus the site's default locale. */
 export interface SiteContext {
@@ -22,9 +24,18 @@ export interface SiteQueryParams {
   readonly defaultLocale: Locale;
 }
 
-export type PageData = NonNullable<PageQueryResult>;
+/** A page as `generateMetadata` reads it: never stega-encoded. */
+export type PageDocument = NonNullable<PageQueryResult>;
 
-export type PageBuilderBlock = Get<PageQueryResult, "pageBuilder", number>;
+/**
+ * Rendered data comes from the `fetch*` helpers, whose `stega` flag is a
+ * runtime value, so every string is typed as possibly stega-encoded.
+ */
+export type PageData = NonNullable<Awaited<ReturnType<typeof fetchPage>>>;
+
+export type SettingsData = Awaited<ReturnType<typeof fetchSettings>>;
+
+export type PageBuilderBlock = Get<PageData, "pageBuilder", number>;
 
 type PageBuilderBlockTypes = NonNullable<PageBuilderBlock>["_type"];
 
@@ -33,22 +44,6 @@ export type PagebuilderType<T extends PageBuilderBlockTypes> = FilterByType<
   T
 >;
 
-export type PageTranslation = NonNullable<
-  NonNullable<PageQueryResult>["translations"]
->[number];
+export type NavigationData = Awaited<ReturnType<typeof fetchNavigation>>;
 
-export interface NavigationData {
-  readonly navigation: NavigationQueryResult;
-  readonly settings: SettingsQueryResult;
-}
-
-export type FooterData = FooterQueryResult;
-
-export type NavigationColumn = Get<NavigationQueryResult, "columns", number>;
-
-export type ColumnLink = Extract<
-  NavigationColumn,
-  { type: "column" }
->["links"] extends (infer T)[] | null
-  ? T
-  : never;
+export type FooterData = Awaited<ReturnType<typeof fetchFooter>>;

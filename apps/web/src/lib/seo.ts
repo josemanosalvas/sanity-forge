@@ -4,10 +4,10 @@ import { createMetadata } from "@repo/seo";
 import type { RouteAlternate } from "@repo/seo";
 import type { Metadata } from "next";
 
-import type { PageData, SiteContext } from "@/types";
+import type { PageDocument, SiteContext } from "@/types";
 
 const toAlternates = (
-  translations: PageData["translations"] | undefined
+  translations: PageDocument["translations"] | undefined
 ): RouteAlternate[] =>
   (translations ?? []).flatMap((translation) =>
     isLocale(translation.language) && translation.slug
@@ -36,7 +36,7 @@ const twitterHandle = (settings: SettingsQueryResult) => {
 /** Metadata for a CMS page: `seo*` overrides win, then page fields, then site settings. */
 export const pageMetadata = (
   context: SiteContext,
-  page: PageData,
+  page: PageDocument,
   settings: SettingsQueryResult
 ): Metadata =>
   createMetadata({

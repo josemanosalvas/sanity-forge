@@ -1,13 +1,15 @@
 import { createClient } from "next-sanity";
 
 import { keys } from "../keys";
+import { token } from "./token";
 
 const env = keys();
 
 /**
  * The published, CDN-backed client. `defineLive` reconfigures a copy of it per
- * fetch (perspective, stega, token), so only the coordinates and
- * `stega.studioUrl` matter here.
+ * fetch (perspective, stega), so only the coordinates, the token and
+ * `stega.studioUrl` matter here. The token makes private datasets work and
+ * makes this module server-only; build-time code creates its own client.
  */
 export const client = createClient({
   apiVersion: env.NEXT_PUBLIC_SANITY_API_VERSION,
@@ -17,5 +19,6 @@ export const client = createClient({
   stega: {
     studioUrl: env.NEXT_PUBLIC_SANITY_STUDIO_URL,
   },
+  token,
   useCdn: true,
 });

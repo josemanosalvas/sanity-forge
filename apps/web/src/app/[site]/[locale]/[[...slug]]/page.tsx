@@ -114,6 +114,7 @@ const CachedPage = async ({
     variant,
   });
   if (!page) {
+    // `fetchPage` caches the miss; only this render re-runs on repeat hits.
     notFound();
   }
 
