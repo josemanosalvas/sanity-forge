@@ -17,7 +17,6 @@ import { draftMode } from "next/headers";
 import { Suspense } from "react";
 import { preconnect, prefetchDNS } from "react-dom";
 
-import { revalidateSyncTags } from "@/app/actions/revalidate";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { PreviewBar } from "@/components/preview-bar";
@@ -139,10 +138,11 @@ const RootLayout = async ({ children }: LayoutProps<"/[site]/[locale]">) => {
                     perspective="published"
                     stega={false}
                   />
-                  <SanityLive
-                    action={revalidateSyncTags}
-                    includeDrafts={isDraftMode}
-                  />
+                  {/* next-sanity's default action: `router.refresh()` in Draft Mode
+                      (caches are bypassed there), `updateTag` in development, and
+                      `revalidateTag(tag, "max")` plus a refresh in production. A
+                      custom action must keep all three branches. */}
+                  <SanityLive includeDrafts={isDraftMode} />
                   {isDraftMode && (
                     <>
                       <PreviewBar />
