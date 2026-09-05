@@ -11,6 +11,7 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@repo/design-system/components/ui/navigation-menu";
+import { useMounted } from "@repo/design-system/hooks/use-mounted";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -27,10 +28,15 @@ export const Navbar = ({
   siteName,
 }: NavigationData & { siteName: string }) => {
   const t = useTranslations("common");
+  // CMS hrefs are public paths. Prerendered HTML is generated for the internal
+  // `/[site]/[locale]/…` path behind the proxy rewrite, so `usePathname()` only
+  // agrees with the browser after mount; comparing earlier would mismatch on
+  // hydration (Next docs, usePathname: "Avoid hydration mismatch with rewrites").
   const pathname = usePathname();
+  const mounted = useMounted();
   const { columns, buttons } = navigation ?? {};
   const currentPage = (href?: string | null) =>
-    href && href === pathname ? ("page" as const) : undefined;
+    mounted && href && href === pathname ? ("page" as const) : undefined;
 
   return (
     <header className="border-border bg-background/80 sticky top-0 z-40 w-full border-b backdrop-blur">
