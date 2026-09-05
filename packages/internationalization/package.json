@@ -12,6 +12,7 @@
     "./request": "./src/request.ts",
     "./navigation": "./src/navigation.tsx",
     "./proxy": "./src/proxy.ts",
+    "./redirects": "./src/redirects.ts",
     "./messages/*": "./messages/*.json"
   },
   "scripts": {

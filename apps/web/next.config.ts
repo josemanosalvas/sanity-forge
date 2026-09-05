@@ -1,4 +1,9 @@
-import { siteList } from "@repo/internationalization/sites";
+import {
+  hostMatcher,
+  isRedirectDestination,
+  isRedirectSource,
+} from "@repo/internationalization/redirects";
+import { hostVariants, siteList } from "@repo/internationalization/sites";
 import {
   createNextConfig,
   sanityImageRemotePattern,
@@ -31,8 +36,10 @@ const siteRedirects = async () => {
     const buildClient = createClient({
       apiVersion: sanity.NEXT_PUBLIC_SANITY_API_VERSION,
       dataset: sanity.NEXT_PUBLIC_SANITY_DATASET,
+      perspective: "published",
       projectId: sanity.NEXT_PUBLIC_SANITY_PROJECT_ID,
-      useCdn: true,
+      token: sanity.SANITY_API_READ_TOKEN,
+      useCdn: false,
     });
     const redirects = await buildClient.fetch(redirectsQuery);
     return redirects.flatMap((redirect) => {
@@ -42,11 +49,24 @@ const siteRedirects = async () => {
       if (!site) {
         return [];
       }
+      // The Studio enforces the same rules; this keeps a document written
+      // around them (or before them) from failing the build.
+      if (
+        !(
+          isRedirectSource(redirect.source) &&
+          isRedirectDestination(redirect.destination)
+        )
+      ) {
+        console.warn(
+          `[next.config] Skipping redirect ${redirect.source} → ${redirect.destination}: not a plain public path`
+        );
+        return [];
+      }
       return Object.values(site.domains).flatMap((domain) => {
         const host = domain.split(":")[0] ?? domain;
-        return [host, `www.${host}`].map((value) => ({
+        return hostVariants(host).map((value) => ({
           destination: redirect.destination,
-          has: [{ type: "host" as const, value }],
+          has: [{ type: "host" as const, value: hostMatcher(value) }],
           permanent: redirect.permanent,
           source: redirect.source,
         }));

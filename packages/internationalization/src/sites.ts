@@ -78,7 +78,8 @@ export type SiteEnvironment = keyof SiteDefinition["domains"];
 
 const normalizeHost = (host: string) => host.trim().toLowerCase();
 
-const hostVariants = (domain: string) => {
+/** A hostname and its `www.` counterpart (or apex, when the domain already has `www.`). */
+export const hostVariants = (domain: string) => {
   const host = normalizeHost(domain);
   return host.startsWith("www.")
     ? [host, host.slice(4)]

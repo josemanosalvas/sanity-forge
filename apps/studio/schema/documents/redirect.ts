@@ -1,3 +1,7 @@
+import {
+  isRedirectDestination,
+  isRedirectSource,
+} from "@repo/internationalization/redirects";
 import { TrendingUpDown } from "lucide-react";
 import type { SanityClient, SlugValue } from "sanity";
 import { defineField, defineType, getDraftId, getPublishedId } from "sanity";
@@ -37,7 +41,7 @@ export const redirect = defineType({
     siteField,
     defineField({
       description: "Enable or disable this redirect",
-      initialValue: () => "active",
+      initialValue: "active",
       name: "status",
       options: {
         layout: "radio",
@@ -62,8 +66,8 @@ export const redirect = defineType({
           if (!(value && source)) {
             return "Can't be blank";
           }
-          if (!source.startsWith("/")) {
-            return "The path must start with a /";
+          if (!isRedirectSource(source)) {
+            return "Enter a public path such as /old-page: it must start with a /, and may only contain letters, numbers, hyphens, dots and slashes.";
           }
 
           const destination = (document?.destination as SlugValue)?.current;
@@ -97,8 +101,8 @@ export const redirect = defineType({
           if (!(value && destination)) {
             return "Can't be blank";
           }
-          if (!destination.startsWith("/")) {
-            return "The path must start with a /";
+          if (!isRedirectDestination(destination)) {
+            return "Enter a public path such as /new-page (a ?query is allowed): it must start with a /, and may only contain letters, numbers, hyphens, dots and slashes.";
           }
           const source = (document as unknown as Redirect)?.source?.current;
           if (destination === source) {
@@ -120,7 +124,7 @@ export const redirect = defineType({
     defineField({
       description:
         "Whether this is a permanent (301) or temporary (302) redirect",
-      initialValue: () => "true",
+      initialValue: "true",
       name: "permanent",
       options: {
         layout: "radio",
