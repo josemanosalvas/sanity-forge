@@ -1,6 +1,6 @@
 # Sanity Forge
 
-A Next.js + Sanity template for related, multilingual content sites. One deployment and Sanity dataset serve multiple domains, with a Studio workspace per site, localized pages, shared page-builder blocks, live previews and per-site SEO.
+A production-grade Next.js + Sanity template for multilingual content sites. One deployment and Sanity dataset serve multiple domains, with a Studio workspace per site, localized pages, shared page-builder blocks, live previews and per-site SEO.
 
 Use it for sites managed by one team. Workspace filters organize editing; they do not enforce tenant permissions. Independently operated clients need a separate access-control or dataset strategy.
 
