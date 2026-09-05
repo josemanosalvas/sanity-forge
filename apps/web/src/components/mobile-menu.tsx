@@ -18,10 +18,10 @@ import {
 import { Menu } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 
 import { MenuLink } from "@/components/menu-link";
+import { OnNavigate } from "@/components/on-navigate";
 import type { NavigationData } from "@/types";
 
 export const MobileMenu = ({
@@ -29,11 +29,7 @@ export const MobileMenu = ({
   siteName,
 }: Pick<NavigationData, "navigation"> & { siteName: string }) => {
   const t = useTranslations("common");
-  const pathname = usePathname();
-  // The pathname the menu was opened on: navigating away closes it without an effect.
-  const [openedOn, setOpenedOn] = useState<string | null>(null);
-  const open = openedOn === pathname;
-  const setOpen = (next: boolean) => setOpenedOn(next ? pathname : null);
+  const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
   const { columns, buttons } = navigation ?? {};
 
@@ -47,6 +43,12 @@ export const MobileMenu = ({
         <Menu />
       </SheetTrigger>
       <SheetContent className="w-full sm:max-w-md" side="right">
+        {/* Back/forward navigation closes the sheet too; link clicks close it directly. */}
+        {open && (
+          <Suspense>
+            <OnNavigate onNavigate={close} />
+          </Suspense>
+        )}
         <SheetHeader>
           <SheetTitle>{siteName}</SheetTitle>
         </SheetHeader>
