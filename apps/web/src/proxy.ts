@@ -46,13 +46,27 @@ const isStaticFile = (pathname: string) =>
   pathname.includes(".") && !isInternalPath(pathname);
 
 /**
+ * Next's router decodes route params, so `/brand%2Da/en/x.y` reaches the
+ * `[site]` segment as `brand-a`. Classify the decoded form so an encoded
+ * internal path cannot pose as a static file. A malformed escape keeps the
+ * raw path; Next rejects it downstream.
+ */
+const decodePathname = (pathname: string) => {
+  try {
+    return decodeURIComponent(pathname);
+  } catch {
+    return pathname;
+  }
+};
+
+/**
  * Every request: Host → site, path → locale, then an internal rewrite to
  * `/[site]/[locale]/…` so public URLs stay clean. Security headers are
  * applied to the final response, whatever kind it is.
  */
 export const proxy: NextProxy = (request) => {
   const site = resolveSite(request, env.DEFAULT_SITE);
-  const { pathname } = request.nextUrl;
+  const pathname = decodePathname(request.nextUrl.pathname);
 
   let response: NextResponse;
   if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {

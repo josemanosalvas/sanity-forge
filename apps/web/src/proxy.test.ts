@@ -94,6 +94,28 @@ describe(proxy, () => {
   );
 
   test.each([
+    ["/brand%2Da/en/x.y", "/brand-b/en/brand%2Da/en/x.y"],
+    ["/brand-a%2Fen/x.y", "/brand-b/en/brand-a%2Fen/x.y"],
+    ["/%73itemap/brand-a.xml", "/brand-b/en/%73itemap/brand-a.xml"],
+  ])(
+    "an encoded internal route %s is classified by its decoded form",
+    (path, rewritten) => {
+      const response = run(`http://localhost:3000${path}`, "brand-b.example");
+      expect(response.headers.get("x-middleware-rewrite")).toBe(
+        `http://localhost:3000${rewritten}`
+      );
+    }
+  );
+
+  test("a malformed escape in a file path still passes through", () => {
+    const response = run(
+      "http://localhost:3000/downloads/%zz-report.pdf",
+      "brand-a.example"
+    );
+    expect(response.headers.get("x-middleware-next")).toBe("1");
+  });
+
+  test.each([
     "/fonts/brand.woff2",
     "/.well-known/apple-app-site-association",
     "/.well-known/acme-challenge/token",
