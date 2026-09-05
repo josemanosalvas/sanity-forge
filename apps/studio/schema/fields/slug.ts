@@ -3,7 +3,7 @@ import { defineField } from "sanity";
 import { PathnameFieldComponent } from "../../components/slug-field";
 import {
   createSlugErrorValidator,
-  createSlugUniqueValidator,
+  isUniqueSlug,
   createSlugWarningValidator,
   getDocumentTypeConfig,
 } from "../../lib/slug-validation";
@@ -29,13 +29,13 @@ export const documentSlugField = (
     description,
     group,
     name: "slug",
+    options: { isUnique: isUniqueSlug },
     title,
     type: "slug",
     validation: (rule) => {
       const config = getDocumentTypeConfig(documentType);
       return [
         rule.custom(createSlugErrorValidator(config)),
-        rule.custom(createSlugUniqueValidator()),
         rule.custom(createSlugWarningValidator(config)).warning(),
       ];
     },

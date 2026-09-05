@@ -11,7 +11,8 @@
     "deploy": "sanity deploy",
     "schema:extract": "sanity schema extract --force --enforce-required-fields --workspace brand-a",
     "clean": "git clean -xdf .cache .sanity .turbo node_modules dist",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "@repo/blocks": "workspace:*",
@@ -42,6 +43,7 @@
     "@repo/typescript-config": "workspace:*",
     "@types/react": "catalog:",
     "typescript": "catalog:",
-    "vite": "catalog:"
+    "vite": "catalog:",
+    "vitest": "catalog:"
   }
 }

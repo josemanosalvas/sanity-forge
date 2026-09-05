@@ -5,7 +5,8 @@
  */
 
 import { locales } from "@repo/internationalization/locales";
-import type { ValidationContext } from "sanity";
+import { getPublishedId } from "sanity";
+import type { SlugIsUniqueValidator } from "sanity";
 import slugify from "slugify";
 
 import { API_VERSION } from "./constants";
@@ -31,6 +32,9 @@ const MAX_LEN = 60;
 const RESERVED_PREFIXES = [
   ["/api", "API routes"],
   ["/_next", "Next.js internals"],
+  ["/sitemap", "sitemap routes"],
+  ["/robots", "robots routes"],
+  ["/monitoring", "the error reporting endpoint"],
   ["/sitemap.xml", "the sitemap"],
   ["/robots.txt", "robots"],
 ] as const;
@@ -171,42 +175,24 @@ export const createSlugErrorValidator =
     return errors.length > 0 ? errors.join("; ") : true;
   };
 
-/**
- * Reject a slug already used by another document of the same site and
- * language. The document's own draft and published ids are excluded so
- * re-saving an unchanged document doesn't flag itself.
- */
-export const createSlugUniqueValidator =
-  (): ((
-    slug: { current?: string } | undefined,
-    context: ValidationContext
-  ) => Promise<string | true>) =>
-  async (slug, context) => {
-    const current = slug?.current;
-    if (!(current && context.getClient)) {
-      return true;
-    }
-    const document = context.document as
-      | { _id?: string; _type?: string; site?: string; language?: string }
-      | undefined;
-    const id = (document?._id ?? "").replace(/^drafts\./u, "");
-    const taken = await context
-      .getClient({ apiVersion: API_VERSION })
-      .fetch<number>(
-        `count(*[_type == $type && site == $site && language == $language && slug.current == $slug && !(_id in [$draft, $published])])`,
-        {
-          draft: `drafts.${id}`,
-          language: document?.language ?? null,
-          published: id,
-          site: document?.site ?? null,
-          slug: current,
-          type: document?._type,
-        }
-      );
-    return taken > 0
-      ? `“${current}” is already used by another document on this site in this language. URLs must be unique.`
-      : true;
-  };
+/** Scope uniqueness to a site and language, excluding all versions of this document. */
+export const isUniqueSlug: SlugIsUniqueValidator = (slug, context) => {
+  const { document, getClient } = context;
+  if (!slug || !document?._id) {
+    return true;
+  }
+  return getClient({ apiVersion: API_VERSION }).fetch<boolean>(
+    `!defined(*[_type == $type && site == $site && language == $language && slug.current == $slug && !sanity::versionOf($published)][0]._id)`,
+    {
+      language: document.language ?? null,
+      published: getPublishedId(document._id),
+      site: document.site ?? null,
+      slug,
+      type: document._type,
+    },
+    { perspective: "raw" }
+  );
+};
 
 export const createSlugWarningValidator =
   (
@@ -217,13 +203,6 @@ export const createSlugWarningValidator =
     return warnings.length > 0 ? warnings.join("; ") : true;
   };
 
-const cleanSlug = (slug: string): string => {
-  if (!slug) {
-    return "";
-  }
-  return slugify(slug, { lower: true, strict: true });
-};
-
 /** Generate a slug from a document title, keeping any parent path of the current slug. */
 export const generateSlugFromTitle = (
   title: string,
@@ -233,7 +212,7 @@ export const generateSlugFromTitle = (
     return "";
   }
 
-  const clean = cleanSlug(title);
+  const clean = slugify(title, { lower: true, strict: true });
   if (!clean) {
     return "";
   }
