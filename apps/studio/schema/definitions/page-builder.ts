@@ -7,22 +7,8 @@ export const pageBuilder = defineType({
   name: "pageBuilder",
   of: blockSchemas.map(({ name }) => defineArrayMember({ type: name })),
   options: {
-    insertMenu: {
-      views: [
-        {
-          name: "grid",
-          previewImageUrl: (schemaTypeName) => {
-            const kebabCaseName = schemaTypeName
-              .replaceAll(
-                /(?<lower>[a-z])(?<upper>[A-Z])/gu,
-                "$<lower>-$<upper>"
-              )
-              .toLowerCase();
-            return `/static/thumbnails/preview-${kebabCaseName}.png`;
-          },
-        },
-      ],
-    },
+    // Add `previewImageUrl` to the grid view once block thumbnails exist.
+    insertMenu: { views: [{ name: "list" }, { name: "grid" }] },
   },
   type: "array",
 });

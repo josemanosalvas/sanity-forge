@@ -12,7 +12,6 @@ import { muxInput } from "sanity-plugin-mux-input";
 import { presentationTool } from "sanity/presentation";
 import { structureTool } from "sanity/structure";
 
-import { Logo } from "./components/logo";
 import { env } from "./env";
 import {
   API_VERSION,
@@ -83,7 +82,6 @@ const createWorkspace = (site: Site): WorkspaceOptions => {
         },
       },
     },
-    icon: Logo,
     name: site.key,
     plugins: [
       presentationTool(createPresentationConfig(site)),

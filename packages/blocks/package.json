@@ -32,7 +32,6 @@
   },
   "scripts": {
     "clean": "git clean -xdf .cache .turbo node_modules coverage",
-    "sync-thumbnails": "node scripts/sync-thumbnails.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"

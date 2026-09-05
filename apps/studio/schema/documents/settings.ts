@@ -127,8 +127,8 @@ export const settings = defineType({
             return true;
           }
           return hasSvg
-            ? "Add an ICO too — Safari cannot render an SVG favicon and would keep the built-in one"
-            : "Add an SVG too — every other browser prefers it and would keep the built-in one";
+            ? "Add an ICO too — Safari cannot render an SVG favicon and would show none"
+            : "Add an SVG too — every other browser prefers it";
         }),
     }),
     defineField({

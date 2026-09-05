@@ -10,7 +10,6 @@
     "start": "sanity start",
     "deploy": "sanity deploy",
     "schema:extract": "sanity schema extract --force --enforce-required-fields --workspace brand-a",
-    "sync-thumbnails": "node ../../packages/blocks/scripts/sync-thumbnails.ts --target-root ../../apps/studio/static/thumbnails --file-prefix preview-",
     "clean": "git clean -xdf .cache .sanity .turbo node_modules dist",
     "typecheck": "tsc --noEmit"
   },

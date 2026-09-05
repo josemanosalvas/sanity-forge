@@ -15,18 +15,20 @@ const toAlternates = (
       : []
   );
 
-/** Favicons from the site settings, falling back to the files in `public/`. */
+/** Favicons from the site settings; none until the site uploads them. */
 export const faviconIcons = (
   settings: SettingsQueryResult
-): Metadata["icons"] => ({
-  icon: [
-    { type: "image/svg+xml", url: settings?.favicon?.svg ?? "/favicon.svg" },
-    {
-      sizes: "16x16 32x32 48x48",
-      url: settings?.favicon?.ico ?? "/favicon.ico",
-    },
-  ],
-});
+): Metadata["icons"] => {
+  const icon = [
+    ...(settings?.favicon?.svg
+      ? [{ type: "image/svg+xml", url: settings.favicon.svg }]
+      : []),
+    ...(settings?.favicon?.ico
+      ? [{ sizes: "16x16 32x32 48x48", url: settings.favicon.ico }]
+      : []),
+  ];
+  return icon.length > 0 ? { icon } : undefined;
+};
 
 const twitterHandle = (settings: SettingsQueryResult) => {
   const handle = settings?.socialLinks?.twitter?.split("/").findLast(Boolean);
