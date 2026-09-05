@@ -8,7 +8,7 @@ Copyright (c) 2025 Roboto Studio
 
 https://github.com/robotostudio/turbo-start-sanity
 
-Page-builder blocks and their Markdown serializers, shared block components and helpers, Studio schema definitions and slug validation.
+Page-builder blocks and their Markdown serializers, shared block components and schema definitions.
 
 ## next-forge
 
@@ -24,4 +24,4 @@ Copyright (c) 2023 Julius Marminge
 
 https://github.com/t3-oss/create-t3-turbo
 
-TypeScript presets and the GitHub setup action under `tooling/`.
+TypeScript presets and `tooling/`.
