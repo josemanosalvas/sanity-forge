@@ -30,6 +30,10 @@ export const sanitizeHref = (
  * parser strips tab, LF and CR, so `/%09/evil.com` arrives as `/<TAB>/evil.com`
  * and leaves the browser as `//evil.com`. Delegating to the same parser the
  * browser uses covers those without enumerating them.
+ *
+ * A same-origin pathname can itself start with `//` (`/..//evil.com`,
+ * `/./\evil.com`), which a later `new URL(result, base)` would read as
+ * another host, so leading slashes collapse to one.
  */
 export const internalPathOnly = (
   path: string | null | undefined,
@@ -41,9 +45,11 @@ export const internalPathOnly = (
   try {
     const baseUrl = new URL(base);
     const target = new URL(path, baseUrl);
-    return target.origin === baseUrl.origin
-      ? `${target.pathname}${target.search}${target.hash}`
-      : "/";
+    if (target.origin !== baseUrl.origin) {
+      return "/";
+    }
+    const pathname = target.pathname.replace(/^\/{2,}/u, "/");
+    return `${pathname}${target.search}${target.hash}`;
   } catch {
     return "/";
   }

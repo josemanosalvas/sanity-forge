@@ -81,6 +81,19 @@ describe(internalPathOnly, () => {
     expect(internalPathOnly(path, BASE)).toBe("/");
   });
 
+  // A same-origin URL whose pathname starts with `//` would become
+  // scheme-relative if the result were parsed again.
+  it.each([
+    "/..//evil.com",
+    "/%2e%2e//evil.com",
+    "/./\\evil.com",
+    `${BASE}//evil.com`,
+  ])("never returns a scheme-relative path for %s", (path) => {
+    const result = internalPathOnly(path, BASE);
+    expect(result).toMatch(/^\/(?!\/)/u);
+    expect(new URL(result, BASE).origin).toBe(new URL(BASE).origin);
+  });
+
   it("falls back to / for missing values and an unusable base", () => {
     expect(internalPathOnly(null, BASE)).toBe("/");
     expect(internalPathOnly(undefined, BASE)).toBe("/");
