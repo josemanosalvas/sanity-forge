@@ -1,7 +1,7 @@
 import { Link, Users } from "lucide-react";
 import { defineArrayMember, defineField, defineType } from "sanity";
 
-import { imageWithAltField } from "../lib/schema-fields";
+import { imageWithAltField } from "../internal/schema-fields";
 
 const SOCIAL_PLATFORMS = [
   { title: "Reddit", value: "reddit" },

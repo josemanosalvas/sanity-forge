@@ -1,4 +1,4 @@
-import { imageWithAltField } from "@repo/blocks/lib/schema-fields";
+import { imageWithAltField } from "@repo/blocks/internal/schema-fields";
 import { File } from "lucide-react";
 import { defineField, defineType } from "sanity";
 

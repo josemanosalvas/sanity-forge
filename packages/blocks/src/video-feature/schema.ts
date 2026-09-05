@@ -4,7 +4,7 @@ import { defineField, defineType } from "sanity";
 import {
   definePortableTextField,
   muxVideoEmbedField,
-} from "../lib/schema-fields";
+} from "../internal/schema-fields";
 
 export const videoFeatureSchema = defineType({
   fields: [

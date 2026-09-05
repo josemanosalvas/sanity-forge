@@ -5,7 +5,7 @@ import {
   buttonsField,
   definePortableTextField,
   logoLinkItem,
-} from "../lib/schema-fields";
+} from "../internal/schema-fields";
 
 const usedByTeamsLogo = logoLinkItem("usedByTeamsLogo");
 

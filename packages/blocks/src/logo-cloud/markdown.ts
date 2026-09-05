@@ -1,6 +1,9 @@
-import { imageToMarkdown, joinSections } from "../lib/markdown";
-import type { MarkdownBlock, MarkdownOptions } from "../lib/markdown";
-import { absolutizeUrl, formatUrl } from "../lib/portable-text-to-markdown";
+import { imageToMarkdown, joinSections } from "../internal/markdown";
+import type { MarkdownBlock, MarkdownOptions } from "../internal/markdown";
+import {
+  absolutizeUrl,
+  formatUrl,
+} from "../internal/portable-text-to-markdown";
 
 export const logoCloudToMarkdown = (
   block: MarkdownBlock,

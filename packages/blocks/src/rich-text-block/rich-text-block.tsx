@@ -1,6 +1,6 @@
-import { BlockEyebrow } from "../components/block-eyebrow";
-import type { RichTextValue } from "../components/rich-text";
-import { RichText } from "../components/rich-text";
+import { BlockEyebrow } from "../internal/block-eyebrow";
+import type { RichTextValue } from "../internal/rich-text";
+import { RichText } from "../internal/rich-text";
 
 export interface RichTextBlockProps {
   eyebrow?: string | null;

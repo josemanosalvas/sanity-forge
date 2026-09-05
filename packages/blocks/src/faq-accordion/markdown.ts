@@ -3,12 +3,12 @@ import {
   headingToMarkdown,
   joinSections,
   mdLink,
-} from "../lib/markdown";
-import type { MarkdownBlock, MarkdownOptions } from "../lib/markdown";
+} from "../internal/markdown";
+import type { MarkdownBlock, MarkdownOptions } from "../internal/markdown";
 import {
   escapeMarkdown,
   portableTextToMarkdown,
-} from "../lib/portable-text-to-markdown";
+} from "../internal/portable-text-to-markdown";
 
 export const faqAccordionToMarkdown = (
   block: MarkdownBlock,

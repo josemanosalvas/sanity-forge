@@ -1,6 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { buttons, paragraph, placeholderImage } from "../testing/fixtures";
+import {
+  buttons,
+  paragraph,
+  placeholderImage,
+} from "../internal/testing/fixtures";
 import { CTABlock } from "./cta-block";
 
 const meta = {

@@ -3,14 +3,14 @@
 import { cn } from "cn";
 import { Check } from "lucide-react";
 
+import { CopyIcon } from "./icons";
 import {
   COPY_STATUS_CLASS,
   SWAP_HIDDEN,
   SWAP_LAYER,
   SWAP_SHOWN,
   useCopyToClipboard,
-} from "../hooks/use-copy";
-import { CopyIcon } from "./icons";
+} from "./use-copy";
 
 export const CopyButton = ({ code }: Readonly<{ code: string }>) => {
   const { status, copy } = useCopyToClipboard(() => code);

@@ -6,10 +6,10 @@ import Link from "next/link";
 import { useState } from "react";
 import type { MouseEvent as ReactMouseEvent } from "react";
 
-import { BlockEyebrow } from "../components/block-eyebrow";
-import type { RichTextValue } from "../components/rich-text";
-import { RichText } from "../components/rich-text";
-import { useDisclosureAnimation } from "../hooks/use-disclosure-animation";
+import { BlockEyebrow } from "../internal/block-eyebrow";
+import type { RichTextValue } from "../internal/rich-text";
+import { RichText } from "../internal/rich-text";
+import { useDisclosureAnimation } from "../internal/use-disclosure-animation";
 
 export interface FaqItem {
   _key?: string | null;

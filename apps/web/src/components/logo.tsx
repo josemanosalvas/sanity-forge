@@ -1,5 +1,5 @@
-import { SanityImage } from "@repo/blocks/components/sanity-image";
-import type { SanityImageData } from "@repo/blocks/components/sanity-image";
+import { SanityImage } from "@repo/blocks/internal/sanity-image";
+import type { SanityImageData } from "@repo/blocks/internal/sanity-image";
 import { Link } from "@repo/internationalization/navigation";
 import { cn } from "cn";
 

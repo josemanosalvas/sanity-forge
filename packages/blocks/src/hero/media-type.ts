@@ -1,7 +1,7 @@
 import { stegaClean } from "next-sanity";
 
-import { muxPlaybackId } from "../lib/mux";
-import type { MuxVideoData } from "../lib/mux";
+import { muxPlaybackId } from "../internal/mux";
+import type { MuxVideoData } from "../internal/mux";
 
 /**
  * The three delivery paths a hero background can take.

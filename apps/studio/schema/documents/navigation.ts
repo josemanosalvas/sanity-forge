@@ -1,4 +1,4 @@
-import { buttonsField, iconField } from "@repo/blocks/lib/schema-fields";
+import { buttonsField, iconField } from "@repo/blocks/internal/schema-fields";
 import { LayoutPanelLeft, Link, PanelTop } from "lucide-react";
 import { defineArrayMember, defineField, defineType } from "sanity";
 

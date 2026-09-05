@@ -1,4 +1,4 @@
-import { imageWithAltField } from "@repo/blocks/lib/schema-fields";
+import { imageWithAltField } from "@repo/blocks/internal/schema-fields";
 import { BadgeCheck, LayoutPanelLeft, Link, PanelBottom } from "lucide-react";
 import { defineArrayMember, defineField, defineType } from "sanity";
 

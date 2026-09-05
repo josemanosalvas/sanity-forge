@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { buttons, MUX_SAMPLE, paragraph } from "../testing/fixtures";
+import { buttons, MUX_SAMPLE, paragraph } from "../internal/testing/fixtures";
 import { HeroBlock } from "./hero-block";
 
 const meta = {

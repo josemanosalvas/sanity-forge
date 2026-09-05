@@ -3,9 +3,9 @@ import {
   headingToMarkdown,
   joinSections,
   mdLink,
-} from "../lib/markdown";
-import type { MarkdownBlock, MarkdownOptions } from "../lib/markdown";
-import { escapeMarkdown } from "../lib/portable-text-to-markdown";
+} from "../internal/markdown";
+import type { MarkdownBlock, MarkdownOptions } from "../internal/markdown";
+import { escapeMarkdown } from "../internal/portable-text-to-markdown";
 
 export const socialGridToMarkdown = (
   block: MarkdownBlock,

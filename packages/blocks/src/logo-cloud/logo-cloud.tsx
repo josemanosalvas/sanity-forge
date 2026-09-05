@@ -2,9 +2,9 @@
 
 import { useRef } from "react";
 
-import { LogoLinkCell } from "../components/logo-link-cell";
-import type { SanityImageData } from "../components/sanity-image";
-import { normalizedLogoHeight } from "../lib/logo-height";
+import { normalizedLogoHeight } from "../internal/logo-height";
+import { LogoLinkCell } from "../internal/logo-link-cell";
+import type { SanityImageData } from "../internal/sanity-image";
 
 export interface LogoCloudLogo {
   _key: string;

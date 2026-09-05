@@ -3,7 +3,7 @@ import { stegaClean } from "next-sanity";
 import Link from "next/link";
 import type { ComponentType } from "react";
 
-import { BlockHeader } from "../components/block-header";
+import { BlockHeader } from "../internal/block-header";
 import {
   FacebookIcon,
   GithubIcon,
@@ -13,10 +13,10 @@ import {
   SlackIcon,
   XLogoIcon,
   YoutubeIcon,
-} from "../components/icons";
-import { SanityImage } from "../components/sanity-image";
-import type { SanityImageData } from "../components/sanity-image";
-import { sanitizeHref } from "../lib/safe-href";
+} from "../internal/icons";
+import { sanitizeHref } from "../internal/safe-href";
+import { SanityImage } from "../internal/sanity-image";
+import type { SanityImageData } from "../internal/sanity-image";
 
 export interface SocialGridItem {
   _key: string;

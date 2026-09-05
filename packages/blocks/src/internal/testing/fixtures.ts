@@ -1,6 +1,6 @@
-import type { RichTextValue } from "../components/rich-text";
-import type { ButtonProps } from "../components/sanity-buttons";
-import type { SanityImageData } from "../components/sanity-image";
+import type { RichTextValue } from "../rich-text";
+import type { ButtonProps } from "../sanity-buttons";
+import type { SanityImageData } from "../sanity-image";
 
 /**
  * Shared fixtures for Storybook stories. Images point at the Sanity CDN with

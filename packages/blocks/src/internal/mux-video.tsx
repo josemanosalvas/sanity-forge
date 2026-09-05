@@ -6,8 +6,8 @@ import { stegaClean } from "next-sanity";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 
-import { muxAspectRatio, muxPlaybackId, muxThumbnailUrl } from "../lib/mux";
-import type { MuxVideoData } from "../lib/mux";
+import { muxAspectRatio, muxPlaybackId, muxThumbnailUrl } from "./mux";
+import type { MuxVideoData } from "./mux";
 
 /** ~100 kB of chrome over hls.js: it arrives only when someone asks to watch. */
 const MuxPlayer = dynamic(() => import("@mux/mux-player-react"), {

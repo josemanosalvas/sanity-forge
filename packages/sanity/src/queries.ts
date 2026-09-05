@@ -3,7 +3,7 @@ import {
   imageFields,
   imageFragment,
   urlFragment,
-} from "@repo/blocks/lib/groq-fragments";
+} from "@repo/blocks/internal/groq-fragments";
 import { pageBuilderProjection } from "@repo/blocks/queries";
 import { defineQuery } from "next-sanity";
 

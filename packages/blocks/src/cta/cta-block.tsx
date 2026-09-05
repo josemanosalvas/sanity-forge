@@ -1,10 +1,10 @@
-import { BlockEyebrow } from "../components/block-eyebrow";
-import { LogoLinkCell } from "../components/logo-link-cell";
-import type { RichTextValue } from "../components/rich-text";
-import { RichText } from "../components/rich-text";
-import type { ButtonProps } from "../components/sanity-buttons";
-import { SanityButtons } from "../components/sanity-buttons";
-import type { SanityImageData } from "../components/sanity-image";
+import { BlockEyebrow } from "../internal/block-eyebrow";
+import { LogoLinkCell } from "../internal/logo-link-cell";
+import type { RichTextValue } from "../internal/rich-text";
+import { RichText } from "../internal/rich-text";
+import type { ButtonProps } from "../internal/sanity-buttons";
+import { SanityButtons } from "../internal/sanity-buttons";
+import type { SanityImageData } from "../internal/sanity-image";
 
 export interface CtaUsedByTeamsLogo {
   _key: string;

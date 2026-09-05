@@ -1,4 +1,4 @@
-import { internalPathOnly } from "@repo/blocks/lib/safe-href";
+import { internalPathOnly } from "@repo/blocks/internal/safe-href";
 import { draftMode } from "next/headers";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";

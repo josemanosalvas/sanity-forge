@@ -3,7 +3,7 @@ import { cn } from "cn";
 import Link from "next/link";
 import type { ComponentProps } from "react";
 
-import { sanitizeHref } from "../lib/safe-href";
+import { sanitizeHref } from "./safe-href";
 
 export interface ButtonProps {
   _key?: string | null;

@@ -1,4 +1,4 @@
-import { richTextFragment } from "../lib/groq-fragments";
+import { richTextFragment } from "../internal/groq-fragments";
 
 export const richTextBlockGroqProjection = `
   _type == "richTextBlock" => {

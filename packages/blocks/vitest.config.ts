@@ -4,7 +4,7 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vitest/config";
 
 const root = import.meta.dirname;
-const mock = (file: string) => path.resolve(root, "src/testing", file);
+const mock = (file: string) => path.resolve(root, "src/internal/testing", file);
 
 export default defineConfig({
   plugins: [react()],

@@ -1,4 +1,4 @@
-import { imageFields } from "../lib/groq-fragments";
+import { imageFields } from "../internal/groq-fragments";
 
 export const showcaseGridGroqProjection = `
   _type == "showcaseGrid" => {

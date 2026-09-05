@@ -162,7 +162,7 @@ const generator = (plop: PlopTypes.NodePlopAPI): void => {
         type: "modify",
       },
       {
-        path: "packages/blocks/src/lib/page-builder-to-markdown.ts",
+        path: "packages/blocks/src/internal/page-builder-to-markdown.ts",
         pattern:
           /(?<anchor>import \{ ctaToMarkdown \} from "\.\.\/cta\/markdown";)/u,
         template:
@@ -170,7 +170,7 @@ const generator = (plop: PlopTypes.NodePlopAPI): void => {
         type: "modify",
       },
       {
-        path: "packages/blocks/src/lib/page-builder-to-markdown.ts",
+        path: "packages/blocks/src/internal/page-builder-to-markdown.ts",
         pattern: /(?<anchor>\n {4}default: \{)/u,
         template:
           '\n    case "{{ camelCase name }}": {\n      return {{ camelCase name }}ToMarkdown(block, options);\n    }$<anchor>',
