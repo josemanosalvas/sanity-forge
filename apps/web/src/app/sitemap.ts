@@ -5,7 +5,7 @@ import {
   siteKeys,
   siteSupportsLocale,
 } from "@repo/internationalization/sites";
-import { sanityFetchStatic } from "@repo/sanity/live";
+import { getDynamicFetchOptions, sanityFetchMetadata } from "@repo/sanity/live";
 import { sitemapQuery } from "@repo/sanity/queries";
 import { sitemapEntry } from "@repo/seo/sitemap";
 import type { MetadataRoute } from "next";
@@ -18,13 +18,17 @@ const sitemap = async ({
 }: {
   id: Promise<string>;
 }): Promise<MetadataRoute.Sitemap> => {
-  const siteKey = await id;
+  const [siteKey, { perspective }] = await Promise.all([
+    id,
+    getDynamicFetchOptions(),
+  ]);
   if (!isSiteKey(siteKey)) {
     return [];
   }
   const site = getSite(siteKey);
-  const pages = await sanityFetchStatic({
+  const { data: pages } = await sanityFetchMetadata({
     params: { site: siteKey },
+    perspective,
     query: sitemapQuery,
   });
 

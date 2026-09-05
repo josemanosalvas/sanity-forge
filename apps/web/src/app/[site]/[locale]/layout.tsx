@@ -5,9 +5,11 @@ import { SiteProvider } from "@repo/internationalization/navigation";
 import { siteList } from "@repo/internationalization/sites";
 import {
   getDynamicFetchOptions,
-  PUBLISHED_FETCH_OPTIONS,
+  sanityFetchMetadata,
   SanityLive,
 } from "@repo/sanity/live";
+import type { DynamicFetchOptions } from "@repo/sanity/live";
+import { settingsQuery } from "@repo/sanity/queries";
 import { NextIntlClientProvider } from "next-intl";
 import { VisualEditing } from "next-sanity/visual-editing";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -21,10 +23,10 @@ import { Header } from "@/components/header";
 import { PreviewBar } from "@/components/preview-bar";
 import { SiteJsonLd } from "@/components/site-json-ld";
 import { TranslationsProvider } from "@/components/translations";
-import { getFooter, getNavigationData, getSettings } from "@/lib/content";
+import { fetchFooter, fetchNavigation, fetchSettings } from "@/lib/content";
 import { siteMetadata } from "@/lib/seo";
 import { getSiteContext, toQueryParams } from "@/lib/site-context";
-import type { FetchOptions, SiteContext } from "@/types";
+import type { SiteContext } from "@/types";
 
 const fontSans = Geist({ subsets: ["latin"], variable: "--font-sans" });
 const fontMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" });
@@ -36,79 +38,59 @@ export const generateStaticParams = () =>
   );
 
 export const generateMetadata = async () => {
-  const context = await getSiteContext();
-  const settings = await getSettings({
-    ...toQueryParams(context),
-    ...PUBLISHED_FETCH_OPTIONS,
+  const [context, { perspective }] = await Promise.all([
+    getSiteContext(),
+    getDynamicFetchOptions(),
+  ]);
+  const { data: settings } = await sanityFetchMetadata({
+    params: toQueryParams(context),
+    perspective,
+    query: settingsQuery,
   });
   return siteMetadata(context, settings);
 };
 
-/** Live updates plus the Presentation overlay, wherever a validated draft session exists. */
-const LivePreviewLayer = async () => {
-  const { isEnabled } = await draftMode();
-  return (
-    <>
-      <SanityLive action={revalidateSyncTags} includeDrafts={isEnabled} />
-      {isEnabled && (
-        <>
-          <PreviewBar />
-          <VisualEditing />
-        </>
-      )}
-    </>
-  );
-};
+type CachedProps = { context: SiteContext } & DynamicFetchOptions;
 
-const CachedHeader = async ({
-  context,
-  options,
-}: {
-  context: SiteContext;
-  options: FetchOptions;
-}) => {
-  const data = await getNavigationData({
-    ...toQueryParams(context),
-    ...options,
-  });
+const CachedHeader = async ({ context, ...options }: CachedProps) => {
+  "use cache";
+  const data = await fetchNavigation({ ...toQueryParams(context), ...options });
   return <Header context={context} data={data} />;
 };
 
 const DynamicHeader = async ({ context }: { context: SiteContext }) => {
   const options = await getDynamicFetchOptions();
-  return <CachedHeader context={context} options={options} />;
+  return <CachedHeader context={context} {...options} />;
 };
 
-const PublishedHeader = ({ context }: { context: SiteContext }) => (
-  <CachedHeader context={context} options={PUBLISHED_FETCH_OPTIONS} />
+const HeaderFallback = () => (
+  <header aria-busy className="border-border min-h-16 border-b" />
 );
 
-const CachedFooter = async ({
-  context,
-  options,
-}: {
-  context: SiteContext;
-  options: FetchOptions;
-}) => {
+const CachedFooter = async ({ context, ...options }: CachedProps) => {
+  "use cache";
   const params = { ...toQueryParams(context), ...options };
   const [footer, settings] = await Promise.all([
-    getFooter(params),
-    getSettings(params),
+    fetchFooter(params),
+    fetchSettings(params),
   ]);
   return <Footer context={context} footer={footer} settings={settings} />;
 };
 
 const DynamicFooter = async ({ context }: { context: SiteContext }) => {
   const options = await getDynamicFetchOptions();
-  return <CachedFooter context={context} options={options} />;
+  return <CachedFooter context={context} {...options} />;
 };
 
-const PublishedFooter = ({ context }: { context: SiteContext }) => (
-  <CachedFooter context={context} options={PUBLISHED_FETCH_OPTIONS} />
+const FooterFallback = () => (
+  <footer aria-busy className="border-border min-h-64 border-t" />
 );
 
 const RootLayout = async ({ children }: LayoutProps<"/[site]/[locale]">) => {
-  const context = await getSiteContext();
+  const [context, { isEnabled: isDraftMode }] = await Promise.all([
+    getSiteContext(),
+    draftMode(),
+  ]);
   preconnect("https://cdn.sanity.io");
   prefetchDNS("https://cdn.sanity.io");
 
@@ -126,24 +108,47 @@ const RootLayout = async ({ children }: LayoutProps<"/[site]/[locale]">) => {
             <SiteProvider site={context.site}>
               <TranslationsProvider>
                 <AnalyticsProvider>
-                  {/* Session-gated, not environment-gated: the published shell
-                      stays static while a draft session swaps in live data. */}
-                  <Suspense fallback={<PublishedHeader context={context} />}>
-                    <DynamicHeader context={context} />
-                  </Suspense>
+                  {isDraftMode ? (
+                    <Suspense fallback={<HeaderFallback />}>
+                      <DynamicHeader context={context} />
+                    </Suspense>
+                  ) : (
+                    <CachedHeader
+                      context={context}
+                      perspective="published"
+                      stega={false}
+                    />
+                  )}
                   <main className="min-h-dvh" id="main">
                     {children}
                   </main>
-                  <Suspense fallback={<PublishedFooter context={context} />}>
-                    <DynamicFooter context={context} />
-                  </Suspense>
-                  {/* Draft-only client tree; the boundary keeps it out of the static shell. */}
-                  <Suspense fallback={null}>
-                    <LivePreviewLayer />
-                  </Suspense>
-                  <Suspense fallback={null}>
-                    <SiteJsonLd context={context} />
-                  </Suspense>
+                  {isDraftMode ? (
+                    <Suspense fallback={<FooterFallback />}>
+                      <DynamicFooter context={context} />
+                    </Suspense>
+                  ) : (
+                    <CachedFooter
+                      context={context}
+                      perspective="published"
+                      stega={false}
+                    />
+                  )}
+                  {/* Structured data is for crawlers, which never hold a draft session. */}
+                  <SiteJsonLd
+                    context={context}
+                    perspective="published"
+                    stega={false}
+                  />
+                  <SanityLive
+                    action={revalidateSyncTags}
+                    includeDrafts={isDraftMode}
+                  />
+                  {isDraftMode && (
+                    <>
+                      <PreviewBar />
+                      <VisualEditing />
+                    </>
+                  )}
                 </AnalyticsProvider>
               </TranslationsProvider>
             </SiteProvider>

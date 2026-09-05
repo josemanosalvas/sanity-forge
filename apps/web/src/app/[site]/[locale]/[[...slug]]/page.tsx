@@ -1,10 +1,11 @@
-import { siteSupportsLocale } from "@repo/internationalization/sites";
+import { getSite, siteSupportsLocale } from "@repo/internationalization/sites";
 import {
   getDynamicFetchOptions,
-  PUBLISHED_FETCH_OPTIONS,
-  sanityFetchStatic,
+  sanityFetchMetadata,
+  sanityFetchStaticParams,
 } from "@repo/sanity/live";
-import { pagePathsQuery } from "@repo/sanity/queries";
+import type { DynamicFetchOptions } from "@repo/sanity/live";
+import { pagePathsQuery, pageQuery, settingsQuery } from "@repo/sanity/queries";
 import type { Metadata } from "next";
 import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
@@ -14,14 +15,12 @@ import { Suspense } from "react";
 import { PageBuilder } from "@/components/page-builder";
 import { PageBuilderJsonLd } from "@/components/page-builder-json-ld";
 import { RegisterTranslations } from "@/components/translations";
-import { getPage, getSettings } from "@/lib/content";
+import { fetchPage } from "@/lib/content";
 import { pageMetadata } from "@/lib/seo";
 import { getSiteContext, toQueryParams } from "@/lib/site-context";
-import type { FetchOptions, PageData, SiteContext } from "@/types";
+import type { SiteQueryParams } from "@/types";
 
-interface Params {
-  slug?: string[];
-}
+type Params = Awaited<PageProps<"/[site]/[locale]/[[...slug]]">["params"]>;
 
 /** Prerendered without a document yet, so the site × locale shell always exists. */
 const PLACEHOLDER_SLUG = "__placeholder__";
@@ -29,10 +28,14 @@ const PLACEHOLDER_SLUG = "__placeholder__";
 const toPath = (slug: string[] | undefined) =>
   slug?.length ? `/${slug.join("/")}` : "/";
 
-export const generateStaticParams = async (): Promise<Params[]> => {
+export const generateStaticParams = async (): Promise<
+  Pick<Params, "slug">[]
+> => {
   const [site, locale] = await Promise.all([siteParam(), localeParam()]);
   try {
-    const pages = await sanityFetchStatic({ query: pagePathsQuery });
+    const { data: pages } = await sanityFetchStaticParams({
+      query: pagePathsQuery,
+    });
     const params = pages.flatMap((page) =>
       page.site === site && page.language === locale && page.slug
         ? [
@@ -61,10 +64,18 @@ export const generateMetadata = async ({
     getSiteContext(),
     getDynamicFetchOptions(),
   ]);
-  const query = { ...toQueryParams(context), perspective, stega: false };
-  const [page, settings] = await Promise.all([
-    getPage({ ...query, path: toPath(slug) }),
-    getSettings(query),
+  const queryParams = toQueryParams(context);
+  const [{ data: page }, { data: settings }] = await Promise.all([
+    sanityFetchMetadata({
+      params: { ...queryParams, path: toPath(slug) },
+      perspective,
+      query: pageQuery,
+    }),
+    sanityFetchMetadata({
+      params: queryParams,
+      perspective,
+      query: settingsQuery,
+    }),
   ]);
   if (!page) {
     return {};
@@ -72,16 +83,43 @@ export const generateMetadata = async ({
   return pageMetadata(context, page, settings);
 };
 
-const PageContent = ({
-  context,
-  page,
-}: {
-  context: SiteContext;
-  page: PageData;
-  options?: FetchOptions;
-}) => {
+/** Draft Mode only: the published shell never suspends, so it never shows this. */
+const PageFallback = () => (
+  <section aria-busy className="block-section">
+    <div className="container">
+      <div className="bg-muted h-12 w-2/3 animate-pulse rounded" />
+      <div className="bg-muted mt-6 h-5 w-1/2 animate-pulse rounded" />
+    </div>
+  </section>
+);
+
+// Layer 3: cached, plain serializable props only.
+const CachedPage = async ({
+  site,
+  locale,
+  defaultLocale,
+  path,
+  perspective,
+  stega,
+  variant,
+}: SiteQueryParams & { path: string } & DynamicFetchOptions) => {
+  "use cache";
+  const page = await fetchPage({
+    defaultLocale,
+    locale,
+    path,
+    perspective,
+    site,
+    stega,
+    variant,
+  });
+  if (!page) {
+    notFound();
+  }
+
+  const siteDefinition = getSite(site);
   const translations = (page.translations ?? []).flatMap((translation) =>
-    translation.slug && siteSupportsLocale(context.site, translation.language)
+    translation.slug && siteSupportsLocale(siteDefinition, translation.language)
       ? [{ locale: translation.language, path: translation.slug }]
       : []
   );
@@ -112,45 +150,46 @@ const PageContent = ({
   );
 };
 
-const DraftPage = async ({ params }: { params: Promise<Params> }) => {
-  const [{ slug }, context, options] = await Promise.all([
-    params,
-    getSiteContext(),
-    getDynamicFetchOptions(),
-  ]);
-  const page = await getPage({
-    ...toQueryParams(context),
-    ...options,
-    path: toPath(slug),
-  });
-  if (!page) {
-    notFound();
-  }
-  return <PageContent context={context} options={options} page={page} />;
+// Layer 2: resolves params and the draft session outside the cache boundary.
+const DynamicPage = async ({
+  params,
+}: Pick<PageProps<"/[site]/[locale]/[[...slug]]">, "params">) => {
+  const [{ slug }, context, { perspective, stega, variant }] =
+    await Promise.all([params, getSiteContext(), getDynamicFetchOptions()]);
+  return (
+    <CachedPage
+      {...toQueryParams(context)}
+      path={toPath(slug)}
+      perspective={perspective}
+      stega={stega}
+      variant={variant}
+    />
+  );
 };
 
+// Layer 1: branches on Draft Mode; published renders skip Suspense entirely.
 const Page = async ({ params }: PageProps<"/[site]/[locale]/[[...slug]]">) => {
-  const { isEnabled } = await draftMode();
-
-  if (isEnabled) {
+  const { isEnabled: isDraftMode } = await draftMode();
+  if (isDraftMode) {
     return (
-      <Suspense fallback={null}>
-        <DraftPage params={params} />
+      <Suspense fallback={<PageFallback />}>
+        <DynamicPage
+          // Awaited inside <DynamicPage> so the Suspense boundary can stream.
+          params={params}
+        />
       </Suspense>
     );
   }
 
-  // Published render with a real 404, not a soft one streamed inside Suspense.
   const [{ slug }, context] = await Promise.all([params, getSiteContext()]);
-  const page = await getPage({
-    ...toQueryParams(context),
-    ...PUBLISHED_FETCH_OPTIONS,
-    path: toPath(slug),
-  });
-  if (!page) {
-    notFound();
-  }
-  return <PageContent context={context} page={page} />;
+  return (
+    <CachedPage
+      {...toQueryParams(context)}
+      path={toPath(slug)}
+      perspective="published"
+      stega={false}
+    />
+  );
 };
 
 export default Page;

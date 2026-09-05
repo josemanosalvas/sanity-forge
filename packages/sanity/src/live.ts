@@ -1,103 +1,50 @@
-import type { ClientReturn, ContentSourceMap, QueryParams } from "next-sanity";
+import type { QueryParams } from "next-sanity";
 import {
   defineLive,
   resolvePerspectiveFromCookies,
   resolveVariantFromCookies,
 } from "next-sanity/live";
 import type { LivePerspective } from "next-sanity/live";
-import { cacheTag } from "next/cache";
 import { cookies, draftMode } from "next/headers";
 
-import { keys } from "../keys";
 import { client } from "./client";
+import { token } from "./token";
 
-const token = keys().SANITY_API_READ_TOKEN;
-
-const live = defineLive({
+/**
+ * Sanity Live for Cache Components. `sanityFetch` tags and gives a lifetime
+ * to the surrounding `'use cache'` scope itself; `<SanityLive>` in the root
+ * layout revalidates those tags as content changes.
+ */
+export const { SanityLive, sanityFetch } = defineLive({
   // Shared with the browser only for validated Draft Mode sessions.
   browserToken: token ?? false,
   client,
-  // Server-only: lets sanityFetch read drafts/releases and stega-encode when
-  // the perspective is not `published`. Without a token the site is
-  // published-only and draft mode stays off.
+  // Server-only: lets sanityFetch read drafts and releases.
   serverToken: token ?? false,
-  // Every fetch names its perspective and stega explicitly, because
-  // draftMode()/cookies() cannot be read inside a `'use cache'` boundary.
+  // Every fetch names its perspective and stega explicitly, so cached scopes
+  // never depend on cookies.
   strict: true,
 });
 
-export const { SanityLive } = live;
-
-const liveFetch = live.sanityFetch;
-
-export interface SanityFetchOptions<Query extends string> {
-  query: Query;
-  params?: QueryParams;
-  perspective: LivePerspective;
-  variant?: string;
-  stega: boolean;
-  tags?: string[];
-  requestTag?: string;
-}
-
-export interface SanityFetchResult<Query extends string> {
-  data: ClientReturn<Query, unknown>;
-  sourceMap: ContentSourceMap | null;
-  tags: string[];
-}
-
-/**
- * `sanityFetch` with two Forge-specific behaviours:
- *
- * 1. The query's sync tags are registered on the surrounding `'use cache'`
- *    entry. Under Turbopack, next-sanity only tags the underlying `fetch`,
- *    which never reaches the cache entry, so `updateTag()` from `<SanityLive>`
- *    would have nothing to invalidate. Tagging here is idempotent.
- * 2. `data` keeps the clean TypeGen type whether or not stega is on. Callers
- *    pass a runtime `stega` flag (published vs. draft-mode renders share one
- *    cached reader), which would otherwise brand every string as
- *    `StegaString`. The default stega filter never encodes `_type`, `type`,
- *    `variant`, `href`, `language` or slugs, which are the only fields the
- *    apps compare to literals; user-facing copy is rendered, not compared.
- *    Use `stegaClean` before comparing any other string in draft mode.
- */
-export const sanityFetch = async <const Query extends string>(
-  options: SanityFetchOptions<Query>
-): Promise<SanityFetchResult<Query>> => {
-  const result = await liveFetch(options);
-  if (result.tags.length > 0) {
-    cacheTag(...result.tags);
-  }
-  return result as SanityFetchResult<Query>;
-};
-
-export { stegaClean } from "next-sanity";
-
 export interface DynamicFetchOptions {
   perspective: LivePerspective;
-  variant?: string;
   stega: boolean;
+  /** Editing variant Presentation is previewing, from its cookie. */
+  variant?: string;
 }
 
-export const PUBLISHED_FETCH_OPTIONS = {
-  perspective: "published",
-  stega: false,
-} as const satisfies DynamicFetchOptions;
-
 /**
- * Perspective, variant and stega for the current request. Reads draftMode()
- * and cookies(), so it must run outside any `'use cache'` boundary.
- *
- * Drafts render in any environment, production included, but only for a
- * request holding a validated draft-mode session. That is what lets the
- * deployed Studio preview the production site.
+ * Resolves `perspective`, `stega` and `variant` outside any `'use cache'`
+ * boundary so they can be passed in as plain props. Reads `cookies()` only
+ * when Draft Mode is on, so published renders stay in the static shell.
  */
 export const getDynamicFetchOptions =
   async (): Promise<DynamicFetchOptions> => {
-    const { isEnabled } = await draftMode();
-    if (!isEnabled) {
-      return PUBLISHED_FETCH_OPTIONS;
+    const { isEnabled: isDraftMode } = await draftMode();
+    if (!isDraftMode) {
+      return { perspective: "published", stega: false };
     }
+
     const jar = await cookies();
     const [perspective, variant] = await Promise.all([
       resolvePerspectiveFromCookies({ cookies: jar }),
@@ -106,12 +53,14 @@ export const getDynamicFetchOptions =
     return { perspective: perspective ?? "drafts", stega: true, variant };
   };
 
-/** For generateStaticParams, sitemaps and robots: always published, never stega. */
-export const sanityFetchStatic = async <const Q extends string>({
+// For usage within `generateStaticParams`
+export const sanityFetchStaticParams = async <
+  const QueryString extends string,
+>({
   query,
   params = {},
 }: {
-  query: Q;
+  query: QueryString;
   params?: QueryParams;
 }) => {
   "use cache";
@@ -121,16 +70,16 @@ export const sanityFetchStatic = async <const Q extends string>({
     query,
     stega: false,
   });
-  return data;
+  return { data };
 };
 
-/** For generateMetadata: honours the request perspective, never stega. */
-export const sanityFetchMetadata = async <const Q extends string>({
+// For usage within `generateMetadata`, `generateViewport` and metadata routes
+export const sanityFetchMetadata = async <const QueryString extends string>({
   query,
   params = {},
   perspective,
 }: {
-  query: Q;
+  query: QueryString;
   params?: QueryParams;
   perspective: LivePerspective;
 }) => {
@@ -141,5 +90,5 @@ export const sanityFetchMetadata = async <const Q extends string>({
     query,
     stega: false,
   });
-  return data;
+  return { data };
 };

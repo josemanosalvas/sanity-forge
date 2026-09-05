@@ -1,6 +1,5 @@
 import type { Locale } from "@repo/internationalization/locales";
 import type { Site } from "@repo/internationalization/sites";
-import type { DynamicFetchOptions } from "@repo/sanity/live";
 import type {
   FooterQueryResult,
   NavigationQueryResult,
@@ -53,5 +52,3 @@ export type ColumnLink = Extract<
 >["links"] extends (infer T)[] | null
   ? T
   : never;
-
-export type FetchOptions = DynamicFetchOptions;

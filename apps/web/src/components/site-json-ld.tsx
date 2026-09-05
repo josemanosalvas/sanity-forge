@@ -1,17 +1,21 @@
-import { PUBLISHED_FETCH_OPTIONS } from "@repo/sanity/live";
+import type { DynamicFetchOptions } from "@repo/sanity/live";
 import { canonicalOrigin } from "@repo/seo";
 import { JsonLd } from "@repo/seo/json-ld";
 import type { Organization, WebSite } from "@repo/seo/json-ld";
 import { stegaClean } from "next-sanity";
 
-import { getSettings } from "@/lib/content";
+import { fetchSettings } from "@/lib/content";
 import { toQueryParams } from "@/lib/site-context";
 import type { SiteContext } from "@/types";
 
 /** Organization + WebSite structured data for the current site. */
-export const SiteJsonLd = async ({ context }: { context: SiteContext }) => {
+export const SiteJsonLd = async ({
+  context,
+  ...options
+}: { context: SiteContext } & DynamicFetchOptions) => {
+  "use cache";
   const settings = stegaClean(
-    await getSettings({ ...toQueryParams(context), ...PUBLISHED_FETCH_OPTIONS })
+    await fetchSettings({ ...toQueryParams(context), ...options })
   );
   if (!settings) {
     return null;

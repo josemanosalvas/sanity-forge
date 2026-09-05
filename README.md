@@ -91,6 +91,16 @@ Dependency direction: `blocks → design-system`, `sanity → blocks` (query pro
 
 Each package owns the variables it needs in a `keys.ts` (t3-env) factory; `apps/web/src/env.ts` composes them and `apps/studio/env.ts` validates the Studio's. See `apps/web/.env.example` and `apps/studio/.env.example`. Optional vendors (Sentry, Google Analytics) activate only when their variables are set.
 
+## Data fetching
+
+The web app follows Sanity's three-layer pattern for Cache Components, with the same names as the official template:
+
+1. **Page or Layout** (`Page`, `RootLayout`) awaits only `draftMode()`. Outside Draft Mode it renders the cached layer directly with `perspective="published" stega={false}`, so the whole route lands in the static shell. In Draft Mode it renders the dynamic layer inside `<Suspense>`.
+2. **Dynamic** (`DynamicPage`, `DynamicHeader`, `DynamicFooter`) awaits `params` and `getDynamicFetchOptions()`, the only place that reads the preview cookies.
+3. **Cached** (`CachedPage`, `CachedHeader`, `CachedFooter`) carries `'use cache'`, takes plain props including `perspective` and `stega`, and reads through the shared `fetch*` helpers in `apps/web/src/lib/content.ts`.
+
+`@repo/sanity/live` exports `SanityLive`, `sanityFetch`, `getDynamicFetchOptions`, `sanityFetchStaticParams` (for `generateStaticParams`) and `sanityFetchMetadata` (for `generateMetadata` and metadata routes). Nothing under `app/` reads `headers()` or `cookies()` outside those helpers.
+
 ## Content model
 
 - `page`: site-scoped, localized per document, with a localized slug and a `pageBuilder` array. The home page is the page whose slug is `/`.

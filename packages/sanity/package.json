@@ -10,6 +10,7 @@
     "./keys": "./keys.ts",
     "./live": "./src/live.ts",
     "./queries": "./src/queries.ts",
+    "./token": "./src/token.ts",
     "./types": "./src/sanity.types.ts"
   },
   "scripts": {
@@ -25,6 +26,7 @@
     "@sanity/image-url": "catalog:",
     "@t3-oss/env-nextjs": "catalog:",
     "next-sanity": "catalog:",
+    "server-only": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
