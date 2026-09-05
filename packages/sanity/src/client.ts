@@ -1,6 +1,6 @@
 import { createClient } from "next-sanity";
 
-import { keys } from "../keys";
+import { keys } from "./keys";
 import { token } from "./token";
 
 const env = keys();

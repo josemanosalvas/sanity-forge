@@ -5,10 +5,10 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./index.ts",
-    "./keys": "./keys.ts",
-    "./provider": "./provider.tsx",
-    "./server": "./server.ts"
+    "./client": "./src/client.ts",
+    "./keys": "./src/keys.ts",
+    "./provider": "./src/provider.tsx",
+    "./server": "./src/server.ts"
   },
   "scripts": {
     "clean": "git clean -xdf .cache .turbo node_modules",

@@ -3,6 +3,6 @@
   "compilerOptions": {
     "types": ["node"]
   },
-  "include": ["src", "keys.ts", "sanity.cli.ts"],
+  "include": ["src", "sanity.cli.ts"],
   "exclude": ["node_modules"]
 }

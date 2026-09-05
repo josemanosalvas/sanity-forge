@@ -1,5 +1,5 @@
 import "server-only";
-import { keys } from "../keys";
+import { keys } from "./keys";
 
 /**
  * Viewer token for draft and release perspectives, Visual Editing and

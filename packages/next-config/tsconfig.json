@@ -1,5 +1,5 @@
 {
   "extends": "@repo/typescript-config/node.json",
-  "include": ["index.ts"],
+  "include": ["src"],
   "exclude": ["node_modules"]
 }

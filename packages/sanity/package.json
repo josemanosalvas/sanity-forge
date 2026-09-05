@@ -7,7 +7,7 @@
   "exports": {
     "./client": "./src/client.ts",
     "./image": "./src/image.ts",
-    "./keys": "./keys.ts",
+    "./keys": "./src/keys.ts",
     "./live": "./src/live.ts",
     "./queries": "./src/queries.ts",
     "./token": "./src/token.ts",

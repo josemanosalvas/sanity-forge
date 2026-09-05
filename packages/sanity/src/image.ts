@@ -1,7 +1,7 @@
 import { createImageUrlBuilder } from "@sanity/image-url";
 import type { SanityImageSource } from "@sanity/image-url";
 
-import { keys } from "../keys";
+import { keys } from "./keys";
 
 const env = keys();
 

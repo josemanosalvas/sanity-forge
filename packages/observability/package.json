@@ -5,13 +5,13 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    "./client": "./client.ts",
-    "./error": "./error.ts",
-    "./instrumentation": "./instrumentation.ts",
-    "./keys": "./keys.ts",
-    "./log": "./log.ts",
-    "./next-config": "./next-config.ts",
-    "./server": "./server.ts"
+    "./client": "./src/client.ts",
+    "./error": "./src/error.ts",
+    "./instrumentation": "./src/instrumentation.ts",
+    "./keys": "./src/keys.ts",
+    "./log": "./src/log.ts",
+    "./next-config": "./src/next-config.ts",
+    "./server": "./src/server.ts"
   },
   "scripts": {
     "clean": "git clean -xdf .cache .turbo node_modules",
