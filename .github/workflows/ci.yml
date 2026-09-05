@@ -82,17 +82,18 @@ jobs:
   web:
     name: Build web and run Playwright smoke tests
     # Prerendering reads real content, so this needs a Sanity project and its viewer token.
-    if: ${{ vars.SANITY_PROJECT_ID != '' }}
+    if: ${{ vars.SANITY_PROJECT_ID != '' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
       SANITY_API_READ_TOKEN: ${{ secrets.SANITY_API_READ_TOKEN }}
       DEFAULT_SITE: brand-a
+      E2E_HAS_CONTENT: ${{ vars.E2E_HAS_CONTENT || 'false' }}
     steps:
       - uses: actions/checkout@v5
       - uses: ./tooling/github/setup
       - run: pnpm turbo run build --filter=web
-      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm --filter web exec playwright install --with-deps chromium
       - run: pnpm test:e2e
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}

@@ -1,10 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-/**
- * The parts of multi-site routing that need no Sanity content: host → site
- * resolution, locale handling and security headers all happen in the proxy
- * before any page renders.
- */
+// These assertions work with an empty dataset; rendering still needs a valid project and Viewer token.
 test.describe("Routing", { tag: "@smoke" }, () => {
   test("an explicit default-locale prefix redirects to the clean URL", async ({
     request,
@@ -24,53 +20,89 @@ test.describe("Routing", { tag: "@smoke" }, () => {
       headers: { host: "brand-a.example" },
       maxRedirects: 0,
     });
+    expect([200, 404]).toContain(response.status());
     expect(response.headers()["content-security-policy"]).toContain(
       "frame-ancestors"
     );
     expect(response.headers()["x-content-type-options"]).toBe("nosniff");
   });
+
+  for (const [site, path, locale] of [
+    ["brand-a", "/", "en"],
+    ["brand-b", "/", "en"],
+    ["brand-a", "/de", "de"],
+    ["brand-b", "/de", "de"],
+  ] as const) {
+    test(`${site}${path} renders its own ${locale} shell`, async ({
+      request,
+    }) => {
+      const response = await request.get(path, {
+        headers: { host: `${site}.example` },
+      });
+      expect([200, 404]).toContain(response.status());
+      const html = await response.text();
+      expect(html).toContain(`data-site="${site}"`);
+      expect(html).toContain(`lang="${locale}"`);
+    });
+  }
+
+  test("internal routes are not reachable directly on another host", async ({
+    request,
+  }) => {
+    const headers = { host: "brand-b.example" };
+    await Promise.all(
+      ["/brand-a/en", "/sitemap/brand-a.xml", "/robots/brand-a"].map(
+        async (path) => {
+          const response = await request.get(path, { headers });
+          expect(response.status(), path).toBe(404);
+          const html = await response.text();
+          expect(html, path).toContain('data-site="brand-b"');
+        }
+      )
+    );
+  });
+
+  test("an unsupported locale returns 404", async ({ request }) => {
+    const response = await request.get("/fr", {
+      headers: { host: "brand-b.example" },
+    });
+    expect(response.status()).toBe(404);
+  });
+
+  for (const site of ["brand-a", "brand-b"]) {
+    test(`${site} serves its own robots and sitemap`, async ({ request }) => {
+      const headers = { host: `${site}.example` };
+      const robots = await request.get("/robots.txt", { headers });
+      expect(robots.status()).toBe(200);
+      expect(await robots.text()).toContain(
+        `Sitemap: https://${site}.example/sitemap.xml`
+      );
+      const sitemap = await request.get("/sitemap.xml", { headers });
+      expect(sitemap.status()).toBe(200);
+      expect(sitemap.headers()["content-type"]).toContain("xml");
+      const other = site === "brand-a" ? "brand-b" : "brand-a";
+      expect(await sitemap.text()).not.toContain(`https://${other}.example`);
+    });
+  }
 });
 
-/**
- * These need a dataset with published home pages for both sites. They are
- * skipped when the run is not marked as having content.
- */
-test.describe("Sites and locales", { tag: "@content" }, () => {
+test.describe("Published content", { tag: "@content" }, () => {
   test.skip(
     process.env.E2E_HAS_CONTENT !== "true",
-    "Requires a configured Sanity dataset"
+    "Requires published home pages for both sites"
   );
 
-  test("each host renders its own site and default locale", async ({
-    page,
-  }) => {
-    await page.setExtraHTTPHeaders({ host: "brand-a.example" });
-    await page.goto("/");
-    await expect(page.locator("html")).toHaveAttribute("data-site", "brand-a");
-    await expect(page.locator("html")).toHaveAttribute("lang", "en");
-
-    await page.setExtraHTTPHeaders({ host: "brand-b.example" });
-    await page.goto("/");
-    await expect(page.locator("html")).toHaveAttribute("data-site", "brand-b");
-  });
-
-  test("a shared locale renders on both sites and an unsupported one is a 404", async ({
-    page,
-  }) => {
-    await page.setExtraHTTPHeaders({ host: "brand-a.example" });
-    await page.goto("/de");
-    await expect(page.locator("html")).toHaveAttribute("lang", "de");
-
-    await page.setExtraHTTPHeaders({ host: "brand-b.example" });
-    const response = await page.goto("/fr");
-    expect(response?.status()).toBe(404);
-  });
-
-  test("the sitemap is served per site", async ({ request }) => {
-    const response = await request.get("/sitemap.xml", {
-      headers: { host: "brand-a.example" },
+  for (const site of ["brand-a", "brand-b"]) {
+    test(`${site} has a published home page and sitemap entry`, async ({
+      request,
+    }) => {
+      const headers = { host: `${site}.example` };
+      const response = await request.get("/", { headers });
+      expect(response.status()).toBe(200);
+      expect(await response.text()).toContain(`data-site="${site}"`);
+      const sitemap = await request.get("/sitemap.xml", { headers });
+      expect(sitemap.status()).toBe(200);
+      expect(await sitemap.text()).toContain(`https://${site}.example`);
     });
-    expect(response.status()).toBe(200);
-    expect(await response.text()).toContain("https://brand-a.example");
-  });
+  }
 });

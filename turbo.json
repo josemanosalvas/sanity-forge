@@ -75,12 +75,18 @@
     "test": {
       "dependsOn": ["transit"],
       "inputs": ["$TURBO_DEFAULT$"],
-      "outputs": ["coverage/**"]
+      "outputs": []
     },
     "test:e2e": {
       "dependsOn": ["build"],
       "cache": false,
-      "env": ["NEXT_PUBLIC_*", "SANITY_*", "PLAYWRIGHT_*"],
+      "env": [
+        "NEXT_PUBLIC_*",
+        "SANITY_*",
+        "PLAYWRIGHT_*",
+        "E2E_HAS_CONTENT",
+        "DEFAULT_SITE"
+      ],
       "inputs": ["$TURBO_DEFAULT$", ".env*", "tests/**"],
       "outputs": ["playwright-report/**", "test-results/**"]
     },

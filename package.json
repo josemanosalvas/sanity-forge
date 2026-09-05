@@ -17,6 +17,7 @@
     "format": "oxfmt --check",
     "format:fix": "oxfmt",
     "typecheck": "turbo run typecheck",
+    "verify": "pnpm check && pnpm lint:ws && pnpm test && pnpm typecheck",
     "typegen": "turbo run typegen",
     "test": "turbo run test",
     "test:e2e": "turbo run test:e2e",

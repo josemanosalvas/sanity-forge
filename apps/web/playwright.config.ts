@@ -26,7 +26,7 @@ export default defineConfig({
     command: "pnpm start",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
-    url: baseURL,
+    url: `${baseURL}/robots.txt`,
   },
   workers: process.env.CI ? 1 : undefined,
 });
