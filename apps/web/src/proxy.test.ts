@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import type { NextResponse } from "next/server";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 
 import { config, proxy } from "./proxy";
 
@@ -10,12 +10,39 @@ const run = (url: string, host: string) =>
     {} as never
   ) as NextResponse;
 
-const matchesPagePattern = (path: string) => {
+const matchesPattern = (path: string) => {
   const [pattern] = config.matcher;
   return new RegExp(`^${pattern}$`, "u").test(path);
 };
 
 describe(proxy, () => {
+  test("configured Google Analytics can load its script and send events", async () => {
+    vi.stubEnv("NEXT_PUBLIC_GA_MEASUREMENT_ID", "G-TEST");
+    vi.resetModules();
+    try {
+      const { proxy: configuredProxy } = await import("./proxy");
+      const response = configuredProxy(
+        new NextRequest("http://localhost:3000/", {
+          headers: { host: "brand-a.example" },
+        }),
+        {} as never
+      ) as NextResponse;
+      const csp = response.headers.get("content-security-policy");
+      expect(csp).toMatch(
+        /script-src[^;]*https:\/\/www\.googletagmanager\.com/u
+      );
+      expect(csp).toMatch(
+        /connect-src[^;]*https:\/\/\*\.google-analytics\.com/u
+      );
+      expect(csp).toMatch(
+        /connect-src[^;]*https:\/\/\*\.analytics\.google\.com/u
+      );
+    } finally {
+      vi.unstubAllEnvs();
+      vi.resetModules();
+    }
+  });
+
   test("public URLs are rewritten to the site and locale the host and path resolve to", () => {
     const response = run(
       "http://localhost:3000/de/ueber-uns",
@@ -50,6 +77,33 @@ describe(proxy, () => {
     );
   });
 
+  test.each([
+    ["/brand-a/en/about", "/brand-b/en/brand-a/en/about"],
+    ["/brand-a/en/x.y", "/brand-b/en/brand-a/en/x.y"],
+    ["/sitemap/brand-a.xml", "/brand-b/en/sitemap/brand-a.xml"],
+    ["/robots/brand-a", "/brand-b/en/robots/brand-a"],
+  ])(
+    "a direct request to the internal route %s is a public path on the requesting site",
+    (path, rewritten) => {
+      const response = run(`http://localhost:3000${path}`, "brand-b.example");
+      expect(response.headers.get("x-middleware-rewrite")).toBe(
+        `http://localhost:3000${rewritten}`
+      );
+      expect(response.headers.get("content-security-policy")).toBeTruthy();
+    }
+  );
+
+  test.each([
+    "/fonts/brand.woff2",
+    "/.well-known/apple-app-site-association",
+    "/.well-known/acme-challenge/token",
+  ])("the public/ file %s passes through with security headers", (path) => {
+    const response = run(`http://localhost:3000${path}`, "brand-a.example");
+    expect(response.headers.get("x-middleware-rewrite")).toBeNull();
+    expect(response.headers.get("x-middleware-next")).toBe("1");
+    expect(response.headers.get("x-content-type-options")).toBe("nosniff");
+  });
+
   test("security headers allow the Studio to frame the site", () => {
     const response = run("http://localhost:3000/", "brand-a.example");
     expect(response.headers.get("content-security-policy")).toContain(
@@ -58,28 +112,27 @@ describe(proxy, () => {
     expect(response.headers.get("x-content-type-options")).toBe("nosniff");
   });
 
-  test("the matcher has a page pattern plus the sitemap and robots paths", () => {
-    expect(config.matcher).toStrictEqual([
-      expect.any(String),
-      "/sitemap.xml",
-      "/robots.txt",
-    ]);
+  test.each([
+    "/",
+    "/about",
+    "/de/ueber-uns",
+    "/robots.txt",
+    "/sitemap.xml",
+    "/favicon.ico",
+    "/brand-a/en/about",
+    "/sitemap/brand-a.xml",
+    "/monitoring-report",
+  ])("the matcher includes %s", (path) => {
+    expect(matchesPattern(path)).toBeTruthy();
   });
-
-  test.each(["/about", "/de/ueber-uns"])(
-    "the page pattern matches %s",
-    (path) => {
-      expect(matchesPagePattern(path)).toBeTruthy();
-    }
-  );
 
   test.each([
     "/api/draft-mode/enable",
-    "/favicon.ico",
-    "/robots.txt",
-    "/robots/brand-a",
-    "/sitemap/brand-a.xml",
-  ])("the page pattern skips %s", (path) => {
-    expect(matchesPagePattern(path)).toBeFalsy();
+    "/_next/static/chunk.js",
+    "/_next/image",
+    "/monitoring",
+    "/monitoring/tunnel",
+  ])("the matcher excludes %s", (path) => {
+    expect(matchesPattern(path)).toBeFalsy();
   });
 });
