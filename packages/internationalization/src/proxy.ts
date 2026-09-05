@@ -11,10 +11,6 @@ import {
 } from "./sites";
 import type { Site, SiteKey } from "./sites";
 
-/** Request headers the proxy stamps for Route Handlers and Server Actions, where root params are unavailable. */
-export const SITE_HEADER = "x-site";
-export const LOCALE_HEADER = "x-locale";
-
 /**
  * Host → site. Unknown hosts (preview deployments, plain `localhost`) fall
  * back to the configured fallback site so the app always renders something.
@@ -66,12 +62,5 @@ export const rewriteToSiteRoute = (
   url.pathname = `${internalPrefix(context)}${internalPath}`;
   url.search = search;
 
-  const headers = new Headers(request.headers);
-  headers.set(SITE_HEADER, context.site);
-  headers.set(LOCALE_HEADER, context.locale);
-
-  return {
-    context,
-    response: NextResponse.rewrite(url, { request: { headers } }),
-  };
+  return { context, response: NextResponse.rewrite(url) };
 };

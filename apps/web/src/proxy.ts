@@ -20,9 +20,12 @@ export const proxy: NextProxy = (request) => {
   const { pathname } = request.nextUrl;
 
   let response: NextResponse;
-  if (pathname === "/sitemap.xml") {
+  if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
     const url = request.nextUrl.clone();
-    url.pathname = `/sitemap/${site.key}.xml`;
+    url.pathname =
+      pathname === "/sitemap.xml"
+        ? `/sitemap/${site.key}.xml`
+        : `/robots/${site.key}`;
     response = NextResponse.rewrite(url);
   } else {
     ({ response } = rewriteToSiteRoute(request, site));
@@ -40,10 +43,11 @@ export const proxy: NextProxy = (request) => {
 
 export const config = {
   matcher: [
-    // Everything except API routes, Next internals, per-site sitemaps, robots
-    // and static files. `/sitemap.xml` is opted back in so it can be routed
-    // to the site's own sitemap.
-    "/((?!api/|monitoring|_next/|sitemap/|robots\\.txt|.*\\..*).*)",
+    // Everything except API routes, Next internals, the per-site sitemap and
+    // robots routes, and static files. `/sitemap.xml` and `/robots.txt` are
+    // opted back in so they can be routed to the site's own prerendered copy.
+    "/((?!api/|monitoring|_next/|sitemap/|robots/|.*\\..*).*)",
     "/sitemap.xml",
+    "/robots.txt",
   ],
 };

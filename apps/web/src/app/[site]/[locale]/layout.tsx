@@ -137,7 +137,7 @@ const RootLayout = async ({ children }: LayoutProps<"/[site]/[locale]">) => {
                   <Suspense fallback={<PublishedFooter context={context} />}>
                     <DynamicFooter context={context} />
                   </Suspense>
-                  {/* Reads draftMode(), so it stays behind Suspense. */}
+                  {/* Draft-only client tree; the boundary keeps it out of the static shell. */}
                   <Suspense fallback={null}>
                     <LivePreviewLayer />
                   </Suspense>

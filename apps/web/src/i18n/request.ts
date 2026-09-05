@@ -1,35 +1,24 @@
-import { LOCALE_HEADER, SITE_HEADER } from "@repo/internationalization/proxy";
 import { createRequestConfig } from "@repo/internationalization/request";
 import {
   getSiteOrDefault,
   siteSupportsLocale,
 } from "@repo/internationalization/sites";
 import { getRequestConfig } from "next-intl/server";
-import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { locale as localeParam, site as siteParam } from "next/root-params";
 
 /**
- * Site and locale for the current request. Server Components read the root
- * params of the rewritten route; Route Handlers and Server Actions, where
- * root params are unavailable, read the headers the proxy stamped.
+ * Site and locale come from the root params of the rewritten route, which
+ * are part of the static shell. Nothing here may read `headers()` or
+ * `cookies()`: that would pull every page out of prerendering.
  */
-const readRouteContext = async () => {
-  try {
-    return { locale: await localeParam(), site: await siteParam() };
-  } catch {
-    const requestHeaders = await headers();
-    return {
-      locale: requestHeaders.get(LOCALE_HEADER) ?? undefined,
-      site: requestHeaders.get(SITE_HEADER) ?? undefined,
-    };
-  }
-};
-
 export default getRequestConfig(async ({ locale }) => {
-  const context = await readRouteContext();
-  const site = getSiteOrDefault(context.site);
-  const resolved = locale ?? context.locale;
+  const [siteKey, routeLocale] = await Promise.all([
+    siteParam(),
+    localeParam(),
+  ]);
+  const site = getSiteOrDefault(siteKey);
+  const resolved = locale ?? routeLocale;
 
   if (!siteSupportsLocale(site, resolved)) {
     notFound();

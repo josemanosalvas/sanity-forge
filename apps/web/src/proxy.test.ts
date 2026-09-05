@@ -24,7 +24,6 @@ describe(proxy, () => {
     expect(response.headers.get("x-middleware-rewrite")).toBe(
       "http://localhost:3000/brand-a/de/ueber-uns"
     );
-    expect(response.headers.get("x-site")).toBeNull();
   });
 
   test("an unknown host falls back to the default site", () => {
@@ -44,6 +43,13 @@ describe(proxy, () => {
     );
   });
 
+  test("the site robots.txt is served from the public robots.txt path", () => {
+    const response = run("http://localhost:3000/robots.txt", "brand-b.example");
+    expect(response.headers.get("x-middleware-rewrite")).toBe(
+      "http://localhost:3000/robots/brand-b"
+    );
+  });
+
   test("security headers allow the Studio to frame the site", () => {
     const response = run("http://localhost:3000/", "brand-a.example");
     expect(response.headers.get("content-security-policy")).toContain(
@@ -52,8 +58,12 @@ describe(proxy, () => {
     expect(response.headers.get("x-content-type-options")).toBe("nosniff");
   });
 
-  test("the matcher has a page pattern and a sitemap pattern", () => {
-    expect(config.matcher).toHaveLength(2);
+  test("the matcher has a page pattern plus the sitemap and robots paths", () => {
+    expect(config.matcher).toStrictEqual([
+      expect.any(String),
+      "/sitemap.xml",
+      "/robots.txt",
+    ]);
   });
 
   test.each(["/about", "/de/ueber-uns"])(
@@ -67,6 +77,7 @@ describe(proxy, () => {
     "/api/draft-mode/enable",
     "/favicon.ico",
     "/robots.txt",
+    "/robots/brand-a",
     "/sitemap/brand-a.xml",
   ])("the page pattern skips %s", (path) => {
     expect(matchesPagePattern(path)).toBeFalsy();
