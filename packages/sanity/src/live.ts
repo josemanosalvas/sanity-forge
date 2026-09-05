@@ -8,6 +8,7 @@ import type { LivePerspective } from "next-sanity/live";
 import { cookies, draftMode } from "next/headers";
 
 import { client } from "./client";
+import { contentTags } from "./tags";
 import { token } from "./token";
 
 /**
@@ -15,7 +16,7 @@ import { token } from "./token";
  * to the surrounding `'use cache'` scope itself; `<SanityLive>` in the root
  * layout revalidates those tags as content changes.
  */
-export const { SanityLive, sanityFetch } = defineLive({
+const live = defineLive({
   // Shared with the browser only for validated Draft Mode sessions.
   browserToken: token,
   client,
@@ -25,6 +26,25 @@ export const { SanityLive, sanityFetch } = defineLive({
   // never depend on cookies.
   strict: true,
 });
+
+export const { SanityLive } = live;
+
+type SanityFetch = typeof live.sanityFetch;
+
+/**
+ * `sanityFetch` with the content tags from `./tags` added to every read, so
+ * the revalidation webhook can invalidate one site's content, or all of it,
+ * when no browser has Sanity Live open. The cast keeps next-sanity's
+ * overloads, which brand the result as stega-encoded when `stega` is `true`.
+ */
+export const sanityFetch = (async (options: Parameters<SanityFetch>[0]) => {
+  const params = await options.params;
+  return live.sanityFetch({
+    ...options,
+    params,
+    tags: [...(options.tags ?? []), ...contentTags(params)],
+  });
+}) as SanityFetch;
 
 export interface DynamicFetchOptions {
   perspective: LivePerspective;

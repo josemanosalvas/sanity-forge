@@ -1,15 +1,17 @@
-import { siteKeys } from "@repo/internationalization/sites";
+import { isSiteKey } from "@repo/internationalization/sites";
 import { keys } from "@repo/sanity/keys";
+import { CONTENT_TAG, siteTag } from "@repo/sanity/tags";
 import { parseBody } from "next-sanity/webhook";
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 interface WebhookBody {
   _type?: unknown;
+  site?: unknown;
 }
 
-// A GROQ-powered webhook with projection `{_type}` also covers deletes.
+// A GROQ-powered webhook with projection `{_type, site}` also covers deletes.
 export const POST = async (request: NextRequest) => {
   const secret = keys().SANITY_REVALIDATE_SECRET;
   if (!secret) {
@@ -30,12 +32,12 @@ export const POST = async (request: NextRequest) => {
     return new Response("Bad Request: _type is required", { status: 400 });
   }
 
-  // Shared FAQs, assets and translations can affect multiple sites. Use the
-  // internal route pattern, because revalidatePath does not run the proxy.
-  revalidatePath("/[site]/[locale]", "layout");
-  for (const site of siteKeys) {
-    revalidatePath(`/sitemap/${site}.xml`);
-  }
+  // Every read is tagged by `@repo/sanity/live`. A document that belongs to
+  // one site only affects that site's reads; anything else (FAQs, assets,
+  // translation metadata) can be referenced from any site. `"max"` serves the
+  // stale version while the next request revalidates, as Sanity Live does.
+  const tag = isSiteKey(body.site) ? siteTag(body.site) : CONTENT_TAG;
+  revalidateTag(tag, "max");
 
-  return NextResponse.json({ revalidated: true });
+  return NextResponse.json({ revalidated: true, tag });
 };
