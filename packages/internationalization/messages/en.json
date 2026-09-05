@@ -26,11 +26,23 @@
     "exit": "Exit",
     "exiting": "Disabling draft mode…"
   },
-  "newsletter": {
-    "emailLabel": "Email address",
-    "emailPlaceholder": "Enter your email address",
-    "subscribe": "Subscribe",
-    "subscribing": "Subscribing…"
+  "blocks": {
+    "copied": "Copied to clipboard",
+    "copyCode": "Copy code to clipboard",
+    "linkBroken": "Link broken",
+    "logoCloud": "Logo cloud",
+    "opensInNewTab": "(opens in a new tab)",
+    "playVideo": "Play video",
+    "playVideoTitled": "Play video: {title}",
+    "showcase": "Showcase",
+    "visit": "Visit {name}",
+    "newsletter": {
+      "emailLabel": "Email address",
+      "emailPlaceholder": "Enter your email address",
+      "subscribe": "Subscribe",
+      "subscribeToNewsletter": "Subscribe to newsletter",
+      "subscribing": "Subscribing…"
+    }
   },
   "footer": {
     "copyright": "© {year} {siteName}. All rights reserved."

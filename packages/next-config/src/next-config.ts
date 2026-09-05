@@ -1,13 +1,7 @@
 import withBundleAnalyzer from "@next/bundle-analyzer";
 import type { NextConfig } from "next";
 
-/**
- * Production-safe Next.js defaults shared by every app in the repository.
- * Application-specific composition (i18n plugin, redirects, cache profiles)
- * stays in each app's `next.config.ts`.
- */
 export const baseConfig = {
-  // Next 16 caching model: static shells + `'use cache'` boundaries.
   cacheComponents: true,
   images: {
     formats: ["image/avif", "image/webp"],
@@ -17,7 +11,7 @@ export const baseConfig = {
     fetches: {},
   },
   poweredByHeader: false,
-  // Stable in Next 16; needs `babel-plugin-react-compiler` in the app.
+  // Requires babel-plugin-react-compiler in the app.
   reactCompiler: true,
   reactStrictMode: true,
   typedRoutes: true,
@@ -31,10 +25,7 @@ export const sanityImageRemotePattern = (projectId: string) =>
     protocol: "https",
   }) as const;
 
-/**
- * Merges app overrides into the shared defaults. Nested objects that apps
- * commonly extend (`images`, `experimental`, `cacheLife`) merge one level deep.
- */
+/** Merges image options one level deep; other overrides replace the defaults. */
 export const createNextConfig = (overrides: NextConfig = {}): NextConfig => ({
   ...baseConfig,
   ...overrides,

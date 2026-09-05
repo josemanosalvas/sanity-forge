@@ -1,9 +1,4 @@
 import { describe, expect, test } from "vitest";
-/**
- * These helpers decide whether a video renders at all, and every value they
- * return lands in a URL or a CSS declaration, so the edge cases matter more
- * than the happy path.
- */
 
 import { muxVideoToMarkdown } from "./markdown";
 import { muxAspectRatio, muxPlaybackId, muxThumbnailUrl } from "./mux";

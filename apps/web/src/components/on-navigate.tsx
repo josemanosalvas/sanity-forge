@@ -3,11 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 
-/**
- * Calls `onNavigate` when the route changes after this mounts. Renders
- * nothing. It reads the URL, so render it inside a Suspense boundary; mounting
- * it only while the UI it closes is open keeps it out of prerendering entirely.
- */
+/** Render inside Suspense: reading the URL can suspend during prerendering. */
 export const OnNavigate = ({ onNavigate }: { onNavigate: () => void }) => {
   const pathname = usePathname();
   const mountedOn = useRef(pathname);

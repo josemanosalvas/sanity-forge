@@ -1,10 +1,6 @@
 /**
- * Editor-managed redirects become `next.config.ts` redirects. Next parses
- * `source` and `destination` with path-to-regexp, where `( ) { } : * + ?`
- * carry meaning and an unbalanced or unescaped character fails `next build`,
- * and it treats `has: { type: "host", value }` as a regular expression. The
- * Studio validates paths with these rules and the build skips anything that
- * still slips through, so one document can never break every deployment.
+ * Next parses redirect paths with path-to-regexp and host conditions as regex.
+ * Share validation between Studio and build to reject unsupported patterns.
  */
 const SEGMENT = "[A-Za-z0-9._~%-]+";
 const PATH = `\\/(?:${SEGMENT}(?:\\/${SEGMENT})*)?`;

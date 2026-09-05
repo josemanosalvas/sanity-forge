@@ -108,12 +108,6 @@ const pagesForLanguage = (S: StructureBuilder, site: Site, language: Locale) =>
         ])
     );
 
-/**
- * The Studio structure for one site. Every list is already scoped to the
- * site (and language, where the type is localized per document), and every
- * "create" action carries that scope through an initial value template, so
- * editors never have to pick a site or language by hand.
- */
 export const createStructure =
   (site: Site): StructureResolver =>
   (S) =>

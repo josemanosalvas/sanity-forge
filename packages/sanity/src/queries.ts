@@ -7,11 +7,7 @@ import {
 import { pageBuilderProjection } from "@repo/blocks/queries";
 import { defineQuery } from "next-sanity";
 
-/**
- * Every query takes the site + locale it serves. Sanity TypeGen resolves the
- * fragment interpolations statically, so fragments are composed with `${}`
- * only, never string concatenation.
- */
+/** TypeGen resolves `${}` fragment interpolation; do not use string concatenation. */
 
 /** A field-level localized value with fallback to the site's default locale. */
 const localized = <const Field extends string>(field: Field) =>
@@ -20,13 +16,7 @@ const localized = <const Field extends string>(field: Field) =>
   ${field}[language == $defaultLocale][0].value
 )` as const;
 
-/**
- * Every translation of the current document (including itself), from the
- * `translation.metadata` document that @sanity/document-internationalization
- * maintains. Drives hreflang alternates and the language switcher. `site`
- * comes along because the field is editable: a translation moved to another
- * site must not become a link on this one.
- */
+/** Include site so callers can exclude translations moved to another site. */
 const translationsFragment = `
   "translations": *[_type == "translation.metadata" && references(^._id)][0]
     .translations[defined(value)]{

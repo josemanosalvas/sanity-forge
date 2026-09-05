@@ -26,10 +26,6 @@ export const videoFeatureSchema = defineType({
       name: "richText",
     }),
     muxVideoEmbedField({
-      // The block is the video: without one there is nothing to show but a
-      // heading, so this blocks publishing rather than warning. The renderer
-      // still copes with an absent clip — a published asset can be deleted, or
-      // its encode can fail, long after the form was satisfied.
       validation: (Rule) => Rule.required(),
     }),
     defineField({

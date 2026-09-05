@@ -17,12 +17,7 @@ interface SiteLanguageParams {
   title?: string;
 }
 
-/**
- * Initial value templates that carry the site and language a document is
- * created for. The Structure passes the parameters, so the bare per-type
- * templates are removed: a site-scoped document must never be created
- * without its scope.
- */
+/** Remove bare templates so creation always receives the site/language scope. */
 export const createTemplates = (previous: Template[]): Template[] => [
   ...previous.filter(
     (template) =>

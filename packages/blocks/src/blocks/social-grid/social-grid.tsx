@@ -50,9 +50,7 @@ const PLATFORM_ICONS: Record<string, ComponentType<IconProps>> = {
 const SocialCard = ({ social }: Readonly<{ social: SocialGridItem }>) => {
   const { platform, label, logo, openInNewTab } = social;
   const href = sanitizeHref(social.href);
-  // stegaClean: `platform` is not on the default stega denylist, so in
-  // Presentation the raw value carries invisible characters and the lookup
-  // misses — no icons in preview, icons in production.
+  // Clean stega before looking up the platform icon.
   const key = stegaClean(platform);
   const Icon = key ? PLATFORM_ICONS[key] : undefined;
   const displayLabel = label ?? platform ?? "";

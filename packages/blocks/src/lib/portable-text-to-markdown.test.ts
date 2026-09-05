@@ -65,9 +65,6 @@ describe(portableTextToMarkdown, () => {
     expect(md).toBe("**Bold **`and code` and [a link](/features)");
   });
 
-  // Only root-relative paths are rewritten; a trailing slash on the base is
-  // normalized, and absolute, protocol-relative, scheme and anchor hrefs are
-  // left untouched.
   test.each([
     ["/about", "https://example.com", "https://example.com/about"],
     ["/about", "https://example.com/", "https://example.com/about"],
@@ -112,8 +109,6 @@ describe(portableTextToMarkdown, () => {
       },
     ]);
 
-    // The `javascript:` scheme is stripped by formatUrl, so no executable target
-    // is emitted.
     expect(md).toBe("[click me]()");
   });
 
@@ -261,11 +256,6 @@ describe(portableTextToMarkdown, () => {
     expect(md).toBe("user_name_field and foo[bar]");
   });
 
-  // ─── block-leading escaping ───────────────────────────────────────────────────
-  // The official lib does not escape block-leading markers, so a normal paragraph
-  // whose text starts with `- x`, `> x`, etc. would render as a list / blockquote
-  // / heading / thematic break. Our custom `block.normal` renderer escapes them.
-
   test("block-leading: escapes bullet, plus, and star markers at paragraph start", () => {
     for (const [text, expected] of [
       ["- x", "\\- x"],
@@ -366,8 +356,6 @@ describe(portableTextToMarkdown, () => {
   });
 
   test("block-leading: inline underscores in normal paragraphs are not over-escaped (guard)", () => {
-    // The block.normal wrapper must only touch block-leading markers, never
-    // inline characters like underscores that the lib deliberately leaves raw.
     expect(
       portableTextToMarkdown([
         {

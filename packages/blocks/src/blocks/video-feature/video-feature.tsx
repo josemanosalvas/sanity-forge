@@ -25,9 +25,7 @@ export const VideoFeature = ({
   title,
   video,
 }: Readonly<VideoFeatureProps>) => {
-  // No upload, a failed encode and a deleted asset all land here. The copy
-  // renders anyway: dropping the section would delete published text, hide the
-  // block from Presentation, and disagree with its own Markdown.
+  // Keep published copy visible if the video asset becomes unavailable.
   const hasVideo = Boolean(muxPlaybackId(video?.asset));
 
   return (

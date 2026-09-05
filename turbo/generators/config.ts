@@ -105,11 +105,6 @@ const generator = (plop: PlopTypes.NodePlopAPI): void => {
         type: "add",
       },
       {
-        path: "packages/blocks/src/blocks/{{ name }}/{{ name }}.test.tsx",
-        templateFile: "templates/block/block.test.tsx.hbs",
-        type: "add",
-      },
-      {
         path: "packages/blocks/src/blocks/{{ name }}/{{ name }}.stories.tsx",
         templateFile: "templates/block/block.stories.tsx.hbs",
         type: "add",
@@ -117,11 +112,6 @@ const generator = (plop: PlopTypes.NodePlopAPI): void => {
       {
         path: "packages/blocks/src/blocks/{{ name }}/markdown.ts",
         templateFile: "templates/block/markdown.ts.hbs",
-        type: "add",
-      },
-      {
-        path: "packages/blocks/src/blocks/{{ name }}/markdown.test.ts",
-        templateFile: "templates/block/markdown.test.ts.hbs",
         type: "add",
       },
       // Register the block in the schema list, the projection and the Markdown
@@ -175,7 +165,7 @@ const generator = (plop: PlopTypes.NodePlopAPI): void => {
           `packages/blocks/src/blocks/${String((answers as { name: string }).name)} packages/blocks/src`
         ),
       () =>
-        "Block scaffolded. Next: add a dynamic import and a `case` for it in apps/web/src/components/page-builder.tsx, then run `pnpm typegen`.",
+        "Block scaffolded. Next: add a dynamic import and a `case` for it in apps/web/src/components/page-builder.tsx, run `pnpm typegen`, and add tests for the block's behavior.",
     ],
     description: "Scaffold a new page-builder block in packages/blocks",
     prompts: [

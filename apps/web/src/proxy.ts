@@ -21,12 +21,7 @@ const googleAnalyticsSources = env.NEXT_PUBLIC_GA_MEASUREMENT_ID
     ]
   : [];
 
-/**
- * Routes that exist only behind the rewrites below. Requested directly they
- * are treated as ordinary public paths, so `brand-b.example/brand-a/en` or
- * `/sitemap/brand-a.xml` renders brand-b's 404 page instead of another
- * site's content.
- */
+/** Prevent public requests from accessing another site through internal routes. */
 const internalPrefixes = [
   ...siteKeys.map((key) => `/${key}`),
   "/sitemap",
@@ -37,19 +32,13 @@ const isInternalPath = (pathname: string) =>
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
   );
 
-/**
- * Anything with a dot anywhere is a file in `public/` (pages never contain
- * one, see slug validation), including extensionless files in dotted folders
- * such as `/.well-known/apple-app-site-association`.
- */
+/** Dotted paths are public assets; CMS slug validation excludes dots. */
 const isStaticFile = (pathname: string) =>
   pathname.includes(".") && !isInternalPath(pathname);
 
 /**
- * Next's router decodes route params, so `/brand%2Da/en/x.y` reaches the
- * `[site]` segment as `brand-a`. Classify the decoded form so an encoded
- * internal path cannot pose as a static file. A malformed escape keeps the
- * raw path; Next rejects it downstream.
+ * Classify decoded paths like the router so encoded internal routes cannot
+ * bypass site isolation as static files. Leave malformed escapes for Next to reject.
  */
 const decodePathname = (pathname: string) => {
   try {
@@ -59,11 +48,6 @@ const decodePathname = (pathname: string) => {
   }
 };
 
-/**
- * Every request: Host → site, path → locale, then an internal rewrite to
- * `/[site]/[locale]/…` so public URLs stay clean. Security headers are
- * applied to the final response, whatever kind it is.
- */
 export const proxy: NextProxy = (request) => {
   const site = resolveSite(request, env.DEFAULT_SITE);
   const pathname = decodePathname(request.nextUrl.pathname);

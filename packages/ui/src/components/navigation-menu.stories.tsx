@@ -10,9 +10,6 @@ import {
   navigationMenuTriggerStyle,
 } from "./navigation-menu";
 
-/**
- * A collection of links for navigating websites.
- */
 const meta = {
   argTypes: {},
   component: NavigationMenu,
@@ -69,5 +66,4 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** The default form of the navigation menu. */
 export const Default: Story = {};

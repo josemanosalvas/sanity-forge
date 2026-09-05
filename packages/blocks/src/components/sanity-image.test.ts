@@ -26,8 +26,6 @@ describe("internal/sanity-image", () => {
   );
 
   test("resolveAssetId returns null for malformed ids", () => {
-    // Missing dimensions/format, wrong prefix, missing the `x` separator, and a
-    // drafts-prefixed non-image ref all fail full-shape validation.
     expect(resolveAssetId({ id: "image-abc" })).toBeNull();
     expect(resolveAssetId({ id: "not-an-image" })).toBeNull();
     expect(resolveAssetId({ id: "image-abc123-200-png" })).toBeNull();
@@ -37,8 +35,6 @@ describe("internal/sanity-image", () => {
   test("svgUrlFromAssetId derives the untransformed .svg URL for svg ids", () => {
     const url = svgUrlFromAssetId("image-abc123def456-210x32-svg");
     expect(url).not.toBeNull();
-    // Strips the `image-` prefix and swaps the trailing `-svg` for `.svg`, with
-    // no `?w=`/format transform that would rasterize the vector.
     expect(url).toMatch(/\/abc123def456-210x32\.svg$/u);
     expect(url).not.toContain("?");
   });

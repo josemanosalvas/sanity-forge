@@ -6,11 +6,6 @@ import { ThemeProvider } from "./providers/theme";
 
 export type UIProviderProps = ThemeProviderProps;
 
-/**
- * Composes the providers the design system needs at the root of an app:
- * theme (next-themes), tooltips and the toast outlet. It deliberately knows
- * nothing about content, analytics, auth or any other application concern.
- */
 export const UIProvider = ({ children, ...properties }: UIProviderProps) => (
   <ThemeProvider {...properties}>
     <TooltipProvider>{children}</TooltipProvider>

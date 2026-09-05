@@ -4,9 +4,6 @@ import { Button } from "./button";
 import { Label } from "./label";
 import { Textarea } from "./textarea";
 
-/**
- * Displays a form textarea or a component that looks like a textarea.
- */
 const meta = {
   argTypes: {},
   args: {
@@ -26,15 +23,12 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** The default form of the textarea. */
 export const Default: Story = {};
 
-/** Use `disabled` to disable the textarea. */
 export const Disabled: Story = {
   args: { disabled: true },
 };
 
-/** Pair the textarea with a `Label`. */
 export const WithLabel: Story = {
   render: (args) => (
     <div className="grid w-full gap-1.5">
@@ -44,7 +38,6 @@ export const WithLabel: Story = {
   ),
 };
 
-/** Combine the textarea with a submit button. */
 export const WithButton: Story = {
   render: (args) => (
     <div className="grid w-full gap-2">

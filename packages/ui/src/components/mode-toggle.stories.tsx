@@ -2,9 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import { ModeToggle } from "./mode-toggle";
 
-/**
- * Switches between light, dark and system themes via next-themes.
- */
 const meta = {
   component: ModeToggle,
   parameters: {

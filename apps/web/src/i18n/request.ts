@@ -7,11 +7,7 @@ import { getRequestConfig } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { locale as localeParam, site as siteParam } from "next/root-params";
 
-/**
- * Site and locale come from the root params of the rewritten route, which
- * are part of the static shell. Nothing here may read `headers()` or
- * `cookies()`: that would pull every page out of prerendering.
- */
+/** Use root params; reading cookies or headers here would prevent prerendering. */
 export default getRequestConfig(async ({ locale }) => {
   const [siteKey, routeLocale] = await Promise.all([
     siteParam(),
@@ -24,5 +20,5 @@ export default getRequestConfig(async ({ locale }) => {
     notFound();
   }
 
-  return createRequestConfig({ locale: resolved, site });
+  return createRequestConfig({ locale: resolved });
 });

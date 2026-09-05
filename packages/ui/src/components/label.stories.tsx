@@ -2,9 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import { Label } from "./label";
 
-/**
- * Renders an accessible label associated with controls.
- */
 const meta = {
   argTypes: {
     children: {
@@ -24,5 +21,4 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** The default form of the label. */
 export const Default: Story = {};

@@ -5,7 +5,6 @@ import { ThLargeIcon } from "@sanity/icons/ThLarge";
 import { defineArrayMember, defineField } from "sanity";
 import type { ConditionalProperty } from "sanity";
 
-// Single source of truth for portable text member names
 const PORTABLE_TEXT_MEMBER_NAMES = {
   block: "block",
   code: "code",
@@ -188,10 +187,7 @@ const richTextMembers = [
         type: "array",
       }),
     ],
-    // The Portable Text table plugin (bundled with `sanity` v6.6+, enabled
-    // in sanity.config.ts) strips fields the schema doesn't declare — omitting
-    // `headerRows` would silently break the header-row toggle, so it's
-    // required here even though the editor UI manages it directly.
+    // The table plugin strips undeclared fields; headerRows must be in the schema.
     icon: ThLargeIcon,
     name: PORTABLE_TEXT_MEMBER_NAMES.table,
     preview: {

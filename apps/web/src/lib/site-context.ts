@@ -9,11 +9,7 @@ import { locale as localeParam, site as siteParam } from "next/root-params";
 
 import type { SiteContext, SiteQueryParams } from "@/types";
 
-/**
- * The site and locale of the current route, from the root params the proxy
- * rewrote the request to. Anything that is not a known site + supported
- * locale pair is a 404, never a fallback to another site.
- */
+/** Reject unknown site/locale pairs instead of serving another site. */
 export const getSiteContext = async (): Promise<SiteContext> => {
   const [siteKey, locale] = await Promise.all([siteParam(), localeParam()]);
   if (!isSiteKey(siteKey)) {
@@ -26,7 +22,6 @@ export const getSiteContext = async (): Promise<SiteContext> => {
   return { defaultLocale: getDefaultLocale(site), locale, site };
 };
 
-/** The query parameters for a site context. */
 export const toQueryParams = ({
   site,
   locale,

@@ -5,10 +5,6 @@ import { keys as sanity } from "@repo/sanity/keys";
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
-/**
- * The web app's runtime environment: every package it consumes contributes
- * its own contract, and the app adds only what is specific to it.
- */
 export const env = createEnv({
   client: {},
   emptyStringAsUndefined: true,

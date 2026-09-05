@@ -12,9 +12,6 @@ import {
   DrawerTrigger,
 } from "./drawer";
 
-/**
- * A swipeable panel that slides in from an edge of the screen.
- */
 const meta = {
   argTypes: {},
   component: Drawer,
@@ -44,5 +41,4 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** The default form of the drawer. */
 export const Default: Story = {};

@@ -1,136 +1,98 @@
 # Sanity Forge
 
-A **Next.js + Sanity** template for teams running related, multilingual content sites on Turborepo. One codebase, one Sanity project and one Studio serve a configured set of sites, each with its own domain and locales.
+A Next.js + Sanity template for related, multilingual content sites. One deployment and Sanity dataset serve multiple domains, with a Studio workspace per site, localized pages, shared page-builder blocks, live previews and per-site SEO.
 
-The shared site registry, localized references, preview workflows and per-site SEO are the core of the template. Use it when those concerns belong to one team and deployment. Workspace filters organize editing; they do not enforce tenant permissions. Independently operated clients need an explicit Sanity access-control or dataset strategy.
+Use it for sites managed by one team. Workspace filters organize editing; they do not enforce tenant permissions. Independently operated clients need a separate access-control or dataset strategy.
 
-- **Multi-site by host.** `brand-a.example` and `brand-b.example` are resolved from the request host by a synchronous, typed site registry; public URLs never carry a site identifier.
-- **Multilingual.** Site and locale are orthogonal. The site's default locale is unprefixed (`/pricing`), the rest are prefixed (`/de/preise`), and CMS slugs are localized per document.
-- **Page builder.** Ten shared blocks (hero, CTA, FAQ, feature cards, logo cloud, rich text, showcase grid, social grid, newsletter, video) with colocated schema, GROQ, component, tests, stories and Markdown output.
-- **Editorial tooling.** One Studio workspace per site with Presentation, Visual Editing, Draft Mode, Releases, Vision, document- and field-level localization and Sanity TypeGen.
-- **Production defaults.** Security headers, SEO (canonical, hreflang, JSON-LD, robots, sitemaps per site), analytics and observability packages that are vendor-neutral or optional.
+## Setup
 
-## Requirements
-
-- pnpm 11 (`corepack enable` or install it globally)
-- Node 24: pnpm provisions it from `devEngines.runtime` in `package.json`, so no version manager is needed (`nvm use 24` works too)
-- A Sanity project (free tier is fine) with a dataset
-
-## Quick start
+Requires pnpm 11 and a Sanity project with a dataset. pnpm provisions Node 24 from `devEngines.runtime`.
 
 ```bash
 pnpm install
-
-# Studio
-cp apps/studio/.env.example apps/studio/.env    # fill in SANITY_STUDIO_PROJECT_ID
-# Web
-cp apps/web/.env.example apps/web/.env          # fill in NEXT_PUBLIC_SANITY_PROJECT_ID
-
-pnpm typegen        # extracts the schema and generates packages/sanity/src/sanity.types.ts
-pnpm dev            # web on :3000, studio on :3333, storybook on :6006
+cp apps/studio/.env.example apps/studio/.env
+cp apps/web/.env.example apps/web/.env
 ```
 
-Local site domains are `brand-a.localhost:3000` and `brand-b.localhost:3000` (browsers resolve `*.localhost` to loopback). Plain `localhost:3000` serves the site named in `DEFAULT_SITE`.
+Fill in the project ID and dataset in both files. Set `SANITY_API_READ_TOKEN` to a Viewer token from the project's API settings; Sanity Live and previews require it.
 
-`SANITY_API_READ_TOKEN` must be a Viewer token from the project's API settings. Sanity Live, Draft Mode, Presentation and Visual Editing all depend on it, and the app refuses to start without it.
-
-## Sites and locales
-
-Sites are declared once, in `packages/internationalization/src/sites.ts`:
-
-| Site      | Locales    | Production host   | Development host         |
-| --------- | ---------- | ----------------- | ------------------------ |
-| `brand-a` | en, de, fr | `brand-a.example` | `brand-a.localhost:3000` |
-| `brand-b` | en, de     | `brand-b.example` | `brand-b.localhost:3000` |
-
-The registry drives the proxy (host to site), the Studio (one workspace per site, Presentation origins), SEO (canonical origin, hreflang) and static generation. To add a site, add an entry there, add its UI messages if it introduces a new locale under `packages/internationalization/messages/`, and create its `settings` document in the Studio.
-
-Every href GROQ projects through `localizedInternalHref` (`urlFragment`, `buttonsFragment` and the rich-text `customLink` mark) already carries the linked page's locale prefix. Render those with `next/link` and use the locale-aware `Link` from `@repo/internationalization/navigation` only for paths the app builds itself, such as `/` or a translation's slug.
-
-Every Sanity document that belongs to a site carries a `site` key. Pages, navigation, footers and FAQs are localized per document (`@sanity/document-internationalization`); site settings use localized string fields (`sanity-plugin-internationalized-array`).
-
-## Repository layout
-
-```
-apps/
-  web/            Next.js 16 App Router site (proxy → /[site]/[locale]/[[...slug]])
-  studio/         Sanity Studio 6, one workspace per site
-  storybook/      Storybook 10 for ui and block stories
-packages/
-  analytics/      Vercel Analytics + optional Google Analytics
-  blocks/         Page-builder blocks: schema, query, component, markdown, tests, stories
-  ui/             shadcn (base-nova) primitives, Tailwind 4 tokens, theme provider
-  internationalization/  Site registry, locale routing, next-intl request config, proxy helpers
-  next-config/    Shared next.config factory
-  observability/  Logger, error capture, optional Sentry
-  sanity/         Client, Live, queries, generated types, TypeGen config
-  security/       Security headers and CSP
-  seo/            Site × locale × route metadata, alternates, JSON-LD, robots, sitemap
-tooling/
-  github/         Reusable setup action
-  tailwind/       Shared PostCSS config
-  typescript/     tsconfig presets
-turbo/generators/ `pnpm turbo gen package` and `pnpm turbo gen block`
+```bash
+pnpm typegen
+pnpm dev
 ```
 
-Dependency direction: `blocks → ui`, `sanity → blocks` (query projections), `web → blocks + sanity`. The `ui` package has no Sanity, analytics or observability dependencies. `pnpm boundaries` enforces this direction through Turborepo Boundaries tags: `ui` may not depend on `platform` or `content` packages, and `platform` packages (i18n, SEO, security, observability, analytics, next-config) may not depend on `content` (blocks, sanity) or `ui`.
+Web runs on port 3000, Studio on 3333 and Storybook on 6006. Use `brand-a.localhost:3000` or `brand-b.localhost:3000`; plain `localhost:3000` serves `DEFAULT_SITE`.
 
-Every package keeps its source under `src/`, laid out by kind like the shadcn monorepo template and next-forge's packages: React components in `src/components` (the shadcn CLI writes primitives there too, via the `ui` alias in `packages/ui/components.json`), hooks in `src/hooks`, helpers in `src/lib`. The blocks package follows the same rule and adds `src/blocks/<block>/`: a vertical folder holding the block's renderer, schema, GROQ projection, Markdown serializer, tests and stories, because the block, not the file kind, is the unit of change there. The renderer is named after its folder, so the single `./*` export resolves `@repo/blocks/cta` to `src/blocks/cta/cta.tsx`; the components, hooks and helpers shared across blocks live in `src/components`, `src/hooks` and `src/lib` like in every other package. Packages expose concrete modules through `package.json` exports (`@repo/blocks/hero`, `@repo/seo/route`); there are no barrel files, so bundlers only load what a route imports.
+## Sites and content
 
-## Commands
+Configure domains and locales in [`sites.ts`](packages/internationalization/src/sites.ts). To add a site, add a registry entry and create its settings in Studio. New locales also need messages in `packages/internationalization/messages/` and a loader in `src/request.ts`.
 
-| Command | What it does |
+Public URLs have no site prefix. The default locale is unprefixed (`/pricing`); other locales are prefixed (`/de/preise`). CMS slugs are localized per document.
+
+| Document               | Scope                                       |
+| ---------------------- | ------------------------------------------- |
+| `page`                 | Site and locale; slug `/` is the home page  |
+| `navigation`, `footer` | Expected once per site and locale           |
+| `settings`             | One per site, with localized string fields  |
+| `faq`                  | Localized per document, shared across sites |
+| `redirect`             | Site; applied at build time                 |
+
+GROQ-projected links already include the destination locale: render them with `next/link`. Use `@repo/internationalization/navigation`'s `Link` for app-authored paths without locale prefixes.
+
+## Development
+
+- `apps/web`: Next.js App Router frontend.
+- `apps/studio`: Sanity schemas, editing structure and Presentation configuration.
+- `apps/storybook`: UI and block stories.
+- `packages/blocks`: each `src/blocks/<name>/` contains its renderer, schema, query, Markdown serializer, tests and stories. Shared components, hooks and helpers sit alongside `blocks/` under `src/`.
+- `packages/ui`: shadcn primitives, styles and theme provider.
+- Other packages provide Sanity access, internationalization, SEO, security, analytics and observability. `tooling/` holds shared configuration.
+
+Import concrete modules through package exports, such as `@repo/blocks/hero` or `@repo/seo/route`. Repository contracts and verification requirements are in [AGENTS.md](AGENTS.md).
+
+| Command | Purpose |
 | --- | --- |
-| `pnpm dev` | All apps in watch mode |
-| `pnpm build` | Builds every app (web needs a Sanity project) |
-| `pnpm check` | Lint and format check (Ultracite: Oxlint + Oxfmt) |
+| `pnpm dev` | Run all apps |
+| `pnpm build` | Build all apps; web needs working Sanity credentials |
+| `pnpm verify` | Formatting, lint, workspace and dependency boundaries, tests, typecheck |
 | `pnpm fix` | Apply lint and format fixes |
-| `pnpm typecheck` | TypeScript across the workspace (runs TypeGen first) |
-| `pnpm verify` | Format, lint, workspace checks, tests and typecheck |
-| `pnpm typegen` | Extract the Studio schema and regenerate GROQ result types |
-| `pnpm test` | Vitest unit and component tests |
-| `pnpm test:e2e` | Playwright smoke tests against a production build of `web` |
-| `pnpm lint:ws` | Workspace consistency checks (sherif) |
-| `pnpm boundaries` | Turborepo Boundaries: undeclared or out-of-package imports, and the `ui → platform → content` dependency direction |
-| `pnpm turbo gen block` | Scaffold a page-builder block with all colocated files |
-| `pnpm turbo gen package` | Scaffold a `@repo/*` package |
+| `pnpm typegen` | Extract schemas and regenerate GROQ result types |
+| `pnpm --filter <package> test` | Focused Vitest tests (`web`, `studio`, `@repo/blocks`) |
+| `pnpm test:e2e` | Playwright against the production web server |
+| `pnpm turbo gen block` | Scaffold and register a block; add its web renderer and behavior tests |
+| `pnpm turbo gen package` | Scaffold a workspace package |
 
-## Environment variables
+Sentry and Google Analytics activate when configured in `apps/web/.env`. Vercel Analytics is enabled by default; disable it with `NEXT_PUBLIC_VERCEL_ANALYTICS=false`. See the `.env.example` files for all options.
 
-Each package owns the variables it needs in a `keys.ts` (t3-env) factory; `apps/web/src/env.ts` composes them and `apps/studio/env.ts` validates the Studio's. See `apps/web/.env.example` and `apps/studio/.env.example`. Optional vendors (Sentry, Google Analytics) activate only when their variables are set.
+The newsletter block needs an `action` or `onSubmit` handler to render a subscription form. Markdown serializers are available per block; there is no Markdown HTTP route.
 
-The newsletter block supplies the UI; connect an `action` or `onSubmit` in the web renderer before accepting subscriptions. Without a handler it renders its content without a form. Markdown serializers are available per block; the template does not expose a Markdown HTTP route.
+## Caching and previews
 
-## Data fetching
+Sanity reads run inside `use cache`. Resolve preview cookies outside the cache and pass `perspective`, `stega` and `variant` through to the cached layer. Shared fetch helpers live in [`content.ts`](apps/web/src/lib/content.ts); preview resolution and Live integration live in [`live.ts`](packages/sanity/src/live.ts).
 
-The web app follows Sanity's three-layer pattern for Cache Components, with the same names as the official template:
+For revalidation when no browser has Sanity Live open, configure a GROQ-powered webhook:
 
-1. **Page or Layout** (`Page`, `RootLayout`) awaits only `draftMode()`. Outside Draft Mode it renders the cached layer directly with `perspective="published" stega={false}`: slugs listed by `generateStaticParams` are prerendered, any other slug renders on its first request, and a missing document is a real 404. In Draft Mode it renders the dynamic layer inside `<Suspense>`.
-2. **Dynamic** (`DynamicPage`, `DynamicHeader`, `DynamicFooter`) awaits `params` and `getDynamicFetchOptions()`, the only place that reads the preview cookies.
-3. **Cached** (`CachedPage`, `CachedHeader`, `CachedFooter`) carries `'use cache'`, takes plain props including `perspective` and `stega`, and reads through the shared `fetch*` helpers in `apps/web/src/lib/content.ts`.
+| Setting           | Value                                               |
+| ----------------- | --------------------------------------------------- |
+| URL               | `https://your-site/api/revalidate`                  |
+| Method / triggers | POST; create, update, delete; draft events disabled |
+| Projection        | `{_type, site}`                                     |
+| Secret            | Same as `SANITY_REVALIDATE_SECRET`                  |
 
-`@repo/sanity/live` exports `SanityLive`, `sanityFetch`, `getDynamicFetchOptions`, `sanityFetchStaticParams` (for `generateStaticParams`) and `sanityFetchMetadata` (for `generateMetadata` and metadata routes). Nothing under `app/` reads `headers()` or `cookies()` outside those helpers.
+Filter:
 
-For updates when no visitor has Sanity Live open, configure a GROQ-powered webhook to `https://your-site/api/revalidate`: POST, create/update/delete triggers, filter `_type in ["page", "settings", "navigation", "footer", "faq", "translation.metadata", "sanity.imageAsset", "sanity.fileAsset", "mux.videoAsset"]`, and projection `{_type, site}`. Use the same secret as `SANITY_REVALIDATE_SECRET` and leave draft events disabled. Every read through `@repo/sanity/live` carries a `sanity-content` tag, plus `sanity-content:<site>` when the query is scoped to a site, so a change to a site's own document revalidates that site's pages and sitemap while shared documents (FAQs, assets, translation metadata) revalidate every site. Like Sanity Live it calls `revalidateTag(tag, "max")`: the next request still serves the previous version while the fresh one is built. Redirect edits still require a rebuild.
+```groq
+_type in ["page", "settings", "navigation", "footer", "faq", "translation.metadata", "sanity.imageAsset", "sanity.fileAsset", "mux.videoAsset"]
+```
 
-## Content model
+Site documents invalidate that site's reads; shared documents invalidate all sites. The next request can receive stale content while the cache refreshes. Redirect edits require a rebuild.
 
-- `page`: site-scoped, localized per document, with a localized slug and a `pageBuilder` array. The home page is the page whose slug is `/`.
-- `navigation`, `footer`: one per site and locale.
-- `settings`: one per site, with field-level localized strings.
-- `faq`: localized per document, shared across sites.
-- `redirect`: site-scoped source/destination pairs applied at build time.
+## CI and verification
 
-## Continuous integration
+[CI](.github/workflows/ci.yml) runs static checks, unit tests, TypeGen freshness, and Studio/Storybook builds using a placeholder project. Set repository variables `SANITY_PROJECT_ID`, `SANITY_DATASET` and secret `SANITY_API_READ_TOKEN` to enable the web build and Playwright tests. Fork PRs run checks that need no secrets.
 
-`.github/workflows/ci.yml` runs format, lint, workspace checks, typecheck, unit tests, a TypeGen freshness check, and builds the Studio and Storybook with a placeholder project. Set the `SANITY_PROJECT_ID` and `SANITY_DATASET` repository variables and the `SANITY_API_READ_TOKEN` secret to also build the web app and run the Playwright smoke tests. Fork PRs run the checks that need no secrets.
-
-The smoke suite checks both site shells, locales, 404s, robots and sitemaps even with an empty dataset. Set `E2E_HAS_CONTENT=true` locally or as a repository variable to additionally require published home pages. It uses the production server; `next dev` is not a substitute for cache and prerender verification. Presentation and release previews also need a manual check in an authenticated Studio session.
-
-## Acknowledgements
-
-Parts of this template are adapted from [turbo-start-sanity](https://github.com/robotostudio/turbo-start-sanity) (MIT, Roboto Studio), [next-forge](https://github.com/vercel/next-forge) (MIT, Vercel) and [create-t3-turbo](https://github.com/t3-oss/create-t3-turbo) (MIT, T3 OSS). See `LICENSE`.
+The smoke suite covers site shells, locales, 404s, robots and sitemaps with an empty dataset. Set `E2E_HAS_CONTENT=true` to require published home pages too. Check Presentation and release previews manually in an authenticated Studio session.
 
 ## License
 
-MIT
+MIT. Portions adapted from [turbo-start-sanity](https://github.com/robotostudio/turbo-start-sanity), [next-forge](https://github.com/vercel/next-forge) and [create-t3-turbo](https://github.com/t3-oss/create-t3-turbo). See [LICENSE](LICENSE).

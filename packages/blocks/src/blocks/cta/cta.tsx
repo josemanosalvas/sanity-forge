@@ -65,9 +65,7 @@ export const CTABlock = ({
             </div>
           </div>
           {hasLogos && (
-            // The logo card keeps its designed size at lg (557px → 165px
-            // cells); the text column beside it is the flexible one — it
-            // shrinks and wraps, so the card never overflows its dotted frame.
+            // Keep the logo card fixed at lg; let the text column shrink.
             <div className="bleed-x flex flex-col items-start gap-2 lg:mx-0 lg:w-[557px] lg:shrink-0">
               {usedByTeams?.title && (
                 <p className="px-4 font-mono text-sm leading-6 font-light tracking-[0.24px] text-zinc-600 uppercase lg:px-0 dark:text-zinc-300">

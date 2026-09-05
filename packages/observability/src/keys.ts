@@ -1,11 +1,6 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
-/**
- * Error tracking is optional. Without a DSN nothing is initialized and the
- * logger falls back to the console, so a fresh checkout runs with no vendor
- * account.
- */
 export const keys = () =>
   createEnv({
     client: {

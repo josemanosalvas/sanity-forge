@@ -14,12 +14,7 @@ import { TableBlock } from "./table-block";
 
 const components: Partial<PortableTextReactComponents> = {
   block: {
-    // The Studio only offers H2–H6, but the schema doesn't police what's
-    // already stored — seeded, imported or migrated blocks can still carry
-    // `style: "h1"`, and @portabletext/react's default would render a real
-    // `<h1>` right next to the page's own. Demote it to the H2 renderer so the
-    // outline stays single-rooted and no level is skipped. Same slug, so
-    // existing anchors keep resolving.
+    // Demote imported or legacy H1 blocks to preserve the page heading hierarchy.
     h1: ({ children, value }) => {
       const slug = parseChildrenToSlug(value.children);
       return (
@@ -98,9 +93,6 @@ const components: Partial<PortableTextReactComponents> = {
         );
       }
       return (
-        // The anchor text is the accessible name. An `aria-label` here would
-        // replace it with a raw URL, which is what a screen reader would then
-        // read out in place of the words the author wrote.
         <Link
           className="underline decoration-dotted underline-offset-2"
           href={safeHref}
@@ -160,9 +152,7 @@ const components: Partial<PortableTextReactComponents> = {
   },
 };
 
-// GROQ projections type block children as optional even though a real
-// block always has them, so loosen that field rather than requiring `any`
-// casts at every call site that passes raw query results in.
+// Accept optional children from generated GROQ result types.
 type LooseRichTextBlock = Omit<PortableTextBlock, "children" | "markDefs"> & {
   children?: PortableTextBlock["children"];
   markDefs?: PortableTextBlock["markDefs"] | null;
@@ -184,8 +174,7 @@ export const RichText = <T extends RichTextValue>({
   return (
     <div
       className={cn(
-        // `strong` is the design's highlight treatment: foreground ink at
-        // normal weight, not bold.
+        // Highlight with foreground color, retaining normal font weight.
         "prose prose-zinc dark:prose-invert prose-headings:scroll-m-24 prose-a:decoration-dotted prose-strong:font-normal prose-strong:text-foreground prose-h2:first:mt-0 dark:prose-headings:text-zinc-100 max-w-none",
         className
       )}

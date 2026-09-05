@@ -38,7 +38,6 @@ describe(SubscribeNewsletter, () => {
     expect(html).toMatch(/Product updates/u);
     expect(html).toContain('action="/api/subscribe"');
     expect(html).toContain('method="post"');
-    // The small print renders together with the form it belongs to.
     expect(html).toMatch(/No spam, ever/u);
   });
 });

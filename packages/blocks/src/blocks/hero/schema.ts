@@ -9,7 +9,6 @@ import {
   muxVideoField,
 } from "../../lib/schema-fields";
 
-/** The three delivery paths a hero background can take. */
 export const HERO_MEDIA_TYPES = ["mux", "mux-mp4", "sanity"] as const;
 
 interface HeroVariantValue {
@@ -20,16 +19,10 @@ interface HeroVariantValue {
   mobileWebm?: unknown;
 }
 
-/** Whether a variant carries any hand-encoded file, in any of the three slots. */
 const hasFiles = (variant?: HeroVariantValue) =>
   Boolean(variant?.webm || variant?.hevc || variant?.mobileWebm);
 
-/**
- * Absent on everything authored before this field existed. Infer it the way
- * the renderer does (`mediaTypeOf` in `./media-type`): a Mux asset means Mux,
- * anything else means the uploaded files, so the Studio shows and validates
- * the fields that are actually being served.
- */
+/** Infer legacy media selection consistently with the renderer. */
 const selected = (
   variant?: HeroVariantValue
 ): (typeof HERO_MEDIA_TYPES)[number] => {
@@ -37,28 +30,15 @@ const selected = (
   if (type === "sanity" || type === "mux-mp4" || type === "mux") {
     return type;
   }
-  // The Studio only sees the reference; the renderer also needs a public,
-  // ready playback ID, so a broken Mux asset still plays the files on the site.
+  // The Studio sees the reference; the renderer also checks the playback ID.
   return variant?.mux?.asset ? "mux" : "sanity";
 };
 
-/** Hides a field unless one of the listed paths is the one selected. */
 const showFor =
   (...types: readonly string[]) =>
   (context: { parent?: unknown }) =>
     !types.includes(selected(context.parent as HeroVariantValue));
 
-/**
- * One theme's worth of background, delivered one of two ways.
- *
- * Mux takes a single upload and encodes it for every device. The Sanity path
- * is the hand-encoded set it replaced — an AV1 `.webm` for most browsers, an
- * HEVC `.mp4` for Safari, and a smaller `.webm` for phones. Both are kept so
- * the two can be measured against each other on the same page.
- *
- * The picture covers the load, stands alone when there is no video, and falls
- * back to the clip's own opening frame when skipped.
- */
 const videoVariantFields = () => [
   defineField({
     description:
@@ -135,14 +115,8 @@ interface MuxAssetState {
 }
 
 /**
- * Warns when what the editor sees is not what the site will serve.
- *
- * Content uploaded to the path that is not selected is the one mistake the
- * toggle makes possible. Beyond that, the Studio only holds a reference to the
- * Mux asset, while the site also needs its encode to have succeeded and its
- * playback ID to be public, so those two facts are read from the asset
- * document. Silent otherwise: a picture with no video at all is a valid
- * background.
+ * Warn about inactive uploads and Mux assets the renderer cannot play.
+ * A poster without video is valid.
  */
 export const validateHeroVariant = async (
   value: unknown,

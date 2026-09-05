@@ -70,10 +70,6 @@ export const imageWithAltField = ({
     validation,
   });
 
-/**
- * A logo-with-optional-link array member, shared by the CTA "used by teams"
- * strip and the Logo Cloud block. Only the member `name` differs.
- */
 export const logoLinkItem = (name: string) =>
   defineArrayMember({
     fields: [
@@ -113,7 +109,6 @@ export const logoLinkItem = (name: string) =>
     type: "object",
   });
 
-/** A bare Mux clip. The plugin encodes it for every device on upload. */
 export const muxVideoField = ({
   description = "Upload a file, paste a video URL, or pick one already in the project.",
   group,
@@ -141,11 +136,7 @@ export const muxVideoField = ({
     validation,
   });
 
-/**
- * A Mux video plus its playback choices: the shape `MuxVideo` renders, for a
- * clip a visitor chooses to watch. Background video takes the bare
- * `muxVideoField` — always muted, always looping, nothing to ask.
- */
+/** Use muxVideoField for backgrounds; this embed adds playback controls. */
 export const muxVideoEmbedField = ({
   description = "The video for this section, and how it plays.",
   group,

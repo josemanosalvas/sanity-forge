@@ -18,10 +18,7 @@ export const heroToMarkdown = (
   block: MarkdownBlock,
   options: MarkdownOptions
 ): string => {
-  // A whole variant at a time, matching `stillOf` on the rendered hero.
-  // Mixing one theme's poster with the other's clip would put a different
-  // image in `.md` than on the page. The Mux still is reachable only on the
-  // Mux path, for the same reason the rendered hero gates it.
+  // Keep poster and clip from the same theme, matching the rendered hero.
   const stillOf = (variant?: MarkdownVideoVariant | null) => {
     if (variant?.poster) {
       return imageToMarkdown(variant.poster, options);

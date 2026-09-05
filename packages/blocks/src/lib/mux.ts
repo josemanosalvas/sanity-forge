@@ -1,14 +1,8 @@
-/**
- * The single place that knows Mux's URL shapes.
- *
- * Every value leaving here lands in a URL or a CSS declaration, so it is
- * stega-cleaned: Visual Editing hides characters inside strings that a browser
- * reads as part of the value.
- */
+/** Clean stega before using CMS values in URLs or CSS. */
 
 import { stegaClean } from "next-sanity";
 
-/** What `muxVideoFields` projects — see `internal/groq-fragments`. */
+/** Shape projected by muxVideoFields in ./groq-fragments. */
 export interface MuxVideoData {
   /** Mux's own aspect ratio for the source, in `16:9` form. */
   aspectRatio?: string | null;
@@ -23,16 +17,9 @@ export interface MuxVideoData {
 }
 
 /**
- * The playback ID, withheld when the encode failed or the ID is not public.
- *
- * Deliberately not gated on `status === "ready"`: only a poll in the editor's
- * open browser tab advances that field, so a closed tab strands it at
- * `preparing` and would hide a playable video for good.
- *
- * The policy check is load-bearing. The plugin stores whichever ID Mux
- * returned first without checking its policy, and a signed or DRM ID needs a
- * JWT this starter never mints — it would 403 in the player and the thumbnail
- * while `status` still read `ready`.
+ * Only public playback IDs are supported; signed/DRM IDs require a JWT.
+ * Do not require status "ready": the Studio poll can stop at "preparing"
+ * when the editor closes the tab, even if encoding succeeds.
  */
 export const muxPlaybackId = (video?: MuxVideoData | null): string | null => {
   if (
@@ -51,10 +38,6 @@ export const muxAspectRatio = (video?: MuxVideoData | null): string => {
   return ratio ? ratio.replace(":", "/") : "16/9";
 };
 
-/**
- * The generated still, standing in for a poster Sanity never holds. Honours
- * `thumbTime`, without which a clip opening on a blank plate posters blank.
- */
 export const muxThumbnailUrl = (
   playbackId?: string | null,
   thumbTime?: number | null,
@@ -76,17 +59,11 @@ export const muxThumbnailUrl = (
   return `https://image.mux.com/${playbackId}/thumbnail.webp${query}`;
 };
 
-/** The static-rendition resolutions this starter asks Mux to keep on hand. */
 export type MuxMp4Resolution = "1080p" | "720p" | "480p" | "270p";
 
 /**
- * A progressive MP4 straight off Mux's origin, no manifest and no player.
- *
- * These exist only for assets that had static renditions enabled — either at
- * upload, or afterwards via `POST /video/v1/assets/{id}/static-renditions`.
- * Mux 404s the URL otherwise, which is why `muxMp4Url` is a URL builder and
- * not a promise that the file is there: the caller has to be willing to fall
- * back. Enabling them costs Mux storage per rendition.
+ * Requires static renditions enabled on the Mux asset. Missing renditions
+ * return 404; callers must retain a poster or another fallback.
  */
 export const muxMp4Url = (
   playbackId?: string | null,

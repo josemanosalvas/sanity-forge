@@ -21,7 +21,6 @@ const isHidden = (name: string, parent: unknown) => {
   return field.hidden({ parent });
 };
 
-/** Documents authored before `mediaType` existed must show what the site serves. */
 describe("hero media type inference in the Studio", () => {
   test("uploaded files without a selection show the file fields", () => {
     const parent = { webm: { asset: { _ref: "file-a-webm" } } };
@@ -43,7 +42,6 @@ describe("hero media type inference in the Studio", () => {
   });
 });
 
-/** A validation context whose client answers the Mux asset query with `asset`. */
 const contextFor = (asset: unknown) => {
   const fetch = vi
     .fn<(query: string, params: Record<string, unknown>) => Promise<unknown>>()
@@ -57,7 +55,6 @@ const contextFor = (asset: unknown) => {
 
 const muxRef = { mux: { asset: { _ref: "mux-asset" } } };
 
-/** The renderer withholds a playback ID whose encode failed or is not public; the Studio must say so. */
 describe(validateHeroVariant, () => {
   test("a public, ready Mux asset passes", async () => {
     const { context } = contextFor({ policy: "public", status: "ready" });

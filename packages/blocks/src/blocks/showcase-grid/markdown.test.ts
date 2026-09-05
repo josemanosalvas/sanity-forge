@@ -30,7 +30,6 @@ describe(showcaseGridToMarkdown, () => {
       {}
     );
     expect(result).toContain("- [Volvo Chile](https://volvo.cl)");
-    // An item without a URL degrades to plain text, not a link.
     expect(result).toContain("- No Link Site");
     expect(result).not.toContain("No Link Site](");
   });
@@ -67,7 +66,6 @@ describe(showcaseGridToMarkdown, () => {
     expect(result).toContain(
       "- [Opera Group](https://opera.example.com) — Real Estate"
     );
-    // An item without a category has no trailing dash.
     expect(result).toContain("- Plain Site");
     expect(result).not.toContain("Plain Site —");
   });

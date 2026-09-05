@@ -22,18 +22,9 @@ export const sanitizeHref = (
 };
 
 /**
- * Narrow a caller-supplied redirect target to a same-origin path, or `/`.
- * Stricter than `isSafeHref`, which allows external URLs on purpose.
- *
- * Resolves against `base` and compares origins rather than pattern-matching the
- * string, because the set of inputs that escape is larger than it looks: the URL
- * parser strips tab, LF and CR, so `/%09/evil.com` arrives as `/<TAB>/evil.com`
- * and leaves the browser as `//evil.com`. Delegating to the same parser the
- * browser uses covers those without enumerating them.
- *
- * A same-origin pathname can itself start with `//` (`/..//evil.com`,
- * `/./\evil.com`), which a later `new URL(result, base)` would read as
- * another host, so leading slashes collapse to one.
+ * Return a same-origin path or `/`. Use the URL parser to catch host changes
+ * from backslashes and control characters; collapse leading pathname slashes
+ * so parsing the result again cannot turn it into an external URL.
  */
 export const internalPathOnly = (
   path: string | null | undefined,

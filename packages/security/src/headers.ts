@@ -38,12 +38,6 @@ export const sanitySources = {
   imgSrc: ["https://cdn.sanity.io"],
 } as const;
 
-/**
- * Production-safe headers for a Next.js + Sanity site, built on nosecone's
- * defaults with the changes a content site needs: the Studio may frame the
- * site for Presentation, images and media load from the CDN, and inline
- * scripts are allowed because static shells cannot carry per-request nonces.
- */
 const createDirectives = ({
   frameAncestors,
   csp,
@@ -103,7 +97,6 @@ export const createSecurityOptions = ({
   return vercelToolbar ? withVercelToolbar(options) : options;
 };
 
-/** Builds the full header set for a response. */
 export const createSecurityHeaders = (
   options?: SecurityHeadersOptions
 ): Headers => {

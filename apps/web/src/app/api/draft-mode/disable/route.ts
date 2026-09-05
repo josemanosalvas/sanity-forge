@@ -3,12 +3,7 @@ import { draftMode } from "next/headers";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-/**
- * Leaves Draft Mode and returns to a same-origin path. `to` is resolved
- * against this origin and dropped if it lands anywhere else, which also
- * covers the `/\evil.com` and `/<tab>/evil.com` forms the URL parser
- * turns into other hosts. Not for `<Link>` (prefetch would trigger it).
- */
+/** Do not use with Link: prefetching would disable Draft Mode. */
 export const POST = async (request: NextRequest) => {
   const draft = await draftMode();
   draft.disable();

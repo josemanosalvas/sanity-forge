@@ -9,19 +9,13 @@ import { useState } from "react";
 import { muxAspectRatio, muxPlaybackId, muxThumbnailUrl } from "../lib/mux";
 import type { MuxVideoData } from "../lib/mux";
 
-/** ~100 kB of chrome over hls.js: it arrives only when someone asks to watch. */
 const MuxPlayer = dynamic(() => import("@mux/mux-player-react"), {
   ssr: false,
 });
 
-/** Wide enough for a full-bleed block, small enough not to ship a 4K still. */
 const POSTER_WIDTH = 1200;
 
-/**
- * Two choices, deliberately: "hide controls" would ship a clip nobody can
- * pause, and muting follows from `autoPlay` because browsers refuse autoplay
- * with sound.
- */
+/** Controls stay visible so autoplaying clips can be paused. */
 export interface MuxVideoOptions {
   autoPlay?: boolean | null;
   loop?: boolean | null;
@@ -34,13 +28,7 @@ export interface MuxVideoProps {
   video?: MuxVideoData | null;
 }
 
-/**
- * A Mux clip for content, which waits to be asked for: until then it is a
- * poster and a play button, so neither the player nor the video bytes Mux
- * bills are spent on someone who never watches.
- *
- * Background video goes through `hero-video` instead — no chrome, theme-aware.
- */
+/** Load the player on play or autoplay; keep the poster visible while it loads. */
 export const MuxVideo = ({
   className,
   options,
@@ -48,8 +36,7 @@ export const MuxVideo = ({
   video,
 }: Readonly<MuxVideoProps>) => {
   const autoPlay = Boolean(options?.autoPlay);
-  // Derived, not seeded: Presentation keeps the instance mounted across edits,
-  // so state initialised at mount would ignore the editor's toggle.
+  // Derive autoplay from props so Presentation edits take effect without remounting.
   const [pressed, setPressed] = useState(false);
   const playing = autoPlay || pressed;
 
@@ -62,9 +49,7 @@ export const MuxVideo = ({
   const videoTitle = stegaClean(title) ?? undefined;
 
   return (
-    // The box outlives both states: `dynamic` renders nothing while the player
-    // downloads, and without it the block would collapse to zero height and
-    // shove the page around. The poster covers that wait.
+    // Reserve the video height while the dynamic player loads.
     <div
       className={cn("bg-muted relative w-full overflow-hidden", className)}
       style={{ aspectRatio: muxAspectRatio(video) }}
@@ -82,12 +67,10 @@ export const MuxVideo = ({
         <MuxPlayer
           autoPlay={autoPlay ? "muted" : "any"}
           className="absolute inset-0 size-full"
-          // Mux Data would beacon and set a year-long cookie ahead of any
-          // consent gate. Drop this and set `envKey` to opt back in.
+          // Enable Mux Data only after adding consent handling.
           disableTracking
           loop={Boolean(options?.loop)}
-          // Stega-encoded strings carry the Studio edit URL — project id,
-          // dataset, document id — off to Mux on every draft-mode view.
+          // Strip Studio document metadata before sending the title to Mux.
           metadata={videoTitle ? { video_title: videoTitle } : undefined}
           muted={autoPlay}
           placeholder={poster}

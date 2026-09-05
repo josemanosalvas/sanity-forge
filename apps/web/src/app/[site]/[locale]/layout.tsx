@@ -138,10 +138,7 @@ const RootLayout = async ({ children }: LayoutProps<"/[site]/[locale]">) => {
                     perspective="published"
                     stega={false}
                   />
-                  {/* next-sanity's default action: `router.refresh()` in Draft Mode
-                      (caches are bypassed there), `updateTag` in development, and
-                      `revalidateTag(tag, "max")` plus a refresh in production. A
-                      custom action must keep all three branches. */}
+                  {/* The default Live action handles refresh and invalidation for each mode. */}
                   <SanityLive includeDrafts={isDraftMode} />
                   {isDraftMode && (
                     <>

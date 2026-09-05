@@ -41,13 +41,6 @@ const hiddenFromGlobalCreate = new Set<string>([
   "mux.videoAsset",
 ]);
 
-/**
- * One workspace per site: the workspace switcher makes the current site
- * explicit, the structure only lists that site's content, translations are
- * limited to the locales the site serves, and Presentation opens the site's
- * own origin. All workspaces share the dataset, so shared content (FAQs,
- * media) is available everywhere.
- */
 const createWorkspace = (site: Site): WorkspaceOptions => {
   const languages = languageOptions(site.locales);
 

@@ -74,11 +74,7 @@ const locations: PresentationPluginOptions["resolve"] = {
   },
 };
 
-/**
- * Presentation for one site. Every known origin (all sites, all environments)
- * is allowed, so an editor can follow a link across sites inside the preview;
- * the initial URL opens this workspace's own site.
- */
+/** Allow all configured site origins for cross-site preview navigation. */
 export const createPresentationConfig = (
   site: Site
 ): PresentationPluginOptions => ({
@@ -110,9 +106,6 @@ export const createPresentationConfig = (
             },
           };
         },
-        // Any path on any site: the site comes from the preview origin and
-        // the language from the path, so the resolved document is always the
-        // one the visitor would see there.
         route: "/:path*",
       },
     ]),

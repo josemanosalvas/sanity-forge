@@ -2,7 +2,7 @@
   "name": "sanity-forge",
   "version": "0.1.0",
   "private": true,
-  "description": "Production-grade, multi-site and multilingual Next.js + Sanity platform template on Turborepo.",
+  "description": "Next.js + Sanity template for related, multilingual content sites.",
   "license": "MIT",
   "type": "module",
   "scripts": {

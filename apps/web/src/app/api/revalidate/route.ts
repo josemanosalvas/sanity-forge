@@ -32,10 +32,8 @@ export const POST = async (request: NextRequest) => {
     return new Response("Bad Request: _type is required", { status: 400 });
   }
 
-  // Every read is tagged by `@repo/sanity/live`. A document that belongs to
-  // one site only affects that site's reads; anything else (FAQs, assets,
-  // translation metadata) can be referenced from any site. `"max"` serves the
-  // stale version while the next request revalidates, as Sanity Live does.
+  // Site documents invalidate their site; shared documents invalidate all sites.
+  // The max profile serves stale content while revalidating.
   const tag = isSiteKey(body.site) ? siteTag(body.site) : CONTENT_TAG;
   revalidateTag(tag, "max");
 

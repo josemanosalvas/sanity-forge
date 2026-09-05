@@ -1,11 +1,6 @@
 import type { Locale } from "./locales";
 
-/**
- * The known sites this platform serves. This registry is deployment
- * configuration, not editorial content: hostnames here decide routing, and
- * the `key` is the stable join between runtime configuration and Sanity
- * documents (`site == $site`). Editors never change it from the Studio.
- */
+/** Deployment configuration. The key joins routes to Sanity documents; keep it stable. */
 export interface SiteDefinition {
   /** Stable identifier stored on Sanity documents and used in internal routes. */
   readonly key: string;
@@ -86,11 +81,6 @@ export const hostVariants = (domain: string) => {
     : [host, `www.${host}`];
 };
 
-/**
- * Resolves the site that owns a request's `Host` (or `X-Forwarded-Host`).
- * Synchronous and dependency-free on purpose: it runs in the proxy on every
- * request, so it must never touch the network.
- */
 export const resolveSiteFromHost = (
   host: string | null | undefined
 ): Site | undefined => {

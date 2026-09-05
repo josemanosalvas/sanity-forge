@@ -3,9 +3,6 @@ import { Loader2, Mail } from "lucide-react";
 
 import { Button } from "./button";
 
-/**
- * Displays a button or a component that looks like a button.
- */
 const meta = {
   argTypes: {
     children: {
@@ -53,35 +50,28 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** The default form of the button, used for primary actions and commands. */
 export const Default: Story = {};
 
-/** Use `outline` to reduce emphasis on secondary actions. */
 export const Outline: Story = {
   args: { variant: "outline" },
 };
 
-/** Use `ghost` for minimal, less intrusive actions. */
 export const Ghost: Story = {
   args: { variant: "ghost" },
 };
 
-/** Use `secondary` for actions that complement the primary one. */
 export const Secondary: Story = {
   args: { variant: "secondary" },
 };
 
-/** Use `destructive` to indicate errors, alerts or irreversible actions. */
 export const Destructive: Story = {
   args: { variant: "destructive" },
 };
 
-/** Use `link` for tertiary, text-only actions. */
 export const Link: Story = {
   args: { variant: "link" },
 };
 
-/** Disable the button while an action is in progress and show a spinner. */
 export const Loading: Story = {
   args: {
     ...Outline.args,
@@ -95,7 +85,6 @@ export const Loading: Story = {
   ),
 };
 
-/** Add an icon to reinforce the action. */
 export const WithIcon: Story = {
   args: {
     ...Secondary.args,
@@ -107,17 +96,14 @@ export const WithIcon: Story = {
   ),
 };
 
-/** Use `sm` for compact interfaces. */
 export const Small: Story = {
   args: { size: "sm" },
 };
 
-/** Use `lg` for prominent calls to action. */
 export const Large: Story = {
   args: { size: "lg" },
 };
 
-/** Use `icon` for a button with only an icon. */
 export const Icon: Story = {
   args: {
     ...Secondary.args,
@@ -126,7 +112,6 @@ export const Icon: Story = {
   },
 };
 
-/** Add `disabled` to prevent interactions. */
 export const Disabled: Story = {
   args: { disabled: true },
 };

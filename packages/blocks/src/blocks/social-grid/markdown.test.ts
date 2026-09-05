@@ -37,7 +37,6 @@ describe(socialGridToMarkdown, () => {
       {}
     );
     expect(result).toContain("- [Reddit](https://reddit.com/r/example)");
-    // A "#" href degrades to plain text, not a link.
     expect(result).toContain("- GitHub");
     expect(result).not.toContain("](#)");
   });

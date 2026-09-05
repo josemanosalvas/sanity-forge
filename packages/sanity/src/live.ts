@@ -11,11 +11,6 @@ import { client } from "./client";
 import { contentTags } from "./tags";
 import { token } from "./token";
 
-/**
- * Sanity Live for Cache Components. `sanityFetch` tags and gives a lifetime
- * to the surrounding `'use cache'` scope itself; `<SanityLive>` in the root
- * layout revalidates those tags as content changes.
- */
 const live = defineLive({
   // Shared with the browser only for validated Draft Mode sessions.
   browserToken: token,
@@ -31,12 +26,7 @@ export const { SanityLive } = live;
 
 type SanityFetch = typeof live.sanityFetch;
 
-/**
- * `sanityFetch` with the content tags from `./tags` added to every read, so
- * the revalidation webhook can invalidate one site's content, or all of it,
- * when no browser has Sanity Live open. The cast keeps next-sanity's
- * overloads, which brand the result as stega-encoded when `stega` is `true`.
- */
+/** Add webhook tags while preserving next-sanity overloads and stega result types. */
 export const sanityFetch = (async (options: Parameters<SanityFetch>[0]) => {
   const params = await options.params;
   return live.sanityFetch({
@@ -53,11 +43,7 @@ export interface DynamicFetchOptions {
   variant?: string;
 }
 
-/**
- * Resolves `perspective`, `stega` and `variant` outside any `'use cache'`
- * boundary so they can be passed in as plain props. Reads `cookies()` only
- * when Draft Mode is on, so published renders stay in the static shell.
- */
+/** Read preview cookies outside use cache and pass the resolved options in. */
 export const getDynamicFetchOptions =
   async (): Promise<DynamicFetchOptions> => {
     const { isEnabled: isDraftMode } = await draftMode();

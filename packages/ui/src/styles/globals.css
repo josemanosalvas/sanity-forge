@@ -7,10 +7,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* ---------------------------------------------------------------------------
- * Tokens. Light values live on :root, dark values on .dark (next-themes sets
- * the class). Everything below the shadcn set is Forge-specific.
- * ------------------------------------------------------------------------ */
+/* Design tokens */
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -46,18 +43,16 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 
-  /* Brand highlight: the one saturated surface, used for emphasis (badges,
-     selection, eyebrows, pills). Swap the hue to re-brand the template. */
+  /* Brand accent for badges, selection, eyebrows and pills. */
   --highlight: oklch(0.935 0.226 122);
   --highlight-foreground: var(--foreground);
   --success: oklch(0.48 0.16 122);
   --danger: oklch(0.55 0.21 27);
 
-  /* Dot ink strength — bg-grid-dots mixes currentColor at this alpha. */
+  /* Opacity of currentColor in bg-grid-dots. */
   --dot-alpha: 80%;
 
-  /* Damped spring sampled to a `linear()` curve — ~1% overshoot, so it settles
-     rather than bounces. A cubic-bezier can't overshoot at all. */
+  /* Sampled spring with approximately 1% overshoot. */
   --ease-spring: linear(
     0,
     0.0668,
@@ -84,8 +79,7 @@
     1
   );
 
-  /* Space the leading hero's copy takes. The pinned banner is `100svh` minus
-     this, so the copy sits on the fold. */
+  /* Reserved hero copy height; banner height is 100svh minus this. */
   --hero-copy: 420px;
 
   /* Inline gutter shared by the navbar's `container` and page content. */
@@ -191,24 +185,19 @@
   --animate-marquee: marquee 40s linear infinite;
 }
 
-/* ---------------------------------------------------------------------------
- * Layout utilities shared by blocks and application chrome.
- * ------------------------------------------------------------------------ */
+/* Layout utilities */
 
-/* Overrides Tailwind's `container`. Inset defaults to 8px via a fallback var,
- * so [--container-px:…] can override it per instance. */
+/* Override --container-px per instance to change the gutter. */
 @utility container {
   @apply mx-auto w-full max-w-360 px-(--container-px,0.5rem);
 }
 
-/* Cancels the container's padding (hardcoding it caused mobile scroll). */
+/* Match the container gutter to avoid horizontal overflow. */
 @utility bleed-x {
   margin-inline: calc(var(--container-px, 0.5rem) * -1);
 }
 
-/* The one hover wash, shared by nav, the FAQ accordion and cards. Any surface
- * using it must rest on `--background`, or the wash and the rest state
- * collapse into each other. */
+/* Apply over --background so the hover color remains distinct. */
 @utility hover-surface {
   @apply hover:bg-zinc-100 dark:hover:bg-zinc-900;
 }
@@ -221,14 +210,11 @@
   @apply text-foreground text-4xl leading-tight font-normal tracking-[-0.24px] text-balance md:text-5xl;
 }
 
-/* Top padding scale for top-anchored page-builder sections, in one place. */
 @utility block-section {
   @apply bg-background py-10 sm:py-14 lg:py-[68px];
 }
 
-/* Dotted surface: a 5.2px tile with a 1.2px dot, tinted by currentColor at
- * `--dot-alpha`. `background-repeat: round` fits a whole number of dots per
- * box so edges land between dots. Change density via padding, not the tile. */
+/* Round the repeat count so edges land between dots. Adjust padding to change density. */
 @utility bg-grid-dots {
   background-image: radial-gradient(
     circle at center,
@@ -248,8 +234,6 @@
   }
 }
 
-/* Blurs the leading hero's banner as the page scrolls over it: the banner is
-   pinned under the content, so scroll progress maps to how covered it is. */
 @keyframes hero-blur {
   to {
     filter: blur(4px);
@@ -266,8 +250,7 @@
   animation-range: 0px calc(100svh - var(--hero-copy, 420px));
 }
 
-/* The sticky banner paints at the viewport top for the whole page. Once the
-   content has fully covered it (~one viewport of scroll) it switches off. */
+/* Stop painting the sticky banner once content covers it. */
 @keyframes hero-park {
   to {
     visibility: hidden;
@@ -302,8 +285,6 @@
   animation: hero-enter 500ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* Underline that wipes in from the left on hover/focus (and while a Base UI
-   popup trigger is open). currentColor adapts it to any surface. */
 @layer utilities {
   .link-underline {
     position: relative;
@@ -326,7 +307,6 @@
   }
 }
 
-/* Keyboard focus ring, for elements that re-enable or scope :focus-visible. */
 @layer utilities {
   .focus-ring {
     outline: none;
@@ -336,8 +316,7 @@
     outline-offset: 2px;
   }
 
-  /* Inset variant: outline drawn inside the element so an overflow-hidden
-     ancestor or packed sibling can't clip it. */
+  /* Inset the ring to avoid clipping by overflow-hidden ancestors. */
   .focus-ring-inset {
     outline: none;
   }
@@ -346,7 +325,6 @@
     outline-offset: -3px;
   }
 
-  /* Rings the whole card when a link inside it is focused. */
   .focus-ring-within:has(a:focus-visible) {
     outline: 2px dotted var(--foreground);
     outline-offset: 2px;
@@ -362,9 +340,6 @@
   }
 }
 
-/* ---------------------------------------------------------------------------
- * Base layer.
- * ------------------------------------------------------------------------ */
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -389,7 +364,6 @@
   textarea::placeholder {
     @apply text-muted-foreground;
   }
-  /* Preflight resets buttons to cursor:default — restore the pointer. */
   button:not(:disabled),
   [role="button"]:not(:disabled),
   label[for],
@@ -400,7 +374,6 @@
     background-color: var(--highlight);
     color: var(--highlight-foreground);
   }
-  /* Global keyboard focus indicator; components opt out with `outline-none`. */
   :focus-visible {
     outline: 2px dotted var(--foreground);
     outline-offset: 2px;
@@ -413,7 +386,6 @@
     height: auto;
     object-fit: cover;
   }
-  /* Media isn't text — keep it out of selections and iOS long-press callouts. */
   img,
   svg,
   video {
@@ -421,7 +393,6 @@
     -webkit-user-select: none;
     -webkit-touch-callout: none;
   }
-  /* Autofill: paint with the app palette, not the browser's yellow/blue. */
   input:-webkit-autofill,
   input:-webkit-autofill:hover,
   input:-webkit-autofill:focus,
@@ -431,15 +402,11 @@
     caret-color: var(--foreground);
     transition: background-color 9999s ease-out 0s;
   }
-  /* Nearest-neighbor upscale so LQIP placeholders load in pixelated, not blurred. */
   img[data-lqip] {
     image-rendering: pixelated;
   }
 }
 
-/* ---------------------------------------------------------------------------
- * Typography plugin, mapped onto the tokens.
- * ------------------------------------------------------------------------ */
 @utility prose {
   --tw-prose-body: var(--color-foreground);
   --tw-prose-headings: var(--color-foreground);
@@ -475,7 +442,6 @@
   --tw-prose-invert-td-borders: var(--color-border);
 }
 
-/* Code blocks (rich text). Plain monospace with a line-number gutter. */
 .rich-code {
   --rich-code-inset-block: 1rem;
   --rich-code-inset-inline: 0.75rem;

@@ -94,7 +94,6 @@ const PageFallback = () => (
   </section>
 );
 
-// Layer 3: cached, plain serializable props only.
 const CachedPage = async ({
   site,
   locale,
@@ -156,8 +155,6 @@ const CachedPage = async ({
 
 type PageParams = Pick<PageProps<"/[site]/[locale]/[[...slug]]">, "params">;
 
-// Layer 2 (Draft Mode): resolves params and the preview cookies outside the
-// cache boundary and passes them in as plain props.
 const DynamicPage = async ({ params }: PageParams) => {
   const [{ slug }, context, { perspective, stega, variant }] =
     await Promise.all([params, getSiteContext(), getDynamicFetchOptions()]);
@@ -172,11 +169,8 @@ const DynamicPage = async ({ params }: PageParams) => {
   );
 };
 
-// Layer 1: branches on Draft Mode. Draft renders stream behind Suspense so the
-// cookie reads never hold up the shell. Published renders stay outside any
-// boundary on purpose: a slug `generateStaticParams` did not list renders on
-// its first request, and when there is no document `notFound()` still produces
-// a real 404 status. Inside a boundary it would stream a soft 404 with 200.
+// Keep published renders outside Suspense so missing pages return HTTP 404.
+// Draft renders stream while preview cookies resolve.
 const Page = async ({ params }: PageProps<"/[site]/[locale]/[[...slug]]">) => {
   const { isEnabled: isDraftMode } = await draftMode();
   if (isDraftMode) {

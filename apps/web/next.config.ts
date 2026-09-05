@@ -23,11 +23,7 @@ const withNextIntl = createNextIntlPlugin({
   requestConfig: "./src/i18n/request.ts",
 });
 
-/**
- * Editor-managed redirects, resolved at build time and matched by host so a
- * redirect on one site never fires on another. Redirect paths are public
- * paths, so localized ones keep their locale prefix.
- */
+/** Build-time redirects use public paths and are scoped by host. */
 const siteRedirects = async () => {
   try {
     const sanity = keys();

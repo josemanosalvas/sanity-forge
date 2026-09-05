@@ -12,10 +12,6 @@ import {
   DialogTrigger,
 } from "./dialog";
 
-/**
- * A window overlaid on the primary window, rendering the content underneath
- * inert.
- */
 const meta = {
   argTypes: {},
   component: Dialog,
@@ -48,5 +44,4 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** The default form of the dialog. */
 export const Default: Story = {};

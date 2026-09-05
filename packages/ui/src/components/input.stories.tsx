@@ -4,9 +4,6 @@ import { Button } from "./button";
 import { Input } from "./input";
 import { Label } from "./label";
 
-/**
- * Displays a form input field or a component that looks like an input field.
- */
 const meta = {
   argTypes: {},
   args: {
@@ -27,15 +24,12 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** The default form of the input field. */
 export const Default: Story = {};
 
-/** Use `disabled` to make the input non-interactive. */
 export const Disabled: Story = {
   args: { disabled: true },
 };
 
-/** Pair the input with a `Label`. */
 export const WithLabel: Story = {
   render: (args) => (
     <div className="grid items-center gap-1.5">
@@ -45,7 +39,6 @@ export const WithLabel: Story = {
   ),
 };
 
-/** Add helper text below the field. */
 export const WithHelperText: Story = {
   render: (args) => (
     <div className="grid items-center gap-1.5">
@@ -56,7 +49,6 @@ export const WithHelperText: Story = {
   ),
 };
 
-/** Combine the input with a submit button. */
 export const WithButton: Story = {
   render: (args) => (
     <div className="flex items-center space-x-2">

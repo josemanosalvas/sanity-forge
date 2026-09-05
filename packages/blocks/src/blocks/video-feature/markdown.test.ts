@@ -54,7 +54,6 @@ describe("video-feature/markdown", () => {
     expect(result).toBe("## The tour");
   });
 
-  // Without a still there is no alt text left to carry the caption.
   test("videoFeatureToMarkdown gives the caption its own line when no still renders", () => {
     const result = videoFeatureToMarkdown(
       { caption: "Recorded live", title: "The tour" },
@@ -80,8 +79,6 @@ describe("video-feature/markdown", () => {
     expect(result).toContain("![The tour](");
   });
 
-  // `status` is patched by a poll in the editor's browser tab, so it stalls at
-  // `preparing` whenever that tab closes mid-encode — the video still plays.
   test("videoFeatureToMarkdown still renders a preparing asset", () => {
     const result = videoFeatureToMarkdown(
       {

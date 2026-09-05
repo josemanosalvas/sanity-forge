@@ -2,12 +2,6 @@ import type { ReactNode } from "react";
 
 import { BlockEyebrow } from "./block-eyebrow";
 
-/**
- * Shared section-header scaffold used by page-builder blocks: an eyebrow, an
- * optional `block-title` heading, and a body slot. The body is passed as
- * children so each block keeps its exact markup (RichText, a subtitle
- * paragraph, etc.) while the wrapper structure stays in one place.
- */
 export const BlockHeader = ({
   eyebrow,
   title,

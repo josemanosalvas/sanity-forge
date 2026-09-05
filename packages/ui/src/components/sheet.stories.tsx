@@ -12,10 +12,6 @@ import {
   SheetTrigger,
 } from "./sheet";
 
-/**
- * Extends the Dialog component to display content that complements the main
- * content of the screen.
- */
 const meta = {
   argTypes: {
     side: {
@@ -56,5 +52,4 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** The default form of the sheet. */
 export const Default: Story = {};

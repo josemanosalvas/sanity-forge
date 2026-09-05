@@ -9,10 +9,6 @@ import {
   TooltipTrigger,
 } from "./tooltip";
 
-/**
- * A popup that displays information related to an element when the element
- * receives keyboard focus or the mouse hovers over it.
- */
 const meta = {
   argTypes: {
     children: {
@@ -51,20 +47,16 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** The default form of the tooltip. */
 export const Default: Story = {};
 
-/** Display the tooltip below the element. */
 export const Bottom: Story = {
   args: { side: "bottom" },
 };
 
-/** Display the tooltip to the left of the element. */
 export const Left: Story = {
   args: { side: "left" },
 };
 
-/** Display the tooltip to the right of the element. */
 export const Right: Story = {
   args: { side: "right" },
 };

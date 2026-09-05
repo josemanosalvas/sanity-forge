@@ -1,6 +1,6 @@
 "use client";
 
-import { captureException } from "@repo/observability/error";
+import { captureException } from "@repo/observability/client";
 import { useEffect } from "react";
 
 const GlobalError = ({

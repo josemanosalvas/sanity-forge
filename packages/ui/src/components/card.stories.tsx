@@ -17,9 +17,6 @@ const notifications = [
   { description: "2 hours ago", title: "Your subscription is expiring soon!" },
 ];
 
-/**
- * Displays a card with header, content and footer.
- */
 const meta = {
   argTypes: {},
   args: {
@@ -61,5 +58,4 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** The default form of the card. */
 export const Default: Story = {};

@@ -2,11 +2,7 @@ import type { RichTextValue } from "../components/rich-text";
 import type { ButtonProps } from "../components/sanity-buttons";
 import type { SanityImageData } from "../components/sanity-image";
 
-/**
- * Shared fixtures for Storybook stories. Images point at the Sanity CDN with
- * synthetic asset ids, so the LQIP `preview` (an inline SVG) is what renders
- * in Storybook; real projects see real assets.
- */
+/** Synthetic asset IDs use inline SVG previews in Storybook. */
 
 const PALETTE = [
   "#6366f1",

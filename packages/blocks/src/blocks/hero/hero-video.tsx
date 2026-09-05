@@ -36,23 +36,17 @@ export interface HeroVideoData {
   dark?: HeroVideoVariant | null;
 }
 
-/** Shared by both elements, so the two paths differ only in how bytes arrive. */
 const BACKGROUND_CLASS =
   "pointer-events-none size-full object-cover object-[50%_45%] transition-opacity duration-700 ease-out";
 
 const hasFiles = (variant?: HeroVideoVariant | null): boolean =>
   Boolean(variant?.webm || variant?.hevc || variant?.mobileWebm);
 
-/** Whether the path this variant selected has something to play. */
 const hasSource = (variant?: HeroVideoVariant | null): boolean =>
   isMuxPath(mediaTypeOf(variant))
     ? Boolean(muxPlaybackId(variant?.mux))
     : hasFiles(variant);
 
-/**
- * Identifies the clip on screen. A theme toggle mounts a fresh element, so
- * readiness has to expire with the source it was earned for.
- */
 const sourceKeyOf = (variant?: HeroVideoVariant | null): string | null => {
   if (isMuxPath(mediaTypeOf(variant))) {
     return muxPlaybackId(variant?.mux);
@@ -62,7 +56,6 @@ const sourceKeyOf = (variant?: HeroVideoVariant | null): string | null => {
   );
 };
 
-/** The resolutions every path picks between. */
 export type DeliveryRung = "1080p" | "720p" | "480p";
 
 interface Connection {
@@ -70,13 +63,7 @@ interface Connection {
   saveData?: boolean;
 }
 
-/**
- * The rendition for this screen and connection.
- *
- * Split from the globals so it is testable: `deliveryRung` reads them, this
- * decides. `saveData` and `effectiveType` are Chromium-only, so Safari and
- * Firefox fall through to the width, which is the answer they had before.
- */
+/** Browsers without Network Information API support use viewport width. */
 export const rungFor = (
   width: number,
   connection?: Connection
@@ -91,24 +78,16 @@ export const rungFor = (
 };
 
 /**
- * Read once, at mount. Deliberately not reactive: `key` is the source URL, so
- * re-picking on a resize would remount the element and re-download the clip —
- * worse than leaving an already-buffered loop alone. Safe to call during render
- * because `HeroVideo` renders nothing until it has mounted.
+ * Choose when rendering the mounted video; do not subscribe to resize
+ * to avoid restarting downloads as the viewport changes.
  */
 const deliveryRung = (): DeliveryRung => {
   const { connection } = navigator as Navigator & { connection?: Connection };
   return rungFor(window.innerWidth, connection);
 };
 
-/**
- * The clips for this viewport. Only the WebM has a smaller version; anything
- * that cannot decode it drops to the desktop HEVC, still the smallest file in
- * the set.
- */
 const pickSources = (variant: HeroVideoVariant | null, rung: DeliveryRung) => {
-  // Only two encodes exist, so anything below the desktop rung takes the
-  // smaller one — including a wide screen on a metered connection.
+  // Use the smaller WebM on narrow screens or constrained connections.
   const webm =
     rung === "1080p" ? variant?.webm : (variant?.mobileWebm ?? variant?.webm);
   return {
@@ -117,17 +96,12 @@ const pickSources = (variant: HeroVideoVariant | null, rung: DeliveryRung) => {
   };
 };
 
-/** Tracks the reduced-motion preference; treated as reduced until the browser answers. */
-const usePrefersReducedMotion = (): boolean =>
-  useMediaQuery("(prefers-reduced-motion: reduce)") ?? true;
-
 type BackgroundProps = Readonly<{
   className?: string;
   onReady: () => void;
   variant: HeroVideoVariant;
 }>;
 
-/** Mux: one upload, an adaptive ladder, and hls.js to drive it. */
 const MuxBackground = ({ className, onReady, variant }: BackgroundProps) => {
   const rung = deliveryRung();
   const playbackId = muxPlaybackId(variant.mux);
@@ -135,10 +109,8 @@ const MuxBackground = ({ className, onReady, variant }: BackgroundProps) => {
     return null;
   }
 
-  // `maxResolution` bottoms out at 720p, so a thin link gets the ladder
-  // instead: releasing `desc` lets ABR settle on 480p or 270p itself. Pinning
-  // the top rung is right everywhere else, since a short loop replays from
-  // buffer and so never steps up on its own.
+  // Mux maxResolution starts at 720p. On slow connections, omit descending
+  // rendition order so adaptive playback can select lower resolutions.
   const thin = rung === "480p";
 
   return (
@@ -146,15 +118,9 @@ const MuxBackground = ({ className, onReady, variant }: BackgroundProps) => {
       aria-hidden
       autoPlay
       className={className}
-      // `pointer-events-none` is what keeps this decorative: without it a
-      // right-click offers Chrome's "Show controls", which sticks per-site and
-      // paints a transport bar over the hero. These two drop picture-in-picture
-      // and casting from that menu.
       disablePictureInPicture
       disableRemotePlayback
-      // The hero autoplays, so Mux Data would beacon and set a year-long
-      // cookie on every visit, ahead of any consent gate. Drop this and set
-      // `envKey` to opt back in.
+      // Enable Mux Data only after adding consent handling.
       disableTracking
       key={playbackId}
       loop
@@ -199,7 +165,6 @@ const MuxMp4Background = ({ className, onReady, variant }: BackgroundProps) => {
   );
 };
 
-/** Sanity: the hand-encoded set, served straight off the asset CDN. */
 const FileBackground = ({ className, onReady, variant }: BackgroundProps) => {
   const rung = deliveryRung();
   const sources = pickSources(variant, rung);
@@ -225,11 +190,7 @@ const FileBackground = ({ className, onReady, variant }: BackgroundProps) => {
       {sources.webm && (
         <source src={sources.webm} type='video/webm; codecs="av01.0.05M.08"' />
       )}
-      {/*
-        The codec string is required, not decoration: as plain `video/mp4`
-        every browser would accept this and then fail to decode it, since
-        <source> selection is by type alone.
-      */}
+      {/* Declare HEVC so browsers that cannot decode it skip this source. */}
       {sources.hevc && (
         <source src={sources.hevc} type='video/mp4; codecs="hvc1"' />
       )}
@@ -238,28 +199,21 @@ const FileBackground = ({ className, onReady, variant }: BackgroundProps) => {
 };
 
 /**
- * Background video for the hero, layered over the poster.
- *
- * Renders nothing until the clip can play, then fades in, so the poster covers
- * the load. Mounting client-side is deliberate: the theme comes from
- * `next-themes` and this site has a manual toggle, so a CSS
- * `prefers-color-scheme` source would pick the wrong variant.
- *
- * Which element renders is the variant's own `mediaType`, so one page can be
- * served by Mux and another by the Sanity CDN with nothing else differing.
+ * Mount after hydration to respect the manual theme toggle. Keep the poster
+ * visible until the selected clip can play.
  */
 export const HeroVideo = ({
   className,
   video,
 }: Readonly<{ className?: string; video?: HeroVideoData | null }>) => {
   const { resolvedTheme } = useTheme();
-  const prefersReducedMotion = usePrefersReducedMotion();
+  // Keep the poster until the browser resolves the motion preference.
+  const prefersReducedMotion =
+    useMediaQuery("(prefers-reduced-motion: reduce)") ?? true;
   const mounted = useMounted();
-  // The clip that decoded a frame, not a boolean: a theme toggle mounts a
-  // fresh element, so readiness expires with the source it was earned for.
+  // Readiness belongs to a source and resets when the theme changes.
   const [readyKey, setReadyKey] = useState<string | null>(null);
 
-  // Dark falls back to the light variant so a single upload still works.
   const variant =
     resolvedTheme === "dark" && hasSource(video?.dark)
       ? video?.dark

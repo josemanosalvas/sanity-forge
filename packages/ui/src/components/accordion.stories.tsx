@@ -7,10 +7,6 @@ import {
   AccordionTrigger,
 } from "./accordion";
 
-/**
- * A vertically stacked set of interactive headings that each reveal a section
- * of content.
- */
 const meta = {
   argTypes: {
     multiple: {
@@ -55,10 +51,8 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** By default only one item can be open at a time. */
 export const Default: Story = {};
 
-/** Set `multiple` to allow several items to be open at once. */
 export const Multiple: Story = {
   args: { defaultValue: ["item-1", "item-2"], multiple: true },
 };

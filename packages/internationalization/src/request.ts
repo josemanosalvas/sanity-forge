@@ -3,7 +3,6 @@ import type { RequestConfig } from "next-intl/server";
 
 import type en from "../messages/en.json";
 import type { Locale } from "./locales";
-import type { Site } from "./sites";
 
 export type Messages = typeof en;
 
@@ -33,15 +32,9 @@ export const loadMessages = async (locale: Locale): Promise<Messages> => {
 
 export const timeZone = "Europe/Zurich";
 
-/**
- * The next-intl request configuration for a resolved site + locale. The app
- * owns its `i18n/request.ts` file (next-intl requires a relative path there)
- * and delegates to this factory.
- */
 export const createRequestConfig = async ({
   locale,
 }: {
-  site: Site;
   locale: Locale;
 }): Promise<RequestConfig> => ({
   formats,

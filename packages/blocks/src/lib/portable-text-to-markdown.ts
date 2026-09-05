@@ -1,11 +1,3 @@
-/**
- * Serializes `richText` portable-text arrays to Markdown. Pure (no React), so
- * blocks degrade to semantic Markdown instead of leaking JSX like
- * `<FAQComponent/>` when content is requested as Markdown. Delegates to the
- * official `@portabletext/markdown` library with custom renderers for the
- * Sanity-specific shapes; each is explained at its definition below.
- */
-
 import {
   DefaultNormalRenderer,
   portableTextToMarkdown as officialPortableTextToMarkdown,
@@ -32,15 +24,12 @@ export interface PortableTextNode {
   level?: number | null;
   children?: PortableTextSpan[] | null;
   markDefs?: PortableTextMarkDef[] | null;
-  // Inline image fields (projected by the shared image GROQ fragment).
   id?: string | null;
   alt?: string | null;
   caption?: string | null;
-  // Code block fields.
   code?: string | null;
   language?: string | null;
   filename?: string | null;
-  // Table fields.
   headerRows?: number | null;
   rows?: PortableTextTableRow[] | null;
 }
@@ -56,15 +45,9 @@ export interface MarkdownImage {
 }
 
 export interface MarkdownOptions {
-  /**
-   * Resolves a Sanity image to a public URL. When omitted, images degrade to
-   * their alt/caption text rather than emitting broken `![]()` markup.
-   */
+  /** Without a resolver, images fall back to caption or alt text. */
   resolveImageUrl?: (image: MarkdownImage) => string | null | undefined;
-  /**
-   * Site origin (e.g. `https://example.com`) used to make root-relative internal
-   * links absolute, so `.md` output is self-contained. Omitted → links stay relative.
-   */
+  /** Origin for root-relative links. Omit to keep links relative. */
   baseUrl?: string;
 }
 
@@ -88,12 +71,9 @@ export const absolutizeUrl = (
   return `${base}${url}`;
 };
 
-// Script-executing schemes dropped so a link href can't smuggle XSS.
 const UNSAFE_URL_SCHEME = /^\s*(?:javascript|vbscript|data):/iu;
 
-// Format a URL for a Markdown link/image target. Spaces or parens would close
-// the `(...)` early, so wrap those in CommonMark's angle-bracket form. Unsafe
-// schemes return an empty target.
+// Wrap spaces and parentheses in CommonMark angle brackets; reject unsafe schemes.
 export const formatUrl = (href: string | null | undefined): string => {
   // Strip ASCII control chars (browsers ignore them) so `java\nscript:` can't
   // slip past the scheme check.
@@ -105,13 +85,10 @@ export const formatUrl = (href: string | null | undefined): string => {
   return /[\s()]/u.test(url) ? `<${url}>` : url;
 };
 
-// Escape inline Markdown metacharacters so literal author text (e.g.
-// `user_name_field`) isn't reinterpreted as italics/bold/links.
-// Used by block-level serializers for plain-string fields (title, eyebrow, etc.).
+// Escape plain CMS strings; Portable Text handles its own marks.
 export const escapeMarkdown = (text: string): string =>
   text.replaceAll(/(?<char>[\\`*_[\]<>~|#])/gu, String.raw`\$<char>`);
 
-// Length of the longest run of consecutive backticks in `text` (0 if none).
 const longestBacktickRun = (text: string): number =>
   Math.max(0, ...(text.match(/`+/gu) ?? []).map((run) => run.length));
 
@@ -128,9 +105,7 @@ interface AnyBlock {
   [key: string]: unknown;
 }
 
-// Fenced code block: open with a backtick run at least one longer than the
-// longest run inside the code (min 3, CommonMark §4.5) so embedded fences
-// don't close the block early. The language, if any, is the info string.
+// Use a longer fence than any embedded backticks (CommonMark §4.5).
 const fenceCodeBlock = (code: string, language?: string | null): string => {
   const fence = "`".repeat(Math.max(3, longestBacktickRun(code) + 1));
   // Strip backticks and newlines so the info string can't break out of or
@@ -145,16 +120,13 @@ const fenceCodeBlock = (code: string, language?: string | null): string => {
   return `${fence}${info}\n${body}\n${fence}`;
 };
 
-// GFM pipe-table cells are single-line, so a literal `|` would split the
-// column and an embedded newline would break the row entirely.
+// Escape column separators and flatten newlines for GFM tables.
 const escapeTableCell = (text: string): string =>
   text.replaceAll("|", String.raw`\|`).replaceAll(/\n+/gu, "<br>");
 
 const renderTableRow = (cells: string[]): string => `| ${cells.join(" | ")} |`;
 
-// GFM requires a header row followed by a `---` separator row; the schema's
-// `headerRows` is a Studio display concern with no Markdown equivalent, so
-// the first row is always treated as the header here regardless of its value.
+// GFM requires one header row; use the first row regardless of Studio headerRows.
 const renderTable = (
   node: PortableTextNode,
   options: MarkdownOptions,
@@ -185,13 +157,6 @@ const renderTable = (
   ].join("\n");
 };
 
-/**
- * Converts a portable-text array to a Markdown string.
- *
- * Consecutive list items are kept together (single newline); everything else
- * is separated by a blank line (handled by the official library's block-spacing
- * renderer). Trailing blank lines from empty blocks are trimmed.
- */
 export const portableTextToMarkdown = (
   blocks?: PortableTextValue,
   options: MarkdownOptions = {}
@@ -201,13 +166,7 @@ export const portableTextToMarkdown = (
   }
 
   return officialPortableTextToMarkdown(blocks as AnyBlock[], {
-    // Escape block-leading Markdown markers in plain paragraphs so a normal
-    // paragraph whose text starts with `- x`, `1. x`, `> x`, `# x`, or `---`
-    // is emitted verbatim instead of being re-parsed as a list / blockquote /
-    // heading / thematic break. The official lib's DefaultNormalRenderer just
-    // returns `children`, so we wrap it and apply the escaping after.
-    // List items produced by real `listItem` blocks are NOT touched here —
-    // they go through the lib's list renderer, not through `block.normal`.
+    // Escape paragraph-leading syntax. Actual list items use the list renderer.
     block: {
       normal: (opts) =>
         DefaultNormalRenderer(opts)
@@ -221,9 +180,7 @@ export const portableTextToMarkdown = (
           .replaceAll(/^(?<rule>[-*_]{3,})$/gmu, String.raw`\$<rule>`),
     },
     marks: {
-      // Use CommonMark-compliant fencing (handles embedded backticks).
       code: ({ children }) => wrapInlineCode(children),
-      // Sanity schema convention: links use `customLink`, not the standard `link`.
       customLink: ({ value, children }) => {
         const href = value?.href as string | null | undefined;
         if (!href || href === "#") {
@@ -243,8 +200,6 @@ export const portableTextToMarkdown = (
         }
         return fenceCodeBlock(code, node.language);
       },
-      // Sanity images carry `{id, alt, caption}`, not `{src, alt, title}`.
-      // Resolve the CDN URL via the caller-supplied resolver when available.
       image: ({ value, isInline }) => {
         if (isInline) {
           return "";
@@ -261,11 +216,8 @@ export const portableTextToMarkdown = (
           return caption && caption !== alt ? `${img}\n\n_${caption}_` : img;
         }
 
-        // No resolvable URL — keep textual content instead of broken markup.
         return caption || alt;
       },
-      // Cells hold nested portable text, so the table renderer gets the
-      // serializer handed in rather than reaching back up to it.
       table: ({ value }) =>
         renderTable(value as PortableTextNode, options, portableTextToMarkdown),
     },

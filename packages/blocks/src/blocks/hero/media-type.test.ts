@@ -16,8 +16,6 @@ describe("hero/media-type", () => {
     expect(mediaTypeOf({ mediaType: "mux", mux: null })).toBe("mux");
   });
 
-  // The field arrived after the documents did, so an absent value is the common
-  // case. Inferring is what keeps every hero authored before the toggle alive.
   test("an absent mediaType is inferred from what is actually there", () => {
     expect(mediaTypeOf({ mux: READY_MUX })).toBe("mux");
     expect(mediaTypeOf({})).toBe("sanity");
@@ -25,8 +23,6 @@ describe("hero/media-type", () => {
     expect(mediaTypeOf()).toBe("sanity");
   });
 
-  // A signed or errored asset yields no playback id, so there is nothing for the
-  // Mux path to render — inferring "mux" there would blank the hero.
   test("an unplayable Mux asset infers the file path, not Mux", () => {
     expect(mediaTypeOf({ mux: { ...READY_MUX, policy: "signed" } })).toBe(
       "sanity"
@@ -54,16 +50,11 @@ describe("hero/media-type", () => {
     expect(isMuxPath("sanity")).toBeFalsy();
   });
 
-  // Nothing infers to mux-mp4: static renditions may not exist for an asset, so
-  // it is only ever reached by an explicit choice.
   test("mux-mp4 is never inferred, only chosen", () => {
     expect(mediaTypeOf({ mux: READY_MUX })).toBe("mux");
     expect(mediaTypeOf({})).toBe("sanity");
   });
 
-  // The rung follows the width; Save-Data and 2g both mean "not the big one"
-  // whatever the screen says, while 3g and 4g are not thin enough to give up
-  // resolution for.
   test.each([
     { rung: "1080p", width: 1440 },
     { rung: "1080p", width: 1280 },

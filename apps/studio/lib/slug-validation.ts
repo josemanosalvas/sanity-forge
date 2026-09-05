@@ -1,8 +1,4 @@
-/**
- * Slug validation, the single source of truth for URL path rules. Slugs are
- * public paths without a locale prefix (`/about`, `/pricing/teams`); the
- * locale prefix is added by the web app at render time.
- */
+/** Slugs are public paths without a locale prefix. */
 
 import { locales } from "@repo/internationalization/locales";
 import { getPublishedId } from "sanity";
@@ -21,7 +17,6 @@ export interface SlugValidationOptions {
   documentType?: string;
   /** Allow the bare `/` slug (the home page) */
   allowRoot?: boolean;
-  /** Custom validators returning error strings */
   customValidators?: ((slug: string) => string[])[];
 }
 

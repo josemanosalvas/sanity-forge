@@ -39,18 +39,13 @@ describe(HeroBlock, () => {
     expect(html).toMatch(/No image test/u);
   });
 
-  // The leading hero's page-builder wrapper is `display: contents`, which
-  // measures 0x0 in the visual editing overlay. Both of the boxes it renders
-  // instead have to carry the attribute: one resolving to the page-builder array
-  // rather than the block makes that half refuse to drag.
+  // The display:contents wrapper has no overlay box; both hero boxes need data-sanity.
   test("leading HeroBlock puts the visual editing attribute on both boxes", () => {
     const html = renderToStaticMarkup(
       <HeroBlock dataSanity="drag-me" isFirst title="Pinned" />
     );
 
     expect(html.match(/data-sanity="drag-me"/gu)).toHaveLength(2);
-    // Anchored on the banner box's id, not its classes — it pins only from `lg`
-    // up, so matching a bare `sticky` misses it.
     expect(html).toMatch(/<div[^>]*data-sanity="drag-me"[^>]*id="hero"/u);
   });
 
@@ -92,10 +87,7 @@ describe(HeroBlock, () => {
     expect(split).toContain("def456");
   });
 
-  // The two delivery paths have to be selectable on the same site, or the
-  // comparison pages measure nothing. `HeroVideo` mounts client-side, so the
-  // server render carries the still only — which is exactly what must differ:
-  // a hero served from Sanity must never reach image.mux.com for its poster.
+  // SSR exposes the poster, so assert the selected CDN there.
   test("a sanity-delivered hero does not borrow the Mux still", () => {
     const html = renderToStaticMarkup(
       <HeroBlock
@@ -126,8 +118,6 @@ describe(HeroBlock, () => {
     expect(html).toContain("https://image.mux.com/abc123/thumbnail.webp");
   });
 
-  // A hero authored before the toggle has no `mediaType` at all. It must keep
-  // rendering from whichever path it actually carries.
   test("a hero with no mediaType keeps rendering from what it carries", () => {
     const files = renderToStaticMarkup(
       <HeroBlock

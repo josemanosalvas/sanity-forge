@@ -35,13 +35,7 @@ const ImageWrapper = <T extends ElementType = "img">(
 // A well-formed Sanity image asset id: `image-<assetId>-<width>x<height>-<format>`.
 const SANITY_ASSET_ID = /^image-[a-zA-Z0-9]+-\d+x\d+-\w+$/u;
 
-// Build the URL for the ORIGINAL SVG asset on the CDN, or null when the id
-// isn't an SVG. The `sanity-image` lib emits width-based `?w=…` srcsets, which
-// makes the CDN rasterize an SVG into a low-res bitmap that then upscales
-// (visible pixelation). For SVG sources we skip that pipeline and point a plain
-// <img> at the untransformed file: `image-<hash>-<w>x<h>-svg` →
-// `${SANITY_BASE_URL}<hash>-<w>x<h>.svg` (drop the `image-` prefix, swap the
-// trailing `-svg` for `.svg`).
+// Serve SVGs without width transforms, which rasterize them on the CDN.
 export const svgUrlFromAssetId = (id: string | null): string | null => {
   if (!id?.endsWith("-svg")) {
     return null;
@@ -103,7 +97,6 @@ export const SanityImage = ({ image, ...props }: SanityImageProps) => {
     return null;
   }
 
-  // Serve SVGs untouched, without raster transforms or LQIP styling.
   const svgUrl = svgUrlFromAssetId(id);
   if (svgUrl) {
     return (

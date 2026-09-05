@@ -2,9 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import { Skeleton } from "./skeleton";
 
-/**
- * Use to show a placeholder while content is loading.
- */
 const meta = {
   argTypes: {},
   component: Skeleton,
@@ -19,7 +16,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** The default form of the skeleton. */
 export const Default: Story = {
   render: (args) => (
     <div className="flex items-center space-x-4">

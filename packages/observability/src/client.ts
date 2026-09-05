@@ -29,4 +29,7 @@ export const initializeObservability = (): void => {
   });
 };
 
-export { captureRouterTransitionStart as onRouterTransitionStart } from "@sentry/nextjs";
+export {
+  captureException,
+  captureRouterTransitionStart as onRouterTransitionStart,
+} from "@sentry/nextjs";

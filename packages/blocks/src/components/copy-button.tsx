@@ -17,9 +17,7 @@ export const CopyButton = ({ code }: Readonly<{ code: string }>) => {
   const copied = status === "copied";
 
   return (
-    // The name stays put and the outcome is announced separately: a name that
-    // changes under a focused element is only sometimes re-read, and swapping
-    // it mid-interaction also renames the control for voice input.
+    // Keep the button name stable; announce the result through the status region.
     <button
       aria-label="Copy code to clipboard"
       className={cn(

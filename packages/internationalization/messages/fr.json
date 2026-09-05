@@ -26,11 +26,23 @@
     "exit": "Quitter",
     "exiting": "Désactivation du mode brouillon…"
   },
-  "newsletter": {
-    "emailLabel": "Adresse e-mail",
-    "emailPlaceholder": "Saisissez votre adresse e-mail",
-    "subscribe": "S'abonner",
-    "subscribing": "Abonnement en cours…"
+  "blocks": {
+    "copied": "Copié dans le presse-papiers",
+    "copyCode": "Copier le code dans le presse-papiers",
+    "linkBroken": "Lien rompu",
+    "logoCloud": "Logos",
+    "opensInNewTab": "(s'ouvre dans un nouvel onglet)",
+    "playVideo": "Lire la vidéo",
+    "playVideoTitled": "Lire la vidéo : {title}",
+    "showcase": "Réalisations",
+    "visit": "Visiter {name}",
+    "newsletter": {
+      "emailLabel": "Adresse e-mail",
+      "emailPlaceholder": "Saisissez votre adresse e-mail",
+      "subscribe": "S'abonner",
+      "subscribeToNewsletter": "S'abonner à la newsletter",
+      "subscribing": "Abonnement en cours…"
+    }
   },
   "footer": {
     "copyright": "© {year} {siteName}. Tous droits réservés."

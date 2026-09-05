@@ -9,12 +9,7 @@ import { socialGridSchema } from "./blocks/social-grid/schema";
 import { subscribeNewsletterSchema } from "./blocks/subscribe-newsletter/schema";
 import { videoFeatureSchema } from "./blocks/video-feature/schema";
 
-/**
- * Every page-builder block schema, in the order the Studio's insert menu
- * shows them. The page builder array type is derived from this list, so
- * adding a block here is enough for the Studio; wire its renderer in the web
- * app's page builder. Individual schemas are imported from `@repo/blocks/<block>/schema`.
- */
+/** Order in the Studio insert menu. Register renderers separately in the web app. */
 export const blockSchemas = [
   heroSchema,
   ctaSchema,

@@ -2,9 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import { Separator } from "./separator";
 
-/**
- * Visually or semantically separates content.
- */
 const meta = {
   argTypes: {},
   component: Separator,
@@ -16,7 +13,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** A horizontal separator between stacked content. */
 export const Horizontal: Story = {
   render: () => (
     <div className="grid gap-2">
@@ -27,7 +23,6 @@ export const Horizontal: Story = {
   ),
 };
 
-/** A vertical separator between inline content. */
 export const Vertical: Story = {
   render: () => (
     <div className="flex gap-2">

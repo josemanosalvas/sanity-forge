@@ -33,19 +33,10 @@ const extractPlainText = (richText: RichTextBlock[]): string =>
     .join(" ")
     .trim();
 
-/**
- * Builds FAQPage JSON-LD from a faqAccordion block's data.
- *
- * PRECONDITION: `block` must already be stega-cleaned by the caller. This is a
- * pure serializer in a headless package and intentionally does not import
- * next-sanity's `stegaClean`; passing stega-encoded fields would leak invisible
- * characters into the emitted JSON-LD. The app boundary
- * (page-builder-json-ld.tsx) owns the cleaning.
- */
+/** Caller must stega-clean the block before serialization. */
 export const faqAccordionToJsonLd = (
   block: FaqAccordionInput
 ): WithContext<FAQPage> | null => {
-  // Serialize every question across all categories (that's what the UI shows).
   const sourceFaqs = (block.categories ?? []).flatMap(
     (category) => category?.faqs ?? []
   );

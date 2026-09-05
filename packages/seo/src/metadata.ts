@@ -10,7 +10,6 @@ export interface CreateMetadataOptions {
   /** The page title. The site name is appended unless already present. */
   readonly title?: string | null;
   readonly description?: string | null;
-  /** The site's display name, used for the title suffix, Open Graph and Twitter. */
   readonly siteName: string;
   /** Absolute Open Graph image URL (1200×630). */
   readonly image?: string | null;
@@ -24,12 +23,6 @@ export interface CreateMetadataOptions {
   readonly icons?: Metadata["icons"];
 }
 
-/**
- * Next.js metadata for one site × locale × route: canonical on the site's
- * production origin, hreflang alternates from CMS-driven localized slugs,
- * Open Graph and Twitter cards, and robots directives. Everything the
- * caller passes is a plain string, so this is safe inside `'use cache'`.
- */
 const resolveTitles = ({
   title,
   siteName,

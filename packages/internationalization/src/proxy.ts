@@ -11,10 +11,6 @@ import {
 } from "./sites";
 import type { Site, SiteKey } from "./sites";
 
-/**
- * Host → site. Unknown hosts (preview deployments, plain `localhost`) fall
- * back to the configured fallback site so the app always renders something.
- */
 export const resolveSite = (request: NextRequest, fallback?: SiteKey): Site => {
   const host =
     request.headers.get("x-forwarded-host") ?? request.headers.get("host");
@@ -27,15 +23,9 @@ export interface SiteRewrite {
 }
 
 /**
- * The public URL → internal route rewrite:
- *
- *   brand-a.example/about       → /brand-a/en/about
- *   brand-a.example/de/ueber-uns → /brand-a/de/ueber-uns
- *   brand-a.example/en/about    → 308 → /about   (default locale stays clean)
- *
- * A locale prefix the site does not serve is left in the path, so the page
- * lookup fails and the app renders its own 404 instead of bouncing the
- * visitor to another site.
+ * Rewrite /about to /<site>/<defaultLocale>/about and /de/about to /<site>/de/about.
+ * Redirect explicit default-locale prefixes away; unsupported locales remain
+ * in the slug and resolve as ordinary paths.
  */
 export const rewriteToSiteRoute = (
   request: NextRequest,

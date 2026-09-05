@@ -9,8 +9,7 @@ const render = (props: Parameters<typeof VideoFeature>[0]) =>
 describe(VideoFeature, () => {
   const READY = { playbackId: "abc123", policy: "public", status: "ready" };
 
-  // Nothing of the player reaches the server: it sits behind a dynamic import
-  // that only resolves in the browser, and only once a visitor asks for it.
+  // The dynamic player renders only in the browser.
   test("VideoFeature renders the copy and a poster to press", () => {
     const html = render({
       caption: "Recorded live",
@@ -28,8 +27,6 @@ describe(VideoFeature, () => {
     );
   });
 
-  // Returning null here would delete published copy from the page and leave the
-  // block unselectable in Presentation, while `.md` keeps printing the copy.
   test.each([
     ["no upload yet", undefined],
     [
@@ -81,8 +78,7 @@ describe(VideoFeature, () => {
     );
   });
 
-  // An autoplaying clip has nothing to press, so the facade steps aside and the
-  // player mounts straight away — client-side only, hence no markup here.
+  // Autoplay skips the facade; the player renders only in the browser.
   test("VideoFeature skips the facade when the editor asks for autoplay", () => {
     const html = render({
       title: "The tour",
@@ -102,9 +98,7 @@ describe(VideoFeature, () => {
     expect(html).toMatch(/aspect-ratio:21\/9/u);
   });
 
-  // Draft mode encodes the Studio edit URL into every string. It has no business
-  // reaching Mux Data or a screen reader, though the visible heading keeps it so
-  // the block stays click-to-edit.
+  // Keep stega for visible editable text; strip it from metadata and accessible names.
   test("VideoFeature strips stega from the title it passes on", () => {
     const zeroWidth = "\u200B\u200C\u200B\u200C";
     const html = render({

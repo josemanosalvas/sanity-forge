@@ -39,9 +39,7 @@ const stillOf = (variant?: HeroVideoVariant | null): HeroStill | null => {
   if (variant?.poster?.id) {
     return { image: variant.poster, key: variant.poster.id };
   }
-  // Only the Mux path may borrow Mux's generated still. A hero served from the
-  // Sanity CDN must not reach image.mux.com for its poster, or the two
-  // delivery paths stop being measurable against each other.
+  // Only use a Mux thumbnail when Mux is the selected delivery path.
   if (!isMuxPath(mediaTypeOf(variant))) {
     return null;
   }
@@ -100,10 +98,7 @@ const HeroPoster = ({
   );
 };
 
-/**
- * The still under the clip, and the whole background when there is no video.
- * Split light/dark in CSS: this renders on the server, which has no theme.
- */
+/** Render theme variants with CSS because the server cannot read the theme. */
 const HeroPosters = ({
   eager,
   video,
@@ -123,10 +118,7 @@ const HeroPosters = ({
         eager={eager}
         still={light}
       />
-      {/* Never eager: the server cannot know the theme, so preloading both
-          halves of a CSS-split pair always wastes one full-size download and
-          earns a "preloaded but not used" warning. The light one carries the
-          priority; the dark one arrives a beat later in dark mode. */}
+      {/* Only prioritize the light poster to avoid preloading both theme variants. */}
       {split && <HeroPoster className="hidden dark:block" still={dark} />}
     </>
   );

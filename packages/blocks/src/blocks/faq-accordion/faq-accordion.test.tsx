@@ -61,7 +61,6 @@ describe(FaqAccordion, () => {
     );
 
     expect(html).toMatch(/Helpful answers/u);
-    // Accordion trigger title is always rendered (even when closed)
     expect(html).toMatch(/Where do the answers render\?/u);
   });
 
@@ -91,8 +90,7 @@ describe(FaqAccordion, () => {
   });
 
   test("FaqAccordion shows only the first category's questions", () => {
-    // Every category is also rendered into the inert measurement layer (it
-    // reserves the tallest category's height), so assert the visible list only.
+    // Exclude the inert measurement layer when asserting visible content.
     const [visible] = twoCategories.split('inert=""');
     expect(visible).toMatch(/First question/u);
     expect(visible).not.toMatch(/Second question/u);

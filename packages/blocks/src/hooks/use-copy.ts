@@ -6,22 +6,15 @@ export const COPY_RESET_MS = 1500;
 
 export type CopyStatus = "idle" | "loading" | "copied" | "error";
 
-/** Shared so every copy affordance signals the same way, using the ink-tuned
- * status tokens rather than `--highlight`/`--destructive`, which are tuned
- * as fills and don't hold contrast as text. Failure had no visual at all until
- * now: a failed copy looked exactly like an idle one. */
+/** Use text-contrast status tokens; highlight/destructive are background fills. */
 export const COPY_STATUS_CLASS: Record<CopyStatus, string> = {
-  // Both hold through hover: without the pair the buttons' own
-  // `hover:text-foreground` wins on specificity and wipes the outcome out under
-  // the very cursor that triggered the copy.
+  // Preserve status colors while the button is hovered.
   copied: "text-success hover:text-success",
   error: "text-danger hover:text-danger",
   idle: "",
   loading: "",
 };
 
-// Grid-stacked status swap shared by the copy buttons: the active layer
-// scales/blurs in over the rest. Text layers fade/blur only — no scale.
 export const SWAP_LAYER =
   "col-start-1 row-start-1 transition-[opacity,filter,scale] duration-300 ease-in-out motion-reduce:transition-none";
 export const SWAP_SHOWN = "scale-100 opacity-100 blur-0";

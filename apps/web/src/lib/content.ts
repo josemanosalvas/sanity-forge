@@ -12,14 +12,8 @@ import type { SiteQueryParams } from "@/types";
 type Scoped = SiteQueryParams & DynamicFetchOptions;
 
 /**
- * Shared `'use cache'` fetch helpers, so components that need the same data
- * do not each wait for it. `perspective`, `stega` and `variant` always come
- * from the caller, never hardcoded here, so Visual Editing and release
- * previews work through every helper.
- *
- * `stega` is a runtime flag here, so next-sanity brands every string in the
- * result as possibly stega-encoded. Compare a field to a literal only through
- * `stegaClean`; the types enforce it.
+ * Preview options come from outside the cache boundary. Results retain stega
+ * branding; use stegaClean before comparing CMS strings to literals.
  */
 export const fetchPage = async ({
   site,

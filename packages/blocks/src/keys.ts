@@ -1,11 +1,6 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
-/**
- * Environment the block renderers need at runtime: only the public Sanity
- * project coordinates, used to build image CDN URLs. Both values are inlined
- * into client bundles by Next.js, so they must stay `NEXT_PUBLIC_`.
- */
 export const keys = () =>
   createEnv({
     client: {

@@ -20,10 +20,6 @@ import {
   DropdownMenuTrigger,
 } from "./dropdown-menu";
 
-/**
- * Displays a menu to the user, such as a set of actions or functions,
- * triggered by a button.
- */
 const meta = {
   argTypes: {},
   component: DropdownMenu,
@@ -53,10 +49,8 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** The default form of the dropdown menu. */
 export const Default: Story = {};
 
-/** A dropdown menu with shortcuts. */
 export const WithShortcuts: Story = {
   render: (args) => (
     <DropdownMenu {...args}>
@@ -78,7 +72,6 @@ export const WithShortcuts: Story = {
   ),
 };
 
-/** A dropdown menu with submenus. */
 export const WithSubmenus: Story = {
   render: (args) => (
     <DropdownMenu {...args}>
@@ -122,7 +115,6 @@ export const WithSubmenus: Story = {
   ),
 };
 
-/** A dropdown menu with radio items. */
 export const WithRadioItems: Story = {
   render: (args) => (
     <DropdownMenu {...args}>
@@ -141,7 +133,6 @@ export const WithRadioItems: Story = {
   ),
 };
 
-/** A dropdown menu with checkboxes. */
 export const WithCheckboxes: Story = {
   render: (args) => (
     <DropdownMenu {...args}>

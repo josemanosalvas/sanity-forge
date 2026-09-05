@@ -1,10 +1,6 @@
 import { defineCliConfig } from "sanity/cli";
 
-/**
- * This package is a Sanity "app root" for TypeGen only: the Studio extracts
- * `schema.json`, and this config turns that schema plus every `defineQuery`
- * in the monorepo into `src/sanity.types.ts`.
- */
+/** TypeGen uses the Studio schema and workspace queries to generate src/sanity.types.ts. */
 export default defineCliConfig({
   api: {
     dataset: process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production",

@@ -26,11 +26,23 @@
     "exit": "Beenden",
     "exiting": "Entwurfsmodus wird beendet…"
   },
-  "newsletter": {
-    "emailLabel": "E-Mail-Adresse",
-    "emailPlaceholder": "E-Mail-Adresse eingeben",
-    "subscribe": "Abonnieren",
-    "subscribing": "Wird abonniert…"
+  "blocks": {
+    "copied": "In die Zwischenablage kopiert",
+    "copyCode": "Code in die Zwischenablage kopieren",
+    "linkBroken": "Link defekt",
+    "logoCloud": "Logos",
+    "opensInNewTab": "(öffnet in neuem Tab)",
+    "playVideo": "Video abspielen",
+    "playVideoTitled": "Video abspielen: {title}",
+    "showcase": "Referenzen",
+    "visit": "{name} besuchen",
+    "newsletter": {
+      "emailLabel": "E-Mail-Adresse",
+      "emailPlaceholder": "E-Mail-Adresse eingeben",
+      "subscribe": "Abonnieren",
+      "subscribeToNewsletter": "Newsletter abonnieren",
+      "subscribing": "Wird abonniert…"
+    }
   },
   "footer": {
     "copyright": "© {year} {siteName}. Alle Rechte vorbehalten."

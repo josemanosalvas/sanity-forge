@@ -16,11 +16,7 @@ import type { NavigationData } from "@/types";
 
 export type NavColumns = NonNullable<NavigationData["navigation"]>["columns"];
 
-/**
- * The desktop menu items. `pathname` is the page to mark with
- * `aria-current`; `null` marks none. Everything else is plain markup, so this
- * doubles as the Suspense fallback for `CurrentNavItems`.
- */
+/** A null pathname omits aria-current for the Suspense fallback. */
 export const NavItems = ({
   columns,
   pathname = null,
@@ -75,16 +71,8 @@ export const NavItems = ({
   });
 
 /**
- * Marks the current page. Reading the pathname is the one thing in the header
- * that needs the URL: on a slug `generateStaticParams` did not list, Cache
- * Components cannot know it while prerendering the fallback shell, so this
- * suspends and the caller renders plain `<NavItems>` as the fallback (Next
- * docs: "URL data in a Client Component outside of Suspense").
- *
- * Prerendered HTML is generated for the internal `/[site]/[locale]/…` path
- * behind the proxy rewrite, while CMS hrefs are public paths, so the
- * comparison waits for mount; earlier it would mismatch on hydration (Next
- * docs, usePathname: "Avoid hydration mismatch with rewrites").
+ * usePathname needs Suspense for routes not listed by generateStaticParams.
+ * Wait for mount before comparing public hrefs: server HTML uses rewritten paths.
  */
 export const CurrentNavItems = ({ columns }: { columns?: NavColumns }) => {
   const pathname = usePathname();
