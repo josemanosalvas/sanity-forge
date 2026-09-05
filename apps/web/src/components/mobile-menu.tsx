@@ -15,9 +15,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@repo/design-system/components/ui/sheet";
-import { Link } from "@repo/internationalization/navigation";
 import { Menu } from "lucide-react";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
@@ -67,6 +67,10 @@ export const MobileMenu = ({
                     href={column.href}
                     key={column._key}
                     onClick={close}
+                    rel={
+                      column.openInNewTab ? "noopener noreferrer" : undefined
+                    }
+                    target={column.openInNewTab ? "_blank" : undefined}
                   >
                     {column.name}
                   </Link>

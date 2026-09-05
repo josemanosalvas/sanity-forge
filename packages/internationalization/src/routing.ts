@@ -21,7 +21,7 @@ export const localizePath = (
   locale: Locale,
   path: string
 ): string => {
-  if (!path.startsWith("/")) {
+  if (!path.startsWith("/") || path.startsWith("//")) {
     return path;
   }
   if (locale === getDefaultLocale(site)) {

@@ -15,6 +15,9 @@ describe("src/routing", () => {
     expect(localizePath(brandA, "de", "https://example.com")).toBe(
       "https://example.com"
     );
+    expect(localizePath(brandA, "de", "//example.com/about")).toBe(
+      "//example.com/about"
+    );
   });
 
   test("pathnames are parsed against the site's own locales", () => {

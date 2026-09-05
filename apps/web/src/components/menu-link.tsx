@@ -1,7 +1,7 @@
 "use client";
 
 import { SanityIcon } from "@repo/blocks/internal/sanity-icon";
-import { Link } from "@repo/internationalization/navigation";
+import Link from "next/link";
 
 export const MenuLink = ({
   name,

@@ -43,6 +43,8 @@ Sites are declared once, in `packages/internationalization/src/sites.ts`:
 
 The registry drives the proxy (host to site), the Studio (one workspace per site, Presentation origins), SEO (canonical origin, hreflang) and static generation. To add a site, add an entry there, add its UI messages if it introduces a new locale under `packages/internationalization/messages/`, and create its `settings` document in the Studio.
 
+Every href GROQ projects through `localizedInternalHref` (`urlFragment`, `buttonsFragment` and the rich-text `customLink` mark) already carries the linked page's locale prefix. Render those with `next/link` and use the locale-aware `Link` from `@repo/internationalization/navigation` only for paths the app builds itself, such as `/` or a translation's slug.
+
 Every Sanity document that belongs to a site carries a `site` key. Pages, navigation, footers and FAQs are localized per document (`@sanity/document-internationalization`); site settings use localized string fields (`sanity-plugin-internationalized-array`).
 
 ## Repository layout

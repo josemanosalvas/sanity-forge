@@ -8,8 +8,8 @@ import {
 } from "@repo/blocks/internal/icons";
 import { normalizedLogoHeight } from "@repo/blocks/internal/logo-height";
 import { SanityImage } from "@repo/blocks/internal/sanity-image";
-import { Link } from "@repo/internationalization/navigation";
 import { getTranslations } from "next-intl/server";
+import Link from "next/link";
 import { Fragment } from "react";
 
 import { Logo } from "@/components/logo";

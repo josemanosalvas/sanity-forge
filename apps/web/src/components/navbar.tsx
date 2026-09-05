@@ -11,11 +11,9 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@repo/design-system/components/ui/navigation-menu";
-import {
-  Link,
-  useUnlocalizedPathname,
-} from "@repo/internationalization/navigation";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { Logo } from "@/components/logo";
@@ -29,7 +27,7 @@ export const Navbar = ({
   siteName,
 }: NavigationData & { siteName: string }) => {
   const t = useTranslations("common");
-  const pathname = useUnlocalizedPathname();
+  const pathname = usePathname();
   const { columns, buttons } = navigation ?? {};
   const currentPage = (href?: string | null) =>
     href && href === pathname ? ("page" as const) : undefined;
@@ -83,7 +81,17 @@ export const Navbar = ({
                     <NavigationMenuLink
                       aria-current={currentPage(column.href)}
                       className={navigationMenuTriggerStyle()}
-                      render={<Link href={column.href} />}
+                      render={
+                        <Link
+                          href={column.href}
+                          rel={
+                            column.openInNewTab
+                              ? "noopener noreferrer"
+                              : undefined
+                          }
+                          target={column.openInNewTab ? "_blank" : undefined}
+                        />
+                      }
                     >
                       {column.name}
                     </NavigationMenuLink>

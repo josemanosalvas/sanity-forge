@@ -3,6 +3,8 @@ import path from "node:path";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
+  // Next's tsconfig keeps JSX for its own compiler; tests need it compiled.
+  oxc: { jsx: { runtime: "automatic" } },
   resolve: {
     alias: { "@": path.resolve(import.meta.dirname, "src") },
   },
@@ -15,7 +17,7 @@ export default defineConfig({
     },
     environment: "node",
     globals: true,
-    include: ["src/**/*.test.ts"],
+    include: ["src/**/*.test.{ts,tsx}"],
     name: "web",
   },
 });

@@ -2,13 +2,11 @@
 
 import { useLocale } from "next-intl";
 import NextLink from "next/link";
-import { usePathname } from "next/navigation";
 import { createContext, useContext } from "react";
 import type { ComponentProps, ReactNode } from "react";
 
-import { locales } from "./locales";
 import type { Locale } from "./locales";
-import { localizePath, parsePathname } from "./routing";
+import { localizePath } from "./routing";
 import type { Site } from "./sites";
 
 const SiteContext = createContext<Site | null>(null);
@@ -48,10 +46,4 @@ export const Link = ({ href, locale, ...rest }: LinkProps) => {
       {...rest}
     />
   );
-};
-
-/** The browser pathname without its locale prefix (rewrites are invisible to `usePathname`). */
-export const useUnlocalizedPathname = (): string => {
-  const site = useSite();
-  return parsePathname(site, usePathname(), locales).pathname;
 };
