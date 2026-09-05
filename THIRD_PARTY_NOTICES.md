@@ -8,20 +8,14 @@ Copyright (c) 2025 Roboto Studio
 
 https://github.com/robotostudio/turbo-start-sanity
 
-Page-builder blocks and their Markdown serializers, shared block components and schema definitions.
-
 ## next-forge
 
 Copyright (c) 2025 Vercel
 
 https://github.com/vercel/next-forge
 
-Package layout, environment key factories, theme provider and Storybook stories.
-
 ## create-t3-turbo
 
 Copyright (c) 2023 Julius Marminge
 
 https://github.com/t3-oss/create-t3-turbo
-
-TypeScript presets and `tooling/`.
