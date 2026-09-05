@@ -55,11 +55,11 @@ Every Sanity document that belongs to a site carries a `site` key. Pages, naviga
 apps/
   web/            Next.js 16 App Router site (proxy → /[site]/[locale]/[[...slug]])
   studio/         Sanity Studio 6, one workspace per site
-  storybook/      Storybook 10 for design-system and block stories
+  storybook/      Storybook 10 for ui and block stories
 packages/
   analytics/      Vercel Analytics + optional Google Analytics
   blocks/         Page-builder blocks: schema, query, component, markdown, tests, stories
-  design-system/  shadcn (base-nova) components, Tailwind 4 tokens, theme provider
+  ui/             shadcn (base-nova) primitives, Tailwind 4 tokens, theme provider
   internationalization/  Site registry, locale routing, next-intl request config, proxy helpers
   next-config/    Shared next.config factory
   observability/  Logger, error capture, optional Sentry
@@ -73,7 +73,9 @@ tooling/
 turbo/generators/ `pnpm turbo gen package` and `pnpm turbo gen block`
 ```
 
-Dependency direction: `blocks → design-system`, `sanity → blocks` (query projections), `web → blocks + sanity`. The design system has no Sanity, analytics or observability dependencies. Packages expose concrete modules through `package.json` exports (`@repo/blocks/hero/hero-block`, `@repo/seo/route`); there are no barrel files, so bundlers only load what a route imports.
+Dependency direction: `blocks → ui`, `sanity → blocks` (query projections), `web → blocks + sanity`. The `ui` package has no Sanity, analytics or observability dependencies.
+
+Every package keeps its source under `src/`, laid out by kind like the shadcn monorepo template and next-forge's packages: React components in `src/components` (the shadcn CLI writes primitives there too, via the `ui` alias in `packages/ui/components.json`), hooks in `src/hooks`, helpers in `src/lib`. Blocks are the one exception: a block is a vertical folder (`src/<block>/`) holding its schema, GROQ projection, renderer, Markdown serializer, tests and stories, because those change together. Packages expose concrete modules through `package.json` exports (`@repo/blocks/hero/hero-block`, `@repo/seo/route`); there are no barrel files, so bundlers only load what a route imports.
 
 ## Commands
 
