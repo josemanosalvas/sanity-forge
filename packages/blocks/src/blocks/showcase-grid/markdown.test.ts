@@ -38,13 +38,17 @@ describe(showcaseGridToMarkdown, () => {
     const result = showcaseGridToMarkdown(
       {
         items: [
-          { _key: "i1", siteName: "Roboto", url: "https://roboto.studio" },
+          {
+            _key: "i1",
+            siteName: "Named Site",
+            url: "https://named.example.com",
+          },
           { _key: "i2", url: "https://nameless.example.com" },
         ],
       },
       {}
     );
-    expect(result).toContain("- [Roboto](https://roboto.studio)");
+    expect(result).toContain("- [Named Site](https://named.example.com)");
     expect(result).not.toContain("nameless.example.com");
   });
 
