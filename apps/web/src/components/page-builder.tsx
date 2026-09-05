@@ -1,22 +1,52 @@
 "use client";
 
-import {
-  CTABlock,
-  FaqAccordion,
-  FeatureCardsWithIcon,
-  HeroBlock,
-  LogoCloud,
-  RichTextBlock,
-  ShowcaseGrid,
-  SocialGrid,
-  SubscribeNewsletter,
-  VideoFeature,
-} from "@repo/blocks/components";
 import { cn } from "cn";
 import { useOptimistic } from "next-sanity/hooks";
+import dynamic from "next/dynamic";
 
 import { sanityDataAttribute } from "@/lib/data-attribute";
-import type { PageBuilderBlock, PagebuilderType } from "@/types";
+import type { PageBuilderBlock } from "@/types";
+
+const CTABlock = dynamic(async () => {
+  const block = await import("@repo/blocks/cta/component");
+  return block.CTABlock;
+});
+const FaqAccordion = dynamic(async () => {
+  const block = await import("@repo/blocks/faq-accordion/component");
+  return block.FaqAccordion;
+});
+const FeatureCardsWithIcon = dynamic(async () => {
+  const block = await import("@repo/blocks/feature-cards-icon/component");
+  return block.FeatureCardsWithIcon;
+});
+const HeroBlock = dynamic(async () => {
+  const block = await import("@repo/blocks/hero/component");
+  return block.HeroBlock;
+});
+const LogoCloud = dynamic(async () => {
+  const block = await import("@repo/blocks/logo-cloud/component");
+  return block.LogoCloud;
+});
+const RichTextBlock = dynamic(async () => {
+  const block = await import("@repo/blocks/rich-text-block/component");
+  return block.RichTextBlock;
+});
+const ShowcaseGrid = dynamic(async () => {
+  const block = await import("@repo/blocks/showcase-grid/component");
+  return block.ShowcaseGrid;
+});
+const SocialGrid = dynamic(async () => {
+  const block = await import("@repo/blocks/social-grid/component");
+  return block.SocialGrid;
+});
+const SubscribeNewsletter = dynamic(async () => {
+  const block = await import("@repo/blocks/subscribe-newsletter/component");
+  return block.SubscribeNewsletter;
+});
+const VideoFeature = dynamic(async () => {
+  const block = await import("@repo/blocks/video-feature/component");
+  return block.VideoFeature;
+});
 
 export interface PageBuilderProps {
   readonly pageBuilder?: PageBuilderBlock[];
@@ -24,10 +54,6 @@ export interface PageBuilderProps {
   readonly type: string;
 }
 
-/**
- * Renders one block, asserting the query result against its projection type
- * so a GROQ or schema rename breaks the build instead of passing `any`.
- */
 const renderBlockComponent = (
   block: PageBuilderBlock,
   isFirst: boolean,
@@ -35,48 +61,34 @@ const renderBlockComponent = (
 ) => {
   switch (block?._type) {
     case "cta": {
-      return <CTABlock {...(block as PagebuilderType<"cta">)} />;
+      return <CTABlock {...block} />;
     }
     case "faqAccordion": {
-      return <FaqAccordion {...(block as PagebuilderType<"faqAccordion">)} />;
+      return <FaqAccordion {...block} />;
     }
     case "hero": {
-      return (
-        <HeroBlock
-          {...(block as PagebuilderType<"hero">)}
-          dataSanity={dataSanity}
-          isFirst={isFirst}
-        />
-      );
+      return <HeroBlock {...block} dataSanity={dataSanity} isFirst={isFirst} />;
     }
     case "featureCardsIcon": {
-      return (
-        <FeatureCardsWithIcon
-          {...(block as PagebuilderType<"featureCardsIcon">)}
-        />
-      );
+      return <FeatureCardsWithIcon {...block} />;
     }
     case "subscribeNewsletter": {
-      return (
-        <SubscribeNewsletter
-          {...(block as PagebuilderType<"subscribeNewsletter">)}
-        />
-      );
+      return <SubscribeNewsletter {...block} />;
     }
     case "logoCloud": {
-      return <LogoCloud {...(block as PagebuilderType<"logoCloud">)} />;
+      return <LogoCloud {...block} />;
     }
     case "socialGrid": {
-      return <SocialGrid {...(block as PagebuilderType<"socialGrid">)} />;
+      return <SocialGrid {...block} />;
     }
     case "showcaseGrid": {
-      return <ShowcaseGrid {...(block as PagebuilderType<"showcaseGrid">)} />;
+      return <ShowcaseGrid {...block} />;
     }
     case "richTextBlock": {
-      return <RichTextBlock {...(block as PagebuilderType<"richTextBlock">)} />;
+      return <RichTextBlock {...block} />;
     }
     case "videoFeature": {
-      return <VideoFeature {...(block as PagebuilderType<"videoFeature">)} />;
+      return <VideoFeature {...block} />;
     }
     default: {
       return null;
@@ -122,7 +134,7 @@ const useOptimisticPageBuilder = (
         currentBlocks.map((block) => [block._key, block])
       );
       const reordered: PageBuilderBlock[] = [];
-      for (const raw of incoming as { _key?: string }[]) {
+      for (const raw of incoming) {
         const block = raw?._key ? resolved.get(raw._key) : undefined;
         if (block) {
           reordered.push(block);
