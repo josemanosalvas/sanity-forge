@@ -10,7 +10,7 @@ export const button = defineType({
     defineField({
       description:
         "Choose the button's visual style - default is solid, secondary is the accent color, outline has a border, and link looks like regular text",
-      initialValue: () => "default",
+      initialValue: "default",
       name: "variant",
       options: createRadioListLayout(buttonVariants, {
         direction: "horizontal",

@@ -39,7 +39,7 @@ export const seoFields = [
   defineField({
     description: "If checked, this content won't be indexed by search engines.",
     group: GROUP.SEO,
-    initialValue: () => false,
+    initialValue: false,
     name: "seoNoIndex",
     title: "Do Not Index This Page",
     type: "boolean",

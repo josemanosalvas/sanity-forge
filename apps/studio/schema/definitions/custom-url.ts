@@ -11,7 +11,7 @@ export const customUrl = defineType({
     defineField({
       description:
         "Choose whether this link points to another page on this site (internal) or to a different website (external)",
-      initialValue: () => "external",
+      initialValue: "external",
       name: "type",
       options: createRadioListLayout(["internal", "external"]),
       type: "string",
@@ -20,7 +20,7 @@ export const customUrl = defineType({
     defineField({
       description:
         "When enabled, clicking this link will open the destination in a new browser tab instead of navigating away from the current page",
-      initialValue: () => false,
+      initialValue: false,
       name: "openInNewTab",
       title: "Open In New Tab",
       type: "boolean",
@@ -51,7 +51,7 @@ export const customUrl = defineType({
       description:
         "Technical field used internally to store the complete URL - you don't need to modify this",
       hidden: true,
-      initialValue: () => "#",
+      initialValue: "#",
       name: "href",
       readOnly: true,
       type: "string",
