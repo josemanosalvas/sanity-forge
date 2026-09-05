@@ -11,7 +11,7 @@ const meta = {
     layout: "centered",
   },
   tags: ["autodocs"],
-  title: "design-system/ModeToggle",
+  title: "ui/ModeToggle",
 } satisfies Meta<typeof ModeToggle>;
 
 export default meta;

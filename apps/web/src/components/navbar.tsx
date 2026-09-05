@@ -1,7 +1,7 @@
 "use client";
 
 import { SanityButtons } from "@repo/blocks/components/sanity-buttons";
-import { ModeToggle } from "@repo/design-system/components/mode-toggle";
+import { ModeToggle } from "@repo/ui/components/mode-toggle";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -10,8 +10,8 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-} from "@repo/design-system/components/navigation-menu";
-import { useMounted } from "@repo/design-system/hooks/use-mounted";
+} from "@repo/ui/components/navigation-menu";
+import { useMounted } from "@repo/ui/hooks/use-mounted";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";

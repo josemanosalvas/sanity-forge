@@ -1,5 +1,5 @@
-import { Button } from "@repo/design-system/components/button";
 import { Link } from "@repo/internationalization/navigation";
+import { Button } from "@repo/ui/components/button";
 import { getTranslations } from "next-intl/server";
 
 const NotFound = async () => {

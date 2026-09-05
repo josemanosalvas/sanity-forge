@@ -1,6 +1,5 @@
 import "@/app/globals.css";
 import { AnalyticsProvider } from "@repo/analytics/provider";
-import { DesignSystemProvider } from "@repo/design-system/provider";
 import { SiteProvider } from "@repo/internationalization/navigation";
 import { siteList } from "@repo/internationalization/sites";
 import {
@@ -10,6 +9,7 @@ import {
 } from "@repo/sanity/live";
 import type { DynamicFetchOptions } from "@repo/sanity/live";
 import { settingsQuery } from "@repo/sanity/queries";
+import { UIProvider } from "@repo/ui/provider";
 import { NextIntlClientProvider } from "next-intl";
 import { VisualEditing } from "next-sanity/visual-editing";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -102,7 +102,7 @@ const RootLayout = async ({ children }: LayoutProps<"/[site]/[locale]">) => {
       <body
         className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased`}
       >
-        <DesignSystemProvider>
+        <UIProvider>
           <NextIntlClientProvider>
             <SiteProvider site={context.site}>
               <TranslationsProvider>
@@ -153,7 +153,7 @@ const RootLayout = async ({ children }: LayoutProps<"/[site]/[locale]">) => {
               </TranslationsProvider>
             </SiteProvider>
           </NextIntlClientProvider>
-        </DesignSystemProvider>
+        </UIProvider>
       </body>
     </html>
   );

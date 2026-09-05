@@ -1,7 +1,7 @@
 "use client";
 
-import { useMediaQuery } from "@repo/design-system/hooks/use-media-query";
-import { useMounted } from "@repo/design-system/hooks/use-mounted";
+import { useMediaQuery } from "@repo/ui/hooks/use-media-query";
+import { useMounted } from "@repo/ui/hooks/use-mounted";
 import { cn } from "cn";
 import { stegaClean } from "next-sanity";
 import { useTheme } from "next-themes";

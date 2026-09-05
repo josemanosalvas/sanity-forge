@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "@repo/design-system/components/button";
 import { captureException } from "@repo/observability/error";
+import { Button } from "@repo/ui/components/button";
 import { useEffect } from "react";
 
 const ErrorBoundary = ({

@@ -1,4 +1,4 @@
-import { Button } from "@repo/design-system/components/button";
+import { Button } from "@repo/ui/components/button";
 import { cn } from "cn";
 import Link from "next/link";
 import type { ComponentProps } from "react";

@@ -26,7 +26,7 @@ const config: StorybookConfig = {
   },
   staticDirs: ["../public"],
   stories: [
-    "../../../packages/design-system/**/*.stories.@(ts|tsx)",
+    "../../../packages/ui/**/*.stories.@(ts|tsx)",
     "../../../packages/blocks/src/**/*.stories.@(ts|tsx)",
   ],
   // The block renderers build Sanity CDN URLs from the public project

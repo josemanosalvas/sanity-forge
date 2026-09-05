@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@repo/design-system/components/button";
+import { Button } from "@repo/ui/components/button";
 import { useTranslations } from "next-intl";
 import { useIsPresentationTool } from "next-sanity/hooks";
 import { useRouter } from "next/navigation";

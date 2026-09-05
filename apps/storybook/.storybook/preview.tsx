@@ -1,4 +1,4 @@
-import { DesignSystemProvider } from "@repo/design-system/provider";
+import { UIProvider } from "@repo/ui/provider";
 import { withThemeByClassName } from "@storybook/addon-themes";
 import type { Preview } from "@storybook/nextjs-vite";
 
@@ -14,11 +14,11 @@ const preview: Preview = {
       },
     }),
     (Story) => (
-      <DesignSystemProvider>
+      <UIProvider>
         <div className="bg-background text-foreground">
           <Story />
         </div>
-      </DesignSystemProvider>
+      </UIProvider>
     ),
   ],
   parameters: {

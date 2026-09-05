@@ -1,18 +1,18 @@
 "use client";
 
-import { Button } from "@repo/design-system/components/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@repo/design-system/components/dropdown-menu";
 import { localeLabels } from "@repo/internationalization/locales";
 import {
   Link,
   useSite,
   useSiteLocale,
 } from "@repo/internationalization/navigation";
+import { Button } from "@repo/ui/components/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@repo/ui/components/dropdown-menu";
 import { Languages } from "lucide-react";
 import { useTranslations } from "next-intl";
 
