@@ -1,0 +1,39 @@
+{
+  "name": "@repo/internationalization",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./locales": "./src/locales.ts",
+    "./sites": "./src/sites.ts",
+    "./routing": "./src/routing.ts",
+    "./request": "./src/request.ts",
+    "./navigation": "./src/navigation.tsx",
+    "./proxy": "./src/proxy.ts",
+    "./messages/*": "./messages/*.json"
+  },
+  "scripts": {
+    "clean": "git clean -xdf .cache .turbo node_modules",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next-intl": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "next": "catalog:",
+    "react": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "next": "catalog:",
+    "react": "catalog:"
+  }
+}

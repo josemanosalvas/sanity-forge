@@ -1,0 +1,14 @@
+import { expect, test } from "vitest";
+
+import { {{ camelCase name }}ToMarkdown } from "./markdown";
+
+test("{{ camelCase name }}ToMarkdown returns an empty string for an empty block", () => {
+  expect({{ camelCase name }}ToMarkdown({}, {})).toBe("");
+});
+
+test("{{ camelCase name }}ToMarkdown renders the eyebrow and title", () => {
+  const markdown = {{ camelCase name }}ToMarkdown({ eyebrow: "New", title: "Hello" }, {});
+
+  expect(markdown).toContain("New");
+  expect(markdown).toContain("## Hello");
+});

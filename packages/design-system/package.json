@@ -1,0 +1,49 @@
+{
+  "name": "@repo/design-system",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./index.tsx",
+    "./styles/globals.css": "./styles/globals.css",
+    "./components/*": "./components/*.tsx",
+    "./components/ui/*": "./components/ui/*.tsx",
+    "./providers/*": "./providers/*.tsx",
+    "./hooks/*": "./hooks/*.ts",
+    "./lib/*": "./lib/*.ts"
+  },
+  "scripts": {
+    "clean": "git clean -xdf .cache .turbo node_modules",
+    "typecheck": "tsc --noEmit",
+    "ui-add": "pnpm dlx shadcn@latest add"
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.8.0",
+    "class-variance-authority": "catalog:",
+    "cn": "catalog:",
+    "lucide-react": "catalog:",
+    "next-themes": "catalog:",
+    "sonner": "^2.0.8"
+  },
+  "devDependencies": {
+    "@repo/tailwind-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@storybook/react": "catalog:",
+    "@tailwindcss/postcss": "catalog:",
+    "@tailwindcss/typography": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "postcss": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "shadcn": "^4.21.0",
+    "tailwindcss": "catalog:",
+    "tw-animate-css": "catalog:",
+    "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  }
+}

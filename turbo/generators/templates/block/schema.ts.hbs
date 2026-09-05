@@ -1,0 +1,37 @@
+import { LayoutTemplate } from "lucide-react";
+import { defineField, defineType } from "sanity";
+
+import { definePortableTextField } from "../internal/schema-fields";
+
+export const {{ camelCase name }}Schema = defineType({
+  name: "{{ camelCase name }}",
+  type: "object",
+  title: "{{ titleCase name }}",
+  description: "{{ description }}",
+  icon: LayoutTemplate,
+  fields: [
+    defineField({
+      name: "eyebrow",
+      type: "string",
+      title: "Eyebrow",
+      description: "Short label shown above the title",
+    }),
+    defineField({
+      name: "title",
+      type: "string",
+      title: "Title",
+      validation: (rule) => rule.required(),
+    }),
+    definePortableTextField(["block"], {
+      name: "richText",
+      description: "Supporting copy shown beneath the title",
+    }),
+  ],
+  preview: {
+    select: { title: "title" },
+    prepare: ({ title }) => ({
+      title: title || "Untitled",
+      subtitle: "{{ titleCase name }}",
+    }),
+  },
+});

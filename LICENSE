@@ -19,3 +19,20 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+--------------------------------------------------------------------------------
+
+Third-party notices
+
+Portions of this repository are adapted from the following projects, each
+distributed under the MIT License with the notices reproduced below. The MIT
+permission and warranty text above applies to them in full.
+
+turbo-start-sanity (https://github.com/robotostudio/turbo-start-sanity)
+Copyright (c) 2025 Roboto Studio
+
+next-forge (https://github.com/vercel/next-forge)
+Copyright (c) 2025 Vercel
+
+create-t3-turbo (https://github.com/t3-oss/create-t3-turbo)
+Copyright (c) 2023 Julius Marminge

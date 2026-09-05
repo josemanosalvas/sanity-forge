@@ -1,0 +1,48 @@
+import type { Meta, StoryObj } from "@storybook/react";
+
+import { Button } from "./button";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "./drawer";
+
+/**
+ * A swipeable panel that slides in from an edge of the screen.
+ */
+const meta = {
+  title: "ui/Drawer",
+  component: Drawer,
+  tags: ["autodocs"],
+  argTypes: {},
+  render: (args) => (
+    <Drawer {...args}>
+      <DrawerTrigger render={<Button variant="outline" />}>Open</DrawerTrigger>
+      <DrawerContent>
+        <DrawerHeader>
+          <DrawerTitle>Are you absolutely sure?</DrawerTitle>
+          <DrawerDescription>This action cannot be undone.</DrawerDescription>
+        </DrawerHeader>
+        <DrawerFooter>
+          <Button>Submit</Button>
+          <DrawerClose render={<Button variant="ghost" />}>Cancel</DrawerClose>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
+  ),
+  parameters: {
+    layout: "centered",
+  },
+} satisfies Meta<typeof Drawer>;
+
+export default meta;
+
+type Story = StoryObj<typeof meta>;
+
+/** The default form of the drawer. */
+export const Default: Story = {};

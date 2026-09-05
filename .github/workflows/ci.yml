@@ -1,0 +1,102 @@
+name: CI
+
+on:
+  pull_request:
+    branches: ["*"]
+  push:
+    branches: ["main"]
+  merge_group:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+env:
+  FORCE_COLOR: 3
+  # Turborepo Remote Caching (optional): https://turborepo.com/docs/core-concepts/remote-caching
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  # Env validation, schema extraction and TypeGen never contact Sanity, so a
+  # placeholder project keeps every check runnable on a fork. Set the
+  # SANITY_PROJECT_ID / SANITY_DATASET repository variables (and the
+  # SANITY_API_READ_TOKEN secret) to also build and smoke-test the web app.
+  NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ vars.SANITY_PROJECT_ID || 'placeholder' }}
+  NEXT_PUBLIC_SANITY_DATASET: ${{ vars.SANITY_DATASET || 'production' }}
+  SANITY_STUDIO_PROJECT_ID: ${{ vars.SANITY_PROJECT_ID || 'placeholder' }}
+  SANITY_STUDIO_DATASET: ${{ vars.SANITY_DATASET || 'production' }}
+  SANITY_STUDIO_PREVIEW_ENVIRONMENT: production
+
+jobs:
+  check:
+    name: Format, lint and workspace checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./tooling/github/setup
+      - run: pnpm format
+      - run: pnpm lint
+      - run: pnpm lint:ws
+
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./tooling/github/setup
+      - run: pnpm typecheck
+
+  test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./tooling/github/setup
+      - run: pnpm test
+
+  typegen:
+    name: Sanity TypeGen freshness
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./tooling/github/setup
+      - run: pnpm typegen
+      - name: Verify generated types are committed
+        run: git diff --exit-code -- packages/sanity/src/sanity.types.ts apps/studio/schema.json
+
+  build:
+    name: Build Studio and Storybook
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./tooling/github/setup
+      - run: pnpm turbo run build --filter=studio --filter=storybook
+
+  web:
+    name: Build web and run Playwright smoke tests
+    # Prerendering reads real content, so this needs a Sanity project.
+    if: ${{ vars.SANITY_PROJECT_ID != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SANITY_API_READ_TOKEN: ${{ secrets.SANITY_API_READ_TOKEN }}
+      DEFAULT_SITE: brand-a
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./tooling/github/setup
+      - run: pnpm turbo run build --filter=web
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:e2e
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: apps/web/playwright-report
+          retention-days: 7

@@ -1,0 +1,10 @@
+export { CTABlock } from "./cta/component";
+export { FaqAccordion } from "./faq-accordion/component";
+export { FeatureCardsWithIcon } from "./feature-cards-icon/component";
+export { HeroBlock } from "./hero/component";
+export { LogoCloud } from "./logo-cloud/component";
+export { RichTextBlock } from "./rich-text-block/component";
+export { ShowcaseGrid } from "./showcase-grid/component";
+export { SocialGrid } from "./social-grid/component";
+export { SubscribeNewsletter } from "./subscribe-newsletter/component";
+export { VideoFeature } from "./video-feature/component";

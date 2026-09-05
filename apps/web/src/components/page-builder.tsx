@@ -1,0 +1,183 @@
+"use client";
+
+import {
+  CTABlock,
+  FaqAccordion,
+  FeatureCardsWithIcon,
+  HeroBlock,
+  LogoCloud,
+  RichTextBlock,
+  ShowcaseGrid,
+  SocialGrid,
+  SubscribeNewsletter,
+  VideoFeature,
+} from "@repo/blocks/components";
+import { cn } from "cn";
+import { useOptimistic } from "next-sanity/hooks";
+
+import { sanityDataAttribute } from "@/lib/data-attribute";
+import type { PageBuilderBlock, PagebuilderType } from "@/types";
+
+export interface PageBuilderProps {
+  readonly pageBuilder?: PageBuilderBlock[];
+  readonly id: string;
+  readonly type: string;
+}
+
+/**
+ * Renders one block, asserting the query result against its projection type
+ * so a GROQ or schema rename breaks the build instead of passing `any`.
+ */
+function renderBlockComponent(
+  block: PageBuilderBlock,
+  isFirst: boolean,
+  dataSanity?: string
+) {
+  switch (block?._type) {
+    case "cta": {
+      return <CTABlock {...(block as PagebuilderType<"cta">)} />;
+    }
+    case "faqAccordion": {
+      return <FaqAccordion {...(block as PagebuilderType<"faqAccordion">)} />;
+    }
+    case "hero": {
+      return (
+        <HeroBlock
+          {...(block as PagebuilderType<"hero">)}
+          dataSanity={dataSanity}
+          isFirst={isFirst}
+        />
+      );
+    }
+    case "featureCardsIcon": {
+      return (
+        <FeatureCardsWithIcon
+          {...(block as PagebuilderType<"featureCardsIcon">)}
+        />
+      );
+    }
+    case "subscribeNewsletter": {
+      return (
+        <SubscribeNewsletter
+          {...(block as PagebuilderType<"subscribeNewsletter">)}
+        />
+      );
+    }
+    case "logoCloud": {
+      return <LogoCloud {...(block as PagebuilderType<"logoCloud">)} />;
+    }
+    case "socialGrid": {
+      return <SocialGrid {...(block as PagebuilderType<"socialGrid">)} />;
+    }
+    case "showcaseGrid": {
+      return <ShowcaseGrid {...(block as PagebuilderType<"showcaseGrid">)} />;
+    }
+    case "richTextBlock": {
+      return <RichTextBlock {...(block as PagebuilderType<"richTextBlock">)} />;
+    }
+    case "videoFeature": {
+      return <VideoFeature {...(block as PagebuilderType<"videoFeature">)} />;
+    }
+    default: {
+      return null;
+    }
+  }
+}
+
+function UnknownBlock({ blockType }: { blockType: string }) {
+  return (
+    <div
+      className="border-muted-foreground/20 bg-muted text-muted-foreground flex items-center justify-center rounded-lg border-2 border-dashed p-8 text-center"
+      role="alert"
+    >
+      <div className="space-y-2">
+        <p>Component not found for block type:</p>
+        <code className="bg-background rounded px-2 py-1 font-mono text-sm">
+          {blockType}
+        </code>
+      </div>
+    </div>
+  );
+}
+
+interface OptimisticDocument {
+  pageBuilder?: { _key?: string }[];
+}
+
+/**
+ * Applies Presentation's drag-and-drop reordering optimistically. The
+ * mutation carries the raw document, not the projected blocks, so only the
+ * `_key` order is taken; a just-inserted block appears after revalidation.
+ */
+function useOptimisticPageBuilder(
+  initialBlocks: PageBuilderBlock[],
+  documentId: string
+) {
+  return useOptimistic<PageBuilderBlock[], OptimisticDocument>(
+    initialBlocks,
+    (currentBlocks, action) => {
+      const incoming = action.document.pageBuilder;
+      if (action.id !== documentId || !Array.isArray(incoming)) {
+        return currentBlocks;
+      }
+      const resolved = new Map(
+        currentBlocks.map((block) => [block._key, block])
+      );
+      const reordered: PageBuilderBlock[] = [];
+      for (const raw of incoming as { _key?: string }[]) {
+        const block = raw?._key ? resolved.get(raw._key) : undefined;
+        if (block) {
+          reordered.push(block);
+        }
+      }
+      return reordered;
+    }
+  );
+}
+
+const NO_BLOCKS: PageBuilderBlock[] = [];
+
+export function PageBuilder({ pageBuilder, id, type }: PageBuilderProps) {
+  const blocks = useOptimisticPageBuilder(pageBuilder ?? NO_BLOCKS, id);
+
+  if (!blocks.length) {
+    return null;
+  }
+
+  return (
+    <div
+      className="grid min-w-0 grid-cols-1"
+      data-sanity={sanityDataAttribute({ id, type, path: "pageBuilder" })}
+    >
+      {blocks.map((block, index) => {
+        // The leading hero's wrapper is `display: contents` so its banner can
+        // pin; a box-less element is unselectable in the overlay, so the
+        // attribute is handed to the hero itself.
+        const isLeadingHero = index === 0 && block?._type === "hero";
+        const dataSanity = sanityDataAttribute({
+          id,
+          type,
+          path: `pageBuilder[_key=="${block._key}"]`,
+        });
+        const content = renderBlockComponent(
+          block,
+          index === 0,
+          isLeadingHero ? dataSanity : undefined
+        );
+
+        return (
+          <div
+            className={cn(
+              "min-w-0",
+              isLeadingHero ? "contents" : "bg-background relative z-10"
+            )}
+            data-sanity={isLeadingHero ? undefined : dataSanity}
+            key={`${block._type}-${block._key}`}
+          >
+            {content ?? <UnknownBlock blockType={block?._type ?? "unknown"} />}
+          </div>
+        );
+      })}
+    </div>
+  );
+}

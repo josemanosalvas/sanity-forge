@@ -1,1 +1,112 @@
-# sanity-forge
+# Sanity Forge
+
+A production-ready, multi-site and multilingual **Next.js + Sanity** template on Turborepo. One codebase, one Sanity project and one Studio serve any number of known sites, each with its own domain and set of locales.
+
+- **Multi-site by host.** `brand-a.example` and `brand-b.example` are resolved from the request host by a synchronous, typed site registry; public URLs never carry a site identifier.
+- **Multilingual.** Site and locale are orthogonal. The site's default locale is unprefixed (`/pricing`), the rest are prefixed (`/de/preise`), and CMS slugs are localized per document.
+- **Page builder.** Ten shared blocks (hero, CTA, FAQ, feature cards, logo cloud, rich text, showcase grid, social grid, newsletter, video) with colocated schema, GROQ, component, tests, stories and Markdown output.
+- **Editorial tooling.** One Studio workspace per site with Presentation, Visual Editing, Draft Mode, Releases, Vision, document- and field-level localization and Sanity TypeGen.
+- **Production defaults.** Security headers, SEO (canonical, hreflang, JSON-LD, robots, sitemaps per site), analytics and observability packages that are vendor-neutral or optional.
+
+## Requirements
+
+- Node 24 (`.nvmrc`)
+- pnpm 11 (`corepack enable` or install it globally)
+- A Sanity project (free tier is fine) with a dataset
+
+## Quick start
+
+```bash
+pnpm install
+
+# Studio
+cp apps/studio/.env.example apps/studio/.env    # fill in SANITY_STUDIO_PROJECT_ID
+# Web
+cp apps/web/.env.example apps/web/.env          # fill in NEXT_PUBLIC_SANITY_PROJECT_ID
+
+pnpm typegen        # extracts the schema and generates packages/sanity/src/sanity.types.ts
+pnpm dev            # web on :3000, studio on :3333, storybook on :6006
+```
+
+Local site domains are `brand-a.localhost:3000` and `brand-b.localhost:3000` (browsers resolve `*.localhost` to loopback). Plain `localhost:3000` serves the site named in `DEFAULT_SITE`.
+
+Add a viewer token as `SANITY_API_READ_TOKEN` to enable Draft Mode, Presentation and Visual Editing.
+
+## Sites and locales
+
+Sites are declared once, in `packages/internationalization/src/sites.ts`:
+
+| Site      | Locales    | Production host   | Development host         |
+| --------- | ---------- | ----------------- | ------------------------ |
+| `brand-a` | en, de, fr | `brand-a.example` | `brand-a.localhost:3000` |
+| `brand-b` | en, de     | `brand-b.example` | `brand-b.localhost:3000` |
+
+The registry drives the proxy (host to site), the Studio (one workspace per site, Presentation origins), SEO (canonical origin, hreflang) and static generation. To add a site, add an entry there, add its UI messages if it introduces a new locale under `packages/internationalization/messages/`, and create its `settings` document in the Studio.
+
+Every Sanity document that belongs to a site carries a `site` key. Pages, navigation, footers and FAQs are localized per document (`@sanity/document-internationalization`); site settings use localized string fields (`sanity-plugin-internationalized-array`).
+
+## Repository layout
+
+```
+apps/
+  web/            Next.js 16 App Router site (proxy → /[site]/[locale]/[[...slug]])
+  studio/         Sanity Studio 6, one workspace per site
+  storybook/      Storybook 10 for design-system and block stories
+packages/
+  analytics/      Vercel Analytics + optional Google Analytics
+  blocks/         Page-builder blocks: schema, query, component, markdown, tests, stories
+  design-system/  shadcn (base-nova) components, Tailwind 4 tokens, theme provider
+  internationalization/  Site registry, locale routing, next-intl request config, proxy helpers
+  next-config/    Shared next.config factory
+  observability/  Logger, error capture, optional Sentry
+  sanity/         Client, Live, queries, generated types, TypeGen config
+  security/       Security headers and CSP
+  seo/            Site × locale × route metadata, alternates, JSON-LD, robots, sitemap
+tooling/
+  github/         Reusable setup action
+  tailwind/       Shared PostCSS config
+  typescript/     tsconfig presets
+turbo/generators/ `pnpm turbo gen package` and `pnpm turbo gen block`
+```
+
+Dependency direction: `blocks → design-system`, `sanity → blocks` (query projections), `web → blocks + sanity`. The design system has no Sanity, analytics or observability dependencies.
+
+## Commands
+
+| Command | What it does |
+| --- | --- |
+| `pnpm dev` | All apps in watch mode |
+| `pnpm build` | Builds every app (web needs a Sanity project) |
+| `pnpm check` | Lint and format check (Ultracite: Oxlint + Oxfmt) |
+| `pnpm fix` | Apply lint and format fixes |
+| `pnpm typecheck` | TypeScript across the workspace (runs TypeGen first) |
+| `pnpm typegen` | Extract the Studio schema and regenerate GROQ result types |
+| `pnpm test` | Vitest unit and component tests |
+| `pnpm test:e2e` | Playwright smoke tests against a production build of `web` |
+| `pnpm lint:ws` | Workspace consistency checks (sherif) |
+| `pnpm turbo gen block` | Scaffold a page-builder block with all colocated files |
+| `pnpm turbo gen package` | Scaffold a `@repo/*` package |
+
+## Environment variables
+
+Each package owns the variables it needs in a `keys.ts` (t3-env) factory; `apps/web/src/env.ts` composes them and `apps/studio/env.ts` validates the Studio's. See `apps/web/.env.example` and `apps/studio/.env.example`. Optional vendors (Sentry, Google Analytics) activate only when their variables are set.
+
+## Content model
+
+- `page`: site-scoped, localized per document, with a localized slug and a `pageBuilder` array. The home page is the page whose slug is `/`.
+- `navigation`, `footer`: one per site and locale.
+- `settings`: one per site, with field-level localized strings.
+- `faq`: localized per document, shared across sites.
+- `redirect`: site-scoped source/destination pairs applied at build time.
+
+## Continuous integration
+
+`.github/workflows/ci.yml` runs format, lint, workspace checks, typecheck, unit tests, a TypeGen freshness check, and builds the Studio and Storybook with a placeholder project. Set the `SANITY_PROJECT_ID` and `SANITY_DATASET` repository variables and the `SANITY_API_READ_TOKEN` secret to also build the web app and run the Playwright smoke tests.
+
+## Acknowledgements
+
+Parts of this template are adapted from [turbo-start-sanity](https://github.com/robotostudio/turbo-start-sanity) (MIT, Roboto Studio), [next-forge](https://github.com/vercel/next-forge) (MIT, Vercel) and [create-t3-turbo](https://github.com/t3-oss/create-t3-turbo) (MIT, T3 OSS). See `LICENSE`.
+
+## License
+
+MIT

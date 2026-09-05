@@ -1,0 +1,510 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@source "../**/*.{ts,tsx}";
+
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ---------------------------------------------------------------------------
+ * Tokens. Light values live on :root, dark values on .dark (next-themes sets
+ * the class). Everything below the shadcn set is Forge-specific.
+ * ------------------------------------------------------------------------ */
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+
+  /* Brand highlight: the one saturated surface, used for emphasis (badges,
+     selection, eyebrows, pills). Swap the hue to re-brand the template. */
+  --highlight: oklch(0.935 0.226 122);
+  --highlight-foreground: var(--foreground);
+  --success: oklch(0.48 0.16 122);
+  --danger: oklch(0.55 0.21 27);
+
+  /* Dot ink strength — bg-grid-dots mixes currentColor at this alpha. */
+  --dot-alpha: 80%;
+
+  /* Damped spring sampled to a `linear()` curve — ~1% overshoot, so it settles
+     rather than bounces. A cubic-bezier can't overshoot at all. */
+  --ease-spring: linear(
+    0,
+    0.0668,
+    0.2132,
+    0.3826,
+    0.5435,
+    0.6806,
+    0.7891,
+    0.87,
+    0.9269,
+    0.9648,
+    0.9884,
+    1.0019,
+    1.0085,
+    1.0109,
+    1.0108,
+    1.0095,
+    1.0076,
+    1.0058,
+    1.0041,
+    1.0028,
+    1.0018,
+    1.001,
+    1
+  );
+
+  /* Space the leading hero's copy takes. The pinned banner is `100svh` minus
+     this, so the copy sits on the fold. */
+  --hero-copy: 420px;
+
+  /* Inline gutter shared by the navbar's `container` and page content. */
+  --container-px: 1.25rem;
+}
+
+@media (width >= 40rem) {
+  :root {
+    --hero-copy: 340px;
+  }
+}
+
+@media (width >= 64rem) {
+  :root {
+    --hero-copy: 285px;
+  }
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.145 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.269 0 0);
+  --input: oklch(0.269 0 0);
+  --ring: oklch(0.439 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-ring: oklch(0.439 0 0);
+
+  --highlight-foreground: oklch(0.21 0.006 285.885);
+  --success: var(--highlight);
+  --danger: oklch(0.72 0.19 27);
+}
+
+@theme inline {
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono), ui-monospace, SFMono-Regular, monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-highlight: var(--highlight);
+  --color-highlight-foreground: var(--highlight-foreground);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --animate-marquee: marquee 40s linear infinite;
+}
+
+/* ---------------------------------------------------------------------------
+ * Layout utilities shared by blocks and application chrome.
+ * ------------------------------------------------------------------------ */
+
+/* Overrides Tailwind's `container`. Inset defaults to 8px via a fallback var,
+ * so [--container-px:…] can override it per instance. */
+@utility container {
+  @apply mx-auto w-full max-w-360 px-(--container-px,0.5rem);
+}
+
+/* Cancels the container's padding (hardcoding it caused mobile scroll). */
+@utility bleed-x {
+  margin-inline: calc(var(--container-px, 0.5rem) * -1);
+}
+
+/* The one hover wash, shared by nav, the FAQ accordion and cards. Any surface
+ * using it must rest on `--background`, or the wash and the rest state
+ * collapse into each other. */
+@utility hover-surface {
+  @apply hover:bg-zinc-100 dark:hover:bg-zinc-900;
+}
+
+@utility body-text {
+  @apply text-base leading-6 font-normal text-pretty sm:text-lg sm:leading-7;
+}
+
+@utility block-title {
+  @apply text-foreground text-4xl leading-tight font-normal tracking-[-0.24px] text-balance md:text-5xl;
+}
+
+/* Top padding scale for top-anchored page-builder sections, in one place. */
+@utility block-section {
+  @apply bg-background py-10 sm:py-14 lg:py-[68px];
+}
+
+/* Dotted surface: a 5.2px tile with a 1.2px dot, tinted by currentColor at
+ * `--dot-alpha`. `background-repeat: round` fits a whole number of dots per
+ * box so edges land between dots. Change density via padding, not the tile. */
+@utility bg-grid-dots {
+  background-image: radial-gradient(
+    circle at center,
+    color-mix(in oklch, currentColor var(--dot-alpha), transparent) 0 0.6px,
+    transparent 1px
+  );
+  background-size: 5.2px 5.2px;
+  background-repeat: round;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Blurs the leading hero's banner as the page scrolls over it: the banner is
+   pinned under the content, so scroll progress maps to how covered it is. */
+@keyframes hero-blur {
+  to {
+    filter: blur(4px);
+  }
+}
+
+@utility hero-blur {
+  animation-name: hero-blur;
+  /* Ignored on a scroll timeline, which drives progress from the range below. */
+  animation-duration: 1ms;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+  animation-timeline: scroll(root block);
+  animation-range: 0px calc(100svh - var(--hero-copy, 420px));
+}
+
+/* The sticky banner paints at the viewport top for the whole page. Once the
+   content has fully covered it (~one viewport of scroll) it switches off. */
+@keyframes hero-park {
+  to {
+    visibility: hidden;
+  }
+}
+
+@utility hero-park {
+  animation-name: hero-park;
+  animation-duration: 1ms;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+  animation-timeline: scroll(root block);
+  animation-range: 100svh calc(100svh + 1px);
+}
+
+@supports not (animation-timeline: scroll()) {
+  .hero-blur,
+  .hero-park {
+    animation-name: none;
+  }
+}
+
+@keyframes hero-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+    filter: blur(2px);
+  }
+}
+
+@utility hero-enter {
+  animation: hero-enter 500ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Underline that wipes in from the left on hover/focus (and while a Base UI
+   popup trigger is open). currentColor adapts it to any surface. */
+@layer utilities {
+  .link-underline {
+    position: relative;
+  }
+  .link-underline::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0.125rem;
+    height: 1px;
+    background-color: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .link-underline:hover::after,
+  .link-underline:focus-visible::after,
+  .link-underline[data-popup-open]::after {
+    transform: scaleX(1);
+  }
+}
+
+/* Keyboard focus ring, for elements that re-enable or scope :focus-visible. */
+@layer utilities {
+  .focus-ring {
+    outline: none;
+  }
+  .focus-ring:focus-visible {
+    outline: 2px dotted var(--foreground);
+    outline-offset: 2px;
+  }
+
+  /* Inset variant: outline drawn inside the element so an overflow-hidden
+     ancestor or packed sibling can't clip it. */
+  .focus-ring-inset {
+    outline: none;
+  }
+  .focus-ring-inset:focus-visible {
+    outline: 2px dotted var(--foreground);
+    outline-offset: -3px;
+  }
+
+  /* Rings the whole card when a link inside it is focused. */
+  .focus-ring-within:has(a:focus-visible) {
+    outline: 2px dotted var(--foreground);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link-underline::after {
+    transition: none;
+  }
+  .hero-enter {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Base layer.
+ * ------------------------------------------------------------------------ */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    @apply border-border;
+  }
+  * {
+    @apply min-w-0;
+  }
+  html {
+    text-rendering: optimizelegibility;
+  }
+  body {
+    @apply bg-background text-foreground min-h-dvh;
+    overflow-x: clip;
+  }
+  input::placeholder,
+  textarea::placeholder {
+    @apply text-muted-foreground;
+  }
+  /* Preflight resets buttons to cursor:default — restore the pointer. */
+  button:not(:disabled),
+  [role="button"]:not(:disabled),
+  label[for],
+  summary {
+    cursor: pointer;
+  }
+  ::selection {
+    background-color: var(--highlight);
+    color: var(--highlight-foreground);
+  }
+  /* Global keyboard focus indicator; components opt out with `outline-none`. */
+  :focus-visible {
+    outline: 2px dotted var(--foreground);
+    outline-offset: 2px;
+  }
+  /* In @layer base so Tailwind utilities (w-40, object-contain, …) still win. */
+  img {
+    display: block;
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+  /* Media isn't text — keep it out of selections and iOS long-press callouts. */
+  img,
+  svg,
+  video {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+  /* Autofill: paint with the app palette, not the browser's yellow/blue. */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px var(--autofill-bg, var(--background)) inset;
+    -webkit-text-fill-color: var(--foreground);
+    caret-color: var(--foreground);
+    transition: background-color 9999s ease-out 0s;
+  }
+  /* Nearest-neighbor upscale so LQIP placeholders load in pixelated, not blurred. */
+  img[data-lqip] {
+    image-rendering: pixelated;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Typography plugin, mapped onto the tokens.
+ * ------------------------------------------------------------------------ */
+@utility prose {
+  --tw-prose-body: var(--color-foreground);
+  --tw-prose-headings: var(--color-foreground);
+  --tw-prose-lead: var(--color-muted-foreground);
+  --tw-prose-links: var(--color-primary);
+  --tw-prose-bold: var(--color-foreground);
+  --tw-prose-counters: var(--color-foreground);
+  --tw-prose-bullets: var(--color-muted-foreground);
+  --tw-prose-hr: var(--color-muted-foreground);
+  --tw-prose-quotes: var(--color-muted-foreground);
+  --tw-prose-quote-borders: var(--color-border);
+  --tw-prose-captions: var(--color-muted-foreground);
+  --tw-prose-code: var(--color-foreground);
+  --tw-prose-pre-code: var(--color-foreground);
+  --tw-prose-pre-bg: var(--color-background);
+  --tw-prose-th-borders: var(--color-border);
+  --tw-prose-td-borders: var(--color-border);
+  --tw-prose-invert-body: var(--color-foreground);
+  --tw-prose-invert-headings: var(--color-foreground);
+  --tw-prose-invert-lead: var(--color-muted-foreground);
+  --tw-prose-invert-links: var(--color-primary);
+  --tw-prose-invert-bold: var(--color-foreground);
+  --tw-prose-invert-counters: var(--color-foreground);
+  --tw-prose-invert-bullets: var(--color-foreground);
+  --tw-prose-invert-hr: var(--color-muted-foreground);
+  --tw-prose-invert-quotes: var(--color-muted-foreground);
+  --tw-prose-invert-quote-borders: var(--color-border);
+  --tw-prose-invert-captions: var(--color-muted-foreground);
+  --tw-prose-invert-code: var(--color-foreground);
+  --tw-prose-invert-pre-code: var(--color-foreground);
+  --tw-prose-invert-pre-bg: var(--color-background);
+  --tw-prose-invert-th-borders: var(--color-border);
+  --tw-prose-invert-td-borders: var(--color-border);
+}
+
+/* Code blocks (rich text). Plain monospace with a line-number gutter. */
+.rich-code {
+  --rich-code-inset-block: 1rem;
+  --rich-code-inset-inline: 0.75rem;
+}
+
+.rich-code-pre {
+  margin: 0;
+  padding: var(--rich-code-inset-block) var(--rich-code-inset-inline);
+  line-height: inherit;
+  width: max-content;
+  min-width: 100%;
+  white-space: pre;
+  tab-size: 2;
+  color: var(--foreground);
+}
+
+.rich-code-gutter {
+  flex: none;
+  padding: var(--rich-code-inset-block) var(--rich-code-inset-inline);
+  min-width: calc(2.5ch + var(--rich-code-inset-inline) * 2);
+  line-height: inherit;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in oklab, var(--muted-foreground) 60%, transparent);
+  user-select: none;
+  border-right: 1px solid var(--border);
+  background-color: var(--muted);
+}
+
+.rich-code-gutter span {
+  display: block;
+}

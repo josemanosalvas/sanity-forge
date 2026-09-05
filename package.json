@@ -1,0 +1,43 @@
+{
+  "name": "sanity-forge",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Production-grade, multi-site and multilingual Next.js + Sanity platform template on Turborepo.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo watch dev --continue",
+    "dev:web": "turbo watch dev --filter=web...",
+    "dev:studio": "turbo watch dev --filter=studio...",
+    "dev:storybook": "turbo watch dev --filter=storybook...",
+    "check": "ultracite check",
+    "fix": "ultracite fix",
+    "lint": "oxlint",
+    "format": "oxfmt --check",
+    "format:fix": "oxfmt",
+    "typecheck": "turbo run typecheck",
+    "typegen": "turbo run typegen",
+    "test": "turbo run test",
+    "test:e2e": "turbo run test:e2e",
+    "lint:ws": "sherif",
+    "clean": "git clean -xdf node_modules",
+    "clean:workspaces": "turbo run clean",
+    "schema:extract": "turbo run schema:extract"
+  },
+  "devDependencies": {
+    "@turbo/gen": "catalog:",
+    "@types/node": "catalog:",
+    "oxfmt": "catalog:",
+    "oxlint": "catalog:",
+    "sherif": "catalog:",
+    "turbo": "catalog:",
+    "typescript": "catalog:",
+    "ultracite": "catalog:"
+  },
+  "engines": {
+    "node": ">=24",
+    "pnpm": ">=11"
+  },
+  "packageManager": "pnpm@11.25.0"
+}

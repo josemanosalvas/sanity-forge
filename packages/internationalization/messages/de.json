@@ -1,0 +1,38 @@
+{
+  "common": {
+    "skipToContent": "Zum Inhalt springen",
+    "readMore": "Mehr lesen",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "openMenu": "Menü öffnen",
+    "closeMenu": "Menü schließen",
+    "mainNavigation": "Hauptnavigation",
+    "language": "Sprache",
+    "switchLanguage": "Sprache wechseln",
+    "theme": {
+      "label": "Design",
+      "light": "Hell",
+      "dark": "Dunkel",
+      "system": "System"
+    }
+  },
+  "notFound": {
+    "eyebrow": "Nicht gefunden",
+    "title": "Die gesuchte Seite existiert nicht.",
+    "cta": "Zur Startseite"
+  },
+  "preview": {
+    "message": "Sie sehen die Website im Vorschaumodus.",
+    "exit": "Beenden",
+    "exiting": "Entwurfsmodus wird beendet…"
+  },
+  "newsletter": {
+    "emailLabel": "E-Mail-Adresse",
+    "emailPlaceholder": "E-Mail-Adresse eingeben",
+    "subscribe": "Abonnieren",
+    "subscribing": "Wird abonniert…"
+  },
+  "footer": {
+    "copyright": "© {year} {siteName}. Alle Rechte vorbehalten."
+  }
+}

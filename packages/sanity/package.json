@@ -1,0 +1,47 @@
+{
+  "name": "@repo/sanity",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    "./client": "./src/client.ts",
+    "./image": "./src/image.ts",
+    "./keys": "./keys.ts",
+    "./live": "./src/live.ts",
+    "./queries": "./src/queries.ts",
+    "./types": "./src/sanity.types.ts"
+  },
+  "scripts": {
+    "clean": "git clean -xdf .cache .turbo node_modules",
+    "typecheck": "tsc --noEmit",
+    "typegen": "sanity typegen generate",
+    "typegen:watch": "sanity typegen generate --watch"
+  },
+  "dependencies": {
+    "@repo/blocks": "workspace:*",
+    "@repo/internationalization": "workspace:*",
+    "@sanity/client": "catalog:",
+    "@sanity/image-url": "catalog:",
+    "@t3-oss/env-nextjs": "catalog:",
+    "next-sanity": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@sanity/codegen": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "next": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "sanity": "catalog:",
+    "styled-components": "catalog:",
+    "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "next": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  }
+}
