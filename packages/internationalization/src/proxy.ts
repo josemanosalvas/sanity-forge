@@ -7,14 +7,46 @@ import type { SiteContext } from "./routing";
 import {
   getDefaultLocale,
   getSiteOrDefault,
+  hostVariants,
   resolveSiteFromHost,
 } from "./sites";
 import type { Site, SiteKey } from "./sites";
 
+/**
+ * The public hostname of a request. `x-forwarded-host` is what Vercel and
+ * most reverse proxies set; Next passes it through untouched, so a
+ * self-hosted deployment must have its proxy overwrite the header, or a
+ * client could pick another site by sending its own.
+ */
+export const requestHost = (request: NextRequest): string | null =>
+  request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+
 export const resolveSite = (request: NextRequest, fallback?: SiteKey): Site => {
-  const host =
-    request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+  const host = requestHost(request);
   return resolveSiteFromHost(host) ?? getSiteOrDefault(fallback);
+};
+
+/**
+ * A 308 to the site's production hostname when the request arrived on its
+ * `www.`/apex twin, so one URL per page reaches crawlers and caches. The
+ * development hostname keeps its port and is never redirected.
+ */
+export const canonicalHostRedirect = (
+  request: NextRequest,
+  site: Site
+): NextResponse | null => {
+  const host = requestHost(request)?.trim().toLowerCase();
+  const canonical = site.domains.production.toLowerCase();
+  if (!host || host === canonical || !hostVariants(canonical).includes(host)) {
+    return null;
+  }
+  const url = request.nextUrl.clone();
+  url.protocol = "https:";
+  // Set host first, then clear the port: a self-hosted origin listens on a
+  // port the public hostname does not.
+  url.host = canonical;
+  url.port = "";
+  return NextResponse.redirect(url, 308);
 };
 
 export interface SiteRewrite {

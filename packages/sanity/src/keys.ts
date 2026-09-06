@@ -32,7 +32,12 @@ export const keys = () =>
     server: {
       /** Viewer token, required at runtime by `src/token.ts`. */
       SANITY_API_READ_TOKEN: z.string().min(1).optional(),
-      /** Shared secret for the `/api/revalidate` webhook; the route fails closed when unset. */
+      /**
+       * Shared secret for the `/api/revalidate` webhook; the route fails closed
+       * when unset and refuses secrets shorter than 32 characters
+       * (`openssl rand -base64 32`), keeping a legacy value from taking the
+       * whole site down at startup.
+       */
       SANITY_REVALIDATE_SECRET: z.string().min(1).optional(),
     },
     skipValidation: process.env.SKIP_ENV_VALIDATION === "true",

@@ -4,7 +4,11 @@ import type { CSSProperties } from "react";
 
 import { sanitizeHref } from "../lib/safe-href";
 import type { SanityImageData } from "./sanity-image";
-import { resolveAssetId, SanityImage } from "./sanity-image";
+import {
+  getImageDimensions,
+  resolveAssetId,
+  SanityImage,
+} from "./sanity-image";
 
 export interface LogoLinkCellProps {
   image?: SanityImageData | null;
@@ -32,12 +36,19 @@ export const LogoLinkCell = ({
     return null;
   }
 
+  // The cell renders at `imageStyle.height` with `w-auto`, so the displayed
+  // width follows the asset's ratio, not the CDN request width.
+  const renderedHeight =
+    typeof imageStyle?.height === "number" ? imageStyle.height : height;
+  const ratio = getImageDimensions(image)?.aspectRatio ?? width / height;
   const media = (
     <SanityImage
       className={imageClassName}
       height={height}
       image={image}
       loading="lazy"
+      placeholder={false}
+      sizes={`${Math.round(renderedHeight * ratio)}px`}
       style={imageStyle}
       width={width}
     />

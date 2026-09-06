@@ -12,6 +12,7 @@ import {
 import { withObservability } from "@repo/observability/next-config";
 import { keys } from "@repo/sanity/keys";
 import { redirectsQuery } from "@repo/sanity/queries";
+import { createSecurityHeaders } from "@repo/security/headers";
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 import { createClient } from "next-sanity";
@@ -69,6 +70,16 @@ const siteRedirects = async () => {
       });
     });
   } catch (error) {
+    // A production build with credentials must not silently ship without
+    // the CMS redirects. `next build` sets NODE_ENV before loading the
+    // config (NEXT_PHASE is only set later, for the render workers); dev and
+    // placeholder builds keep the warning.
+    if (
+      process.env.NODE_ENV === "production" &&
+      process.env.NEXT_PUBLIC_SANITY_PROJECT_ID !== "placeholder"
+    ) {
+      throw error;
+    }
     console.warn(
       "[next.config] Skipping Sanity redirects:",
       (error as Error).message
@@ -77,9 +88,33 @@ const siteRedirects = async () => {
   }
 };
 
+/**
+ * The proxy does not run for API routes and the Sentry tunnel, so their
+ * responses get the transport-level headers (nosniff, HSTS, referrer policy)
+ * from the config instead; a CSP is meaningless for JSON and redirects.
+ */
+const transportHeaders = () =>
+  [...createSecurityHeaders({ contentSecurityPolicy: false })].map(
+    ([key, value]) => ({ key, value })
+  );
+
 const baseConfig: NextConfig = createNextConfig({
   // Sanity Live invalidates by tag, so cached reads live until content changes.
-  cacheLife: { default: sanityCacheLife },
+  // The profile is registered under its own name too, so cached scopes can
+  // state `cacheLife("sanity")` instead of relying on the implicit default.
+  cacheLife: { default: sanityCacheLife, sanity: sanityCacheLife },
+  experimental: {
+    // Dotted paths and other URLs that never reach the site layout still get
+    // a branded 404 (src/app/global-not-found.tsx).
+    globalNotFound: true,
+  },
+  headers: () =>
+    Promise.resolve(
+      ["/api/:path*", "/monitoring", "/monitoring/:path*"].map((source) => ({
+        headers: transportHeaders(),
+        source,
+      }))
+    ),
   images: {
     remotePatterns: [
       sanityImageRemotePattern(env.NEXT_PUBLIC_SANITY_PROJECT_ID),

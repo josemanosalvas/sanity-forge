@@ -11,14 +11,33 @@ import {
   DropdownMenuTrigger,
 } from "./dropdown-menu";
 
-const themes = [
-  { label: "Light", value: "light" },
-  { label: "Dark", value: "dark" },
-  { label: "System", value: "system" },
-];
+export interface ModeToggleLabels {
+  /** Accessible name of the trigger. */
+  toggle: string;
+  light: string;
+  dark: string;
+  system: string;
+}
 
-export const ModeToggle = () => {
+const defaultLabels: ModeToggleLabels = {
+  dark: "Dark",
+  light: "Light",
+  system: "System",
+  toggle: "Toggle theme",
+};
+
+/** The site passes translated labels; the English defaults serve Storybook. */
+export const ModeToggle = ({
+  labels = defaultLabels,
+}: {
+  labels?: ModeToggleLabels;
+}) => {
   const { setTheme } = useTheme();
+  const themes = [
+    { label: labels.light, value: "light" },
+    { label: labels.dark, value: "dark" },
+    { label: labels.system, value: "system" },
+  ];
 
   return (
     <DropdownMenu>
@@ -33,7 +52,7 @@ export const ModeToggle = () => {
       >
         <Sun className="size-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
         <Moon className="absolute size-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-        <span className="sr-only">Toggle theme</span>
+        <span className="sr-only">{labels.toggle}</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         {themes.map(({ label, value }) => (

@@ -138,8 +138,15 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-mono), ui-monospace, SFMono-Regular, monospace;
+  /*
+   * The app registers its next/font faces as --font-app-sans / --font-app-mono
+   * on <html>; without them (Storybook, tests) the system stacks apply. The
+   * tokens must not reference themselves, or they are invalid at :root.
+   */
+  --font-sans:
+    var(--font-app-sans, ui-sans-serif), ui-sans-serif, system-ui, sans-serif;
+  --font-mono:
+    var(--font-app-mono, ui-monospace), ui-monospace, SFMono-Regular, monospace;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -355,6 +362,8 @@
   }
   html {
     text-rendering: optimizelegibility;
+    /* Anchored headings and the skip target clear the 4rem sticky header. */
+    scroll-padding-top: 4rem;
   }
   body {
     @apply bg-background text-foreground min-h-dvh;

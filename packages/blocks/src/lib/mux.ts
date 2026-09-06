@@ -59,6 +59,28 @@ export const muxThumbnailUrl = (
   return `https://image.mux.com/${playbackId}/thumbnail.webp${query}`;
 };
 
+/** Candidate widths for a full-bleed still; 1920 covers 2x phones and 1x desktops. */
+export const MUX_STILL_WIDTHS = [640, 960, 1440, 1920] as const;
+
+/**
+ * A `srcSet` for a full-width still, so phones fetch the 640px file instead
+ * of the desktop one. Pair with `sizes="100vw"`.
+ */
+export const muxThumbnailSrcSet = (
+  playbackId?: string | null,
+  thumbTime?: number | null,
+  widths: readonly number[] = MUX_STILL_WIDTHS
+): string | undefined => {
+  if (!playbackId) {
+    return undefined;
+  }
+  return widths
+    .map(
+      (width) => `${muxThumbnailUrl(playbackId, thumbTime, width)} ${width}w`
+    )
+    .join(", ");
+};
+
 export type MuxMp4Resolution = "1080p" | "720p" | "480p" | "270p";
 
 /**

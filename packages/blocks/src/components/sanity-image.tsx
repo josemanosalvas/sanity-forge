@@ -4,12 +4,10 @@ import type { ElementType } from "react";
 import { SanityImage as BaseSanityImage } from "sanity-image";
 import type { WrapperProps } from "sanity-image";
 
-import { keys } from "../keys";
-
-const env = keys();
-
-const SANITY_BASE_URL =
-  `https://cdn.sanity.io/images/${env.NEXT_PUBLIC_SANITY_PROJECT_ID}/${env.NEXT_PUBLIC_SANITY_DATASET}/` as const;
+// Read directly: Next inlines NEXT_PUBLIC_ values into client bundles, and
+// the app validates them at startup, so a schema here would only add its
+// validator to every page's JavaScript.
+const SANITY_BASE_URL = `https://cdn.sanity.io/images/${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}/${process.env.NEXT_PUBLIC_SANITY_DATASET}/`;
 
 export interface SanityImageData {
   id?: string | null;
@@ -26,6 +24,13 @@ export interface SanityImageData {
 
 export type SanityImageProps = {
   image: SanityImageData;
+  /**
+   * Whether to blur up from the LQIP. Off automatically for eager and
+   * high-priority images; pass `false` for decorative repeats (logo
+   * marquees, theme twins) where the inlined placeholder costs more than it
+   * shows.
+   */
+  placeholder?: boolean;
 } & Omit<WrapperProps<"img">, "id">;
 
 const ImageWrapper = <T extends ElementType = "img">(
@@ -91,7 +96,53 @@ const isFiniteAll = (
   return fields.every((field) => Number.isFinite(record[field]));
 };
 
-export const SanityImage = ({ image, ...props }: SanityImageProps) => {
+/** Below this requested width a base64 placeholder costs more bytes than it shows. */
+const MIN_PREVIEW_WIDTH = 64;
+
+/**
+ * The LQIP wrapper hides the full image (`opacity: 0`) until React hydrates
+ * and its `onLoad` runs, so an eager image, the page's LCP candidate, must
+ * render as a plain `<img>` that can paint from the server HTML.
+ */
+type ImgProps = Omit<SanityImageProps, "image" | "placeholder">;
+
+const wantsPreview = (
+  image: SanityImageData,
+  props: ImgProps,
+  placeholder: boolean
+) =>
+  placeholder &&
+  Boolean(image.preview) &&
+  props.loading !== "eager" &&
+  props.fetchPriority !== "high" &&
+  (typeof props.width !== "number" || props.width >= MIN_PREVIEW_WIDTH);
+
+/** The reserved box for an SVG follows the asset's own ratio, not the request's. */
+const svgBox = (image: SanityImageData, props: ImgProps) => {
+  const dimensions = getImageDimensions(image);
+  if (!dimensions) {
+    return { height: props.height, width: props.width };
+  }
+  if (typeof props.height === "number") {
+    return {
+      height: props.height,
+      width: Math.round(props.height * dimensions.aspectRatio),
+    };
+  }
+  if (typeof props.width === "number") {
+    return {
+      height: Math.round(props.width / dimensions.aspectRatio),
+      width: props.width,
+    };
+  }
+  return { height: dimensions.height, width: dimensions.width };
+};
+
+export const SanityImage = ({
+  image,
+  placeholder = true,
+  ...props
+}: SanityImageProps) => {
   const id = resolveAssetId(image);
   if (!(id && image)) {
     return null;
@@ -99,25 +150,31 @@ export const SanityImage = ({ image, ...props }: SanityImageProps) => {
 
   const svgUrl = svgUrlFromAssetId(id);
   if (svgUrl) {
+    const box = svgBox(image, props);
     return (
       // oxlint-disable-next-line next/no-img-element -- serves the original SVG untouched by the CDN transform pipeline
       <img
         alt={props.alt ?? image.alt ?? ""}
         className={cn("object-contain", props.className)}
         decoding="async"
-        height={props.height}
+        fetchPriority={props.fetchPriority}
+        height={box.height}
         loading={props.loading ?? "lazy"}
+        sizes={props.sizes}
         src={svgUrl}
         style={props.style}
-        width={props.width}
+        width={box.width}
       />
     );
   }
 
+  const preview = wantsPreview(image, props, placeholder)
+    ? image.preview
+    : undefined;
   const processedData = {
     alt: props.alt ?? image.alt ?? "",
     id,
-    ...(image.preview && { preview: image.preview }),
+    ...(preview && { preview }),
     ...(isFiniteAll(image.hotspot, HOTSPOT_KEYS) && { hotspot: image.hotspot }),
     ...(isFiniteAll(image.crop, CROP_KEYS) && { crop: image.crop }),
   };

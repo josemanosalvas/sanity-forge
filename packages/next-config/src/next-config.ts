@@ -2,6 +2,9 @@ import withBundleAnalyzer from "@next/bundle-analyzer";
 import type { NextConfig } from "next";
 
 export const baseConfig = {
+  // Repositories keep their own AGENTS.md; do not let `next dev` scaffold
+  // another one in each app.
+  agentRules: false,
   cacheComponents: true,
   images: {
     formats: ["image/avif", "image/webp"],
@@ -14,7 +17,10 @@ export const baseConfig = {
   // Requires babel-plugin-react-compiler in the app.
   reactCompiler: true,
   reactStrictMode: true,
-  typedRoutes: true,
+  // `typedRoutes` is deliberately off: the apps put their route parameters
+  // (site, locale) behind a proxy rewrite, so every public href is a path the
+  // router never sees and typed links would reject all of them. The route-aware
+  // `PageProps`/`LayoutProps`/`RouteContext` helpers are generated regardless.
 } satisfies NextConfig;
 
 /** `images.remotePatterns` entry for a Sanity project's image CDN. */

@@ -21,6 +21,14 @@
     "title": "La page que vous cherchez n'existe pas.",
     "cta": "Retour à l'accueil"
   },
+  "error": {
+    "title": "Une erreur est survenue",
+    "body": "La page n'a pas pu être affichée. Réessayez ou revenez dans un instant.",
+    "retry": "Réessayer",
+    "home": "Retour à l'accueil",
+    "errorId": "Identifiant d'erreur",
+    "chrome": "Cette partie de la page n'a pas pu être chargée."
+  },
   "preview": {
     "message": "Vous consultez le site en mode aperçu.",
     "exit": "Quitter",
@@ -42,9 +50,11 @@
       "subscribe": "S'abonner",
       "subscribeToNewsletter": "S'abonner à la newsletter",
       "subscribing": "Abonnement en cours…"
-    }
+    },
+    "sectionFailed": "Cette section n'a pas pu être affichée.",
+    "tryAgain": "Réessayer"
   },
   "footer": {
-    "copyright": "© {year} {siteName}. Tous droits réservés."
+    "copyright": "© {siteName}. Tous droits réservés."
   }
 }

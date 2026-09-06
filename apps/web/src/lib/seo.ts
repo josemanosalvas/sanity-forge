@@ -1,6 +1,6 @@
 import { isLocale } from "@repo/internationalization/locales";
 import type { SettingsQueryResult } from "@repo/sanity/types";
-import { createMetadata } from "@repo/seo/metadata";
+import { createMetadata, titleTemplate } from "@repo/seo/metadata";
 import type { RouteAlternate } from "@repo/seo/route";
 import type { Metadata } from "next";
 
@@ -19,7 +19,7 @@ const toAlternates = (
       : []
   );
 
-/** Favicons from the site settings; none until the site uploads them. */
+/** Favicons from the site settings; the neutral mark in public/ until the site uploads its own. */
 export const faviconIcons = (
   settings: SettingsQueryResult
 ): Metadata["icons"] => {
@@ -31,7 +31,9 @@ export const faviconIcons = (
       ? [{ sizes: "16x16 32x32 48x48", url: settings.favicon.ico }]
       : []),
   ];
-  return icon.length > 0 ? { icon } : undefined;
+  return icon.length > 0
+    ? { icon }
+    : { icon: [{ type: "image/svg+xml", url: "/icon.svg" }] };
 };
 
 const twitterHandle = (settings: SettingsQueryResult) => {
@@ -63,17 +65,27 @@ export const pageMetadata = (
     twitterHandle: twitterHandle(settings),
   });
 
-/** Metadata for routes without a CMS document (404, errors): site defaults only. */
+/**
+ * The layout's metadata: site defaults every segment inherits, plus the title
+ * template that appends the site name to page titles. Routes without a CMS
+ * document (404, errors) render with exactly this, so it asserts neither
+ * alternates nor a robots directive; the 404 status carries its own noindex.
+ */
 export const siteMetadata = (
   context: SiteContext,
   settings: SettingsQueryResult
-): Metadata => ({
-  ...createMetadata({
-    description: settings?.siteDescription,
-    icons: faviconIcons(settings),
-    image: settings?.ogImage,
-    route: { locale: context.locale, path: "/", site: context.site },
-    siteName: settings?.siteTitle ?? context.site.name,
-  }),
-  alternates: undefined,
-});
+): Metadata => {
+  const siteName = settings?.siteTitle ?? context.site.name;
+  return {
+    ...createMetadata({
+      description: settings?.siteDescription,
+      icons: faviconIcons(settings),
+      image: settings?.ogImage,
+      route: { locale: context.locale, path: "/", site: context.site },
+      siteName,
+    }),
+    alternates: undefined,
+    robots: undefined,
+    title: { default: siteName, template: titleTemplate(siteName) },
+  };
+};

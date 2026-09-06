@@ -21,6 +21,14 @@
     "title": "The page you are looking for does not exist.",
     "cta": "Return home"
   },
+  "error": {
+    "title": "Something went wrong",
+    "body": "The page could not be rendered. Try again, or come back in a moment.",
+    "retry": "Try again",
+    "home": "Return home",
+    "errorId": "Error ID",
+    "chrome": "This part of the page could not be loaded."
+  },
   "preview": {
     "message": "Viewing the website in preview mode.",
     "exit": "Exit",
@@ -42,9 +50,11 @@
       "subscribe": "Subscribe",
       "subscribeToNewsletter": "Subscribe to newsletter",
       "subscribing": "Subscribing…"
-    }
+    },
+    "sectionFailed": "This section could not be displayed.",
+    "tryAgain": "Try again"
   },
   "footer": {
-    "copyright": "© {year} {siteName}. All rights reserved."
+    "copyright": "© {siteName}. All rights reserved."
   }
 }

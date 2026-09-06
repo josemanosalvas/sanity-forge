@@ -21,11 +21,19 @@ export interface NewsletterTestimonial {
   quote?: RichTextValue;
 }
 
+/** Outcome of the last submission, as a Server Action returns it through `useActionState`. */
+export interface SubscribeNewsletterState {
+  status: "idle" | "success" | "error";
+  /** Shown under the form and announced to screen readers. */
+  message?: string | null;
+}
+
 export interface SubscribeNewsletterProps {
   action?: ComponentProps<"form">["action"];
   helperText?: RichTextValue;
   method?: ComponentProps<"form">["method"];
   onSubmit?: ComponentProps<"form">["onSubmit"];
+  state?: SubscribeNewsletterState | null;
   subTitle?: RichTextValue;
   testimonial?: NewsletterTestimonial | null;
   title?: string | null;
@@ -62,6 +70,28 @@ const SubscribeNewsletterButton = () => {
   );
 };
 
+/**
+ * The outcome of the last submission. The region is always mounted so a
+ * message swapped into it is announced; an alert is assertive on its own.
+ */
+const SubmissionMessage = ({
+  state,
+}: Readonly<{ state?: SubscribeNewsletterState | null }>) => {
+  const failed = state?.status === "error";
+  return (
+    <p
+      aria-live={failed ? undefined : "polite"}
+      className={cn(
+        "text-sm leading-5 empty:hidden",
+        failed ? "text-danger" : "text-muted-foreground"
+      )}
+      role={failed ? "alert" : "status"}
+    >
+      {state?.message ?? ""}
+    </p>
+  );
+};
+
 const TestimonialPanel = ({
   testimonial,
 }: Readonly<{ testimonial: NewsletterTestimonial }>) => {
@@ -83,6 +113,8 @@ const TestimonialPanel = ({
                   height={42}
                   image={authorImage}
                   loading="lazy"
+                  mode="cover"
+                  sizes="42px"
                   width={42}
                 />
               </div>
@@ -111,6 +143,7 @@ export const SubscribeNewsletter = ({
   helperText,
   method,
   onSubmit,
+  state,
   testimonial,
 }: Readonly<SubscribeNewsletterProps>) => {
   const { newsletter } = useBlockLabels();
@@ -153,7 +186,12 @@ export const SubscribeNewsletter = ({
                 <form
                   action={action}
                   className="bg-muted flex w-full items-center gap-1.5 py-1.5 pr-1.5 pl-4 has-[input:focus-visible]:[outline:2px_dotted_var(--foreground)] has-[input:focus-visible]:outline-offset-2"
-                  method={method ?? "post"}
+                  // React owns the request for a function action; a method there is rejected.
+                  method={
+                    typeof action === "function"
+                      ? undefined
+                      : (method ?? "post")
+                  }
                   onSubmit={onSubmit}
                 >
                   <input
@@ -166,6 +204,7 @@ export const SubscribeNewsletter = ({
                   />
                   <SubscribeNewsletterButton />
                 </form>
+                <SubmissionMessage state={state} />
                 {helperText && (
                   <RichText
                     className="text-muted-foreground [&_a]:text-foreground text-sm leading-5 [&_a]:rounded-none [&_a]:font-medium [&_a]:underline [&_a]:decoration-solid"

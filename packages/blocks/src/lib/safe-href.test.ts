@@ -25,6 +25,8 @@ describe(isSafeHref, () => {
     "file:///etc/passwd",
     // oxlint-enable no-script-url
     "not a url",
+    "//evil.example/path",
+    String.raw`/\evil.example`,
   ])("rejects %s", (href) => {
     expect(isSafeHref(href.trim())).toBeFalsy();
   });

@@ -1,4 +1,5 @@
 import { cn } from "cn";
+import { preconnect } from "react-dom";
 
 import { BlockEyebrow } from "../../components/block-eyebrow";
 import type { RichTextValue } from "../../components/rich-text";
@@ -7,7 +8,11 @@ import type { ButtonProps } from "../../components/sanity-buttons";
 import { SanityButtons } from "../../components/sanity-buttons";
 import type { SanityImageData } from "../../components/sanity-image";
 import { getImageDimensions, SanityImage } from "../../components/sanity-image";
-import { muxPlaybackId, muxThumbnailUrl } from "../../lib/mux";
+import {
+  muxPlaybackId,
+  muxThumbnailSrcSet,
+  muxThumbnailUrl,
+} from "../../lib/mux";
 import type { HeroVideoData, HeroVideoVariant } from "./hero-video";
 import { HeroVideo } from "./hero-video";
 import { isMuxPath, mediaTypeOf } from "./media-type";
@@ -33,6 +38,7 @@ interface HeroStill {
   image?: SanityImageData;
   key: string;
   url?: string;
+  srcSet?: string;
 }
 
 const stillOf = (variant?: HeroVideoVariant | null): HeroStill | null => {
@@ -43,12 +49,19 @@ const stillOf = (variant?: HeroVideoVariant | null): HeroStill | null => {
   if (!isMuxPath(mediaTypeOf(variant))) {
     return null;
   }
+  const playbackId = muxPlaybackId(variant?.mux);
   const url = muxThumbnailUrl(
-    muxPlaybackId(variant?.mux),
+    playbackId,
     variant?.mux?.thumbTime,
     POSTER_WIDTH
   );
-  return url ? { key: url, url } : null;
+  return url
+    ? {
+        key: url,
+        srcSet: muxThumbnailSrcSet(playbackId, variant?.mux?.thumbTime),
+        url,
+      }
+    : null;
 };
 
 const HeroPoster = ({
@@ -74,7 +87,9 @@ const HeroPoster = ({
         className={shared}
         fetchPriority={eager ? "high" : undefined}
         loading={eager ? "eager" : "lazy"}
+        sizes="100vw"
         src={still.url}
+        srcSet={still.srcSet}
       />
     );
   }
@@ -93,6 +108,10 @@ const HeroPoster = ({
       }
       image={image}
       loading={eager ? "eager" : "lazy"}
+      // A lazy hidden twin is never fetched; without the placeholder the
+      // visible one paints from the HTML instead of waiting for hydration.
+      placeholder={false}
+      sizes="100vw"
       width={POSTER_WIDTH}
     />
   );
@@ -108,6 +127,10 @@ const HeroPosters = ({
   if (!light) {
     return null;
   }
+  if (eager && light.url) {
+    // The LCP still comes from Mux, not the preconnected Sanity CDN.
+    preconnect("https://image.mux.com");
+  }
 
   const split = dark !== null && dark.key !== light.key;
 
@@ -118,7 +141,11 @@ const HeroPosters = ({
         eager={eager}
         still={light}
       />
-      {/* Only prioritize the light poster to avoid preloading both theme variants. */}
+      {/*
+       * The theme is a class toggle, so a media query cannot pick the still:
+       * the light one is the LCP candidate; the dark twin lazy-loads (hidden
+       * means never fetched) and paints as soon as it is shown.
+       */}
       {split && <HeroPoster className="hidden dark:block" still={dark} />}
     </>
   );
@@ -135,7 +162,8 @@ export const HeroBlock = ({
 }: Readonly<HeroBlockProps>) => {
   const banner = (
     <>
-      <HeroPosters eager video={video} />
+      {/* Only the page's first hero is an LCP candidate; later ones lazy-load. */}
+      <HeroPosters eager={isFirst} video={video} />
       <HeroVideo className={bannerFill} video={video} />
     </>
   );

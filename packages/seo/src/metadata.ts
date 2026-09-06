@@ -23,6 +23,9 @@ export interface CreateMetadataOptions {
   readonly icons?: Metadata["icons"];
 }
 
+/** The `%s | Site` pattern the root layout registers as its `title.template`. */
+export const titleTemplate = (siteName: string) => `%s | ${siteName}`;
+
 const resolveTitles = ({
   title,
   siteName,
@@ -32,7 +35,15 @@ const resolveTitles = ({
   const fullTitle = pageTitle.includes(siteName)
     ? pageTitle
     : `${pageTitle} | ${siteName}`;
-  return { fullTitle, socialTitle: ogTitle?.trim() || fullTitle };
+  // The layout's template appends the site name to a bare page title; a
+  // title that already carries it (or is the site name) opts out with `absolute`.
+  const documentTitle: Metadata["title"] =
+    pageTitle === fullTitle ? { absolute: fullTitle } : pageTitle;
+  return {
+    documentTitle,
+    fullTitle,
+    socialTitle: ogTitle?.trim() || fullTitle,
+  };
 };
 
 /** Open Graph writes the region tag with an underscore: `de-DE` becomes `de_DE`. */
@@ -53,7 +64,7 @@ export const createMetadata = ({
   type = "website",
   icons,
 }: CreateMetadataOptions): Metadata => {
-  const { fullTitle, socialTitle } = resolveTitles({
+  const { documentTitle, socialTitle } = resolveTitles({
     ogTitle,
     siteName,
     title,
@@ -86,7 +97,7 @@ export const createMetadata = ({
     robots: noIndex
       ? { follow: false, index: false }
       : { follow: true, index: true },
-    title: fullTitle,
+    title: documentTitle,
     twitter: {
       card: images ? "summary_large_image" : "summary",
       creator: twitterHandle ?? undefined,

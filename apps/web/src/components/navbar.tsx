@@ -1,5 +1,3 @@
-"use client";
-
 import { SanityButtons } from "@repo/blocks/components/sanity-buttons";
 import { ModeToggle } from "@repo/ui/components/mode-toggle";
 import {
@@ -15,6 +13,11 @@ import { MobileMenu } from "@/components/mobile-menu";
 import { CurrentNavItems, NavItems } from "@/components/nav-items";
 import type { NavigationData } from "@/types";
 
+/**
+ * A Server Component: next-intl's `useTranslations` resolves on the server,
+ * and every interactive part below declares its own client boundary, so the
+ * header shell and the logo stay out of the browser bundle.
+ */
 export const Navbar = ({
   navigation,
   settings,
@@ -22,6 +25,12 @@ export const Navbar = ({
 }: NavigationData & { siteName: string }) => {
   const t = useTranslations("common");
   const { columns, buttons } = navigation ?? {};
+  const themeLabels = {
+    dark: t("theme.dark"),
+    light: t("theme.light"),
+    system: t("theme.system"),
+    toggle: t("theme.label"),
+  };
 
   return (
     <header className="border-border bg-background/80 sticky top-0 z-40 w-full border-b backdrop-blur">
@@ -55,12 +64,12 @@ export const Navbar = ({
             size="sm"
           />
           <LanguageSwitcher />
-          <ModeToggle />
+          <ModeToggle labels={themeLabels} />
         </div>
 
         <div className="flex flex-1 items-center justify-end gap-1 lg:hidden">
           <LanguageSwitcher />
-          <ModeToggle />
+          <ModeToggle labels={themeLabels} />
           <MobileMenu navigation={navigation} siteName={siteName} />
         </div>
       </div>
