@@ -16,12 +16,14 @@ cp apps/web/.env.example apps/web/.env
 
 Fill in the project ID and dataset in both files. Set `SANITY_API_READ_TOKEN` to a Viewer token from the project's API settings; Sanity Live and previews require it.
 
+On a Vercel-linked checkout, `vercel env pull apps/web/.env.local` replaces the manual copy; Next loads `.env.local` ahead of `.env`. Env files live beside each app's `package.json`, never at the repository root, and are read at startup: restart `pnpm dev` after editing them.
+
 ```bash
 pnpm typegen
 pnpm dev
 ```
 
-Web runs on port 3000, Studio on 3333 and Storybook on 6006. Use `brand-a.localhost:3000` or `brand-b.localhost:3000`; plain `localhost:3000` serves `DEFAULT_SITE`.
+Web runs on port 3000, Studio on 3333 and Storybook on 6006. Use `brand-a.localhost:3000` or `brand-b.localhost:3000`; plain `localhost:3000` serves `DEFAULT_SITE`. Stale-module or Turbopack cache errors clear with `pnpm clean:workspaces && pnpm clean && pnpm install`.
 
 ## Sites and content
 
@@ -66,7 +68,22 @@ Import concrete modules through package exports, such as `@repo/blocks/hero` or 
 | `pnpm turbo gen block` | Scaffold and register a block; add its web renderer and behavior tests |
 | `pnpm turbo gen package` | Scaffold a workspace package |
 
-Sentry and Google Analytics activate when configured in `apps/web/.env`. Vercel Analytics is enabled by default; disable it with `NEXT_PUBLIC_VERCEL_ANALYTICS=false`. See the `.env.example` files for all options.
+### Third-party scripts
+
+Every external script is loaded by a maintained integration and can be switched off with a public key; the Loading column states when each runs. See `apps/web/.env.example`.
+
+| Provider | Origins | Purpose | Loading | Key |
+| --- | --- | --- | --- | --- |
+| Vercel Web Analytics | own origin (`/_vercel/insights`) | page views, custom events | `@vercel/analytics/next`, after hydration | `NEXT_PUBLIC_VERCEL_ANALYTICS` (on) |
+| Vercel Speed Insights | own origin (`/_vercel/speed-insights`) | real-user LCP, INP, CLS | `@vercel/speed-insights/next`, after hydration | `NEXT_PUBLIC_VERCEL_SPEED_INSIGHTS` (on) |
+| Google Analytics | `googletagmanager.com`, `google-analytics.com` | page views | `@next/third-parties/google`, after hydration | `NEXT_PUBLIC_GA_MEASUREMENT_ID` (off) |
+| Sentry | `*.ingest.sentry.io` through the `/monitoring` tunnel | errors, traces; Session Replay opt-in | `instrumentation-client.ts`, before hydration | `NEXT_PUBLIC_SENTRY_DSN` (off) |
+| Mux | `stream.mux.com`, `image.mux.com` | video playback and stills | dynamic import on play; Mux Data off | per block |
+| Sanity Live | `*.api.sanity.io` | content updates | `next-sanity/live`, every page | always |
+
+Performance targets are the Core Web Vitals field thresholds, read from Speed Insights at the 75th percentile over 28 days with mobile and desktop separate: LCP under 2.5 s, INP under 200 ms, CLS under 0.1. The LCP element is the leading hero's poster (`packages/blocks/src/blocks/hero/hero.tsx`); INP is governed by the client bundle, which the page builder keeps to interactive leaves; CLS is prevented by explicit image dimensions, `next/font` fallbacks and reserved Suspense fallbacks.
+
+Draft Mode exits through the preview bar's Server Action; `POST /api/draft-mode/disable?to=/path` is the equivalent endpoint for tooling outside the site.
 
 The newsletter block needs an `action` or `onSubmit` handler to render a subscription form. The strings blocks render themselves (form labels, the copy and play buttons, screen-reader text) come from the `blocks` namespace of `packages/internationalization/messages/` through `BlockLabelsProvider` (`@repo/blocks/components/block-labels`), which the layout mounts; without a provider, as in Storybook, the English defaults apply. Markdown serializers are available per block; there is no Markdown HTTP route.
 
@@ -81,7 +98,7 @@ For revalidation when no browser has Sanity Live open, configure a GROQ-powered 
 | URL               | `https://your-site/api/revalidate`                  |
 | Method / triggers | POST; create, update, delete; draft events disabled |
 | Projection        | `{_type, site}`                                     |
-| Secret            | Same as `SANITY_REVALIDATE_SECRET`                  |
+| Secret            | Same as `SANITY_REVALIDATE_SECRET` (32+ characters) |
 
 Filter:
 
@@ -91,9 +108,23 @@ _type in ["page", "settings", "navigation", "footer", "faq", "translation.metada
 
 Site documents invalidate that site's reads; shared documents invalidate all sites. The next request can receive stale content while the cache refreshes. Redirect edits require a rebuild.
 
+## Deployment
+
+One Vercel project serves every hostname in `sites.ts`; attach all production domains to it and `DEFAULT_SITE` answers preview URLs. Settings:
+
+| Setting | Value |
+| --- | --- |
+| Root Directory | repository root (empty): the web build runs the Studio's schema extraction through Turborepo |
+| Install Command | `pnpm install --frozen-lockfile` |
+| Build Command | `pnpm turbo run build --filter=web` |
+| Output Directory | `apps/web/.next` |
+| Node.js | 24.x (`.node-version`) |
+
+Environment variables: everything in `apps/web/.env.example` marked required, plus `SANITY_STUDIO_PROJECT_ID` and `SANITY_STUDIO_DATASET` for the build, `NEXT_PUBLIC_SANITY_STUDIO_URL` set to the deployed Studio origin (a loopback value is dropped from the frame-ancestors policy), and `SANITY_REVALIDATE_SECRET` (at least 32 characters; shorter values are refused by the route) if the webhook is used. Unauthenticated requests to the webhook and the Draft Mode handshake are rate-limited per client address; signed deliveries and valid handshakes never are. `SANITY_API_READ_TOKEN` must be a Viewer token: validated Draft Mode sessions receive it in the browser for Sanity Live. Behind another reverse proxy, that proxy must overwrite `x-forwarded-host`, which is what resolves the site. Requests on a site's `www.`/apex twin are redirected to the production hostname with a 308.
+
 ## CI and verification
 
-[CI](.github/workflows/ci.yml) runs static checks, unit tests, TypeGen freshness, and Studio/Storybook builds using a placeholder project. Set repository variables `SANITY_PROJECT_ID`, `SANITY_DATASET` and secret `SANITY_API_READ_TOKEN` to enable the web build and Playwright tests. Fork PRs run checks that need no secrets.
+[CI](.github/workflows/ci.yml) runs static checks, unit tests, TypeGen freshness, and Studio/Storybook builds using a placeholder project. Set repository variables `SANITY_PROJECT_ID`, `SANITY_DATASET` and secret `SANITY_API_READ_TOKEN` to enable the web build and Playwright tests; that job records the route table in the job summary, fails if the CMS page is no longer prerendered, and checks that the Viewer token never reaches the build output. Fork PRs run checks that need no secrets.
 
 The smoke suite covers site shells, locales, 404s, robots and sitemaps with an empty dataset. Set `E2E_HAS_CONTENT=true` to require published home pages too. Check Presentation and release previews manually in an authenticated Studio session.
 

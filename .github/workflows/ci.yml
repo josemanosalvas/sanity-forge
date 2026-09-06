@@ -93,7 +93,40 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: ./tooling/github/setup
-      - run: pnpm turbo run build --filter=web
+      - name: Build web
+        # `shell: bash` adds pipefail, so a failed build still fails this step.
+        shell: bash
+        run: |
+          pnpm turbo run build --filter=web --log-prefix=none 2>&1 \
+            | sed -E $'s/\x1b\\[[0-9;]*[A-Za-z]//g' | tee build.log
+      - name: Record the route table and check prerendering
+        # Next prints prerendered site × locale roots as ○/● child rows under
+        # the catch-all; a ƒ there means request-time data reached the
+        # published render path.
+        shell: bash
+        run: |
+          {
+            echo '## Route table'
+            echo '```'
+            awk '/Route \(app\)/{p=1} p{print} /^[○●◐ƒ]  \(/{if(p){exit}}' build.log | head -80
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          grep -qE '[○●][[:space:]]+/brand-a/en([[:space:]]|$)' build.log \
+            || { echo 'The CMS page route is no longer prerendered'; exit 1; }
+      - name: Check that the Viewer token is not in the build output
+        if: ${{ env.SANITY_API_READ_TOKEN != '' }}
+        shell: bash
+        run: |
+          test -d apps/web/.next/server && test -d apps/web/.next/static
+          if grep -rqF --exclude-dir=cache "$SANITY_API_READ_TOKEN" apps/web/.next; then
+            echo 'SANITY_API_READ_TOKEN found in the build output'; exit 1
+          fi
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: web-build-log
+          path: build.log
+          retention-days: 7
       - run: pnpm --filter web exec playwright install --with-deps chromium
       - run: pnpm test:e2e
       - uses: actions/upload-artifact@v4
