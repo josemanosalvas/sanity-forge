@@ -56,6 +56,21 @@ describe(HeroBlock, () => {
     status: "ready",
   };
 
+  test("only the leading hero fetches its still eagerly", () => {
+    const leading = renderToStaticMarkup(
+      <HeroBlock isFirst title="H" video={{ light: { mux: READY_MUX } }} />
+    );
+    expect(leading).toMatch(/<img[^>]*fetchpriority="high"/iu);
+    expect(leading).toMatch(/<img[^>]*loading="eager"/u);
+    expect(leading).toMatch(/srcset="[^"]*thumbnail\.webp\?width=640 640w/iu);
+
+    const later = renderToStaticMarkup(
+      <HeroBlock title="H" video={{ light: { mux: READY_MUX } }} />
+    );
+    expect(later).not.toMatch(/fetchpriority/iu);
+    expect(later).toMatch(/<img[^>]*loading="lazy"/u);
+  });
+
   test("HeroBlock falls back to the Mux still when no picture is set", () => {
     const html = renderToStaticMarkup(
       <HeroBlock isFirst title="H" video={{ light: { mux: READY_MUX } }} />

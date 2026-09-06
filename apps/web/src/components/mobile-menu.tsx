@@ -10,12 +10,13 @@ import {
 import { Button } from "@repo/ui/components/button";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@repo/ui/components/sheet";
-import { Menu } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { Suspense, useState } from "react";
@@ -42,7 +43,24 @@ export const MobileMenu = ({
       >
         <Menu />
       </SheetTrigger>
-      <SheetContent className="w-full sm:max-w-md" side="right">
+      <SheetContent
+        className="w-full sm:max-w-md"
+        showCloseButton={false}
+        side="right"
+      >
+        {/* Composed here so the close control carries the visitor's language. */}
+        <SheetClose
+          render={
+            <Button
+              className="absolute top-3 right-3"
+              size="icon-sm"
+              variant="ghost"
+            />
+          }
+        >
+          <X />
+          <span className="sr-only">{t("closeMenu")}</span>
+        </SheetClose>
         {/* Back/forward navigation closes the sheet too; link clicks close it directly. */}
         {open && (
           <Suspense>

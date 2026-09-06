@@ -20,14 +20,43 @@ const loaders: Record<Locale, () => Promise<{ default: Messages }>> = {
   fr: () => import("../messages/fr.json"),
 };
 
-/** Loads a locale's UI messages, falling back to English for missing namespaces. */
+interface MessageTree {
+  [key: string]: string | MessageTree;
+}
+
+const isTree = (value: unknown): value is MessageTree =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+/**
+ * Fills every missing key, at any depth, from the fallback tree. A shallow
+ * spread would only fall back for whole namespaces, so one untranslated key
+ * inside an existing namespace would render as its key path.
+ */
+export const mergeMessages = <T extends MessageTree>(
+  fallback: T,
+  messages: MessageTree
+): T => {
+  const result: MessageTree = { ...fallback };
+  for (const [key, value] of Object.entries(messages)) {
+    const base = result[key];
+    result[key] =
+      isTree(base) && isTree(value) ? mergeMessages(base, value) : value;
+  }
+  return result as T;
+};
+
+/** Loads a locale's UI messages, falling back to English for missing keys. */
 export const loadMessages = async (locale: Locale): Promise<Messages> => {
-  const { default: messages } = await loaders[locale]();
   if (locale === "en") {
+    const { default: messages } = await loaders.en();
     return messages;
   }
-  const { default: fallback } = await loaders.en();
-  return { ...fallback, ...messages };
+  // Independent imports: start both before awaiting either.
+  const [{ default: messages }, { default: fallback }] = await Promise.all([
+    loaders[locale](),
+    loaders.en(),
+  ]);
+  return mergeMessages(fallback, messages);
 };
 
 export const timeZone = "Europe/Zurich";

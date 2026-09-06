@@ -1,6 +1,9 @@
-import { keys } from "@repo/sanity/keys";
+import { keys } from "@repo/blocks/keys";
 import { createDataAttribute } from "next-sanity";
 
+// The blocks package's schema names only NEXT_PUBLIC_ values, so this module
+// can sit in the client graph (Presentation overlays run in the browser)
+// without pulling the secret-declaring Sanity schema in with it.
 const env = keys();
 
 /** `data-sanity` attribute for a document path, so Presentation overlays map back to the Studio. */

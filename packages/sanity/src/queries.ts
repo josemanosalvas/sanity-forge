@@ -59,6 +59,24 @@ export const pageQuery = defineQuery(`
   }
 `);
 
+/**
+ * What `generateMetadata` needs and nothing more: the page builder is the
+ * bulk of a page document and the head never reads it.
+ */
+export const pageMetadataQuery = defineQuery(`
+  *[_type == "page" && site == $site && language == $locale && slug.current == $path][0]{
+    _id,
+    _type,
+    site,
+    language,
+    title,
+    description,
+    "slug": slug.current,
+    ${seoFragment},
+    ${translationsFragment}
+  }
+`);
+
 export const pagePathsQuery = defineQuery(`
   *[_type == "page" && defined(site) && defined(language) && defined(slug.current)]{
     site,

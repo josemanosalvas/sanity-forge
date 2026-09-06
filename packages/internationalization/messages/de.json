@@ -21,6 +21,14 @@
     "title": "Die gesuchte Seite existiert nicht.",
     "cta": "Zur Startseite"
   },
+  "error": {
+    "title": "Etwas ist schiefgelaufen",
+    "body": "Die Seite konnte nicht dargestellt werden. Versuchen Sie es erneut oder kommen Sie später wieder.",
+    "retry": "Erneut versuchen",
+    "home": "Zur Startseite",
+    "errorId": "Fehler-ID",
+    "chrome": "Dieser Teil der Seite konnte nicht geladen werden."
+  },
   "preview": {
     "message": "Sie sehen die Website im Vorschaumodus.",
     "exit": "Beenden",
@@ -42,9 +50,11 @@
       "subscribe": "Abonnieren",
       "subscribeToNewsletter": "Newsletter abonnieren",
       "subscribing": "Wird abonniert…"
-    }
+    },
+    "sectionFailed": "Dieser Abschnitt konnte nicht angezeigt werden.",
+    "tryAgain": "Erneut versuchen"
   },
   "footer": {
-    "copyright": "© {year} {siteName}. Alle Rechte vorbehalten."
+    "copyright": "© {siteName}. Alle Rechte vorbehalten."
   }
 }

@@ -8,6 +8,7 @@ import {
 } from "@repo/blocks/components/icons";
 import { SanityImage } from "@repo/blocks/components/sanity-image";
 import { normalizedLogoHeight } from "@repo/blocks/lib/logo-height";
+import { sanitizeHref } from "@repo/blocks/lib/safe-href";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { Fragment } from "react";
@@ -23,6 +24,8 @@ const SocialLinks = ({
   if (!data) {
     return null;
   }
+  // Editors type these URLs; the Studio validates them, and the same guard
+  // every other CMS link passes through keeps a stray scheme out of the HTML.
   const links = [
     { Icon: InstagramBrandIcon, label: "Instagram", url: data.instagram },
     { Icon: FacebookIcon, label: "Facebook", url: data.facebook },
@@ -30,7 +33,9 @@ const SocialLinks = ({
     { Icon: LinkedinBrandIcon, label: "LinkedIn", url: data.linkedin },
     { Icon: YoutubeIcon, label: "YouTube", url: data.youtube },
     { Icon: RedditBrandIcon, label: "Reddit", url: data.reddit },
-  ].filter((link): link is typeof link & { url: string } => Boolean(link.url));
+  ]
+    .map((link) => ({ ...link, url: sanitizeHref(link.url) }))
+    .filter((link): link is typeof link & { url: string } => Boolean(link.url));
 
   if (!links.length) {
     return null;
@@ -66,7 +71,9 @@ export const Footer = async ({
 }) => {
   const t = await getTranslations("footer");
   const siteName = settings?.siteTitle ?? context.site.name;
-  const year = new Date().getFullYear();
+  // No clock here: the footer is a cached, prerendered scope, so a year read
+  // at render time would freeze into the cache entry. Editors who want a
+  // year type it into the CMS copyright field.
   const logo = settings?.logos?.footerLogo ?? settings?.logos?.logo;
 
   return (
@@ -117,7 +124,7 @@ export const Footer = async ({
         ) : null}
       </div>
       <div className="border-border text-muted-foreground container flex flex-col gap-4 border-t py-6 text-sm sm:flex-row sm:items-center sm:justify-between">
-        <p>{footer?.copyright ?? t("copyright", { siteName, year })}</p>
+        <p>{footer?.copyright ?? t("copyright", { siteName })}</p>
         {footer?.credits?.length ? (
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             {footer.credits.map((credit, index) => {
@@ -135,6 +142,7 @@ export const Footer = async ({
                       height={logoHeight}
                       image={credit.logo}
                       loading="lazy"
+                      sizes="75px"
                       style={{ height: logoHeight }}
                       width={75}
                     />

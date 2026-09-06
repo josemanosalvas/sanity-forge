@@ -1,7 +1,12 @@
 import { describe, expect, test } from "vitest";
 
 import { muxVideoToMarkdown } from "./markdown";
-import { muxAspectRatio, muxPlaybackId, muxThumbnailUrl } from "./mux";
+import {
+  muxAspectRatio,
+  muxPlaybackId,
+  muxThumbnailSrcSet,
+  muxThumbnailUrl,
+} from "./mux";
 
 describe("internal/mux", () => {
   const ready = {
@@ -81,6 +86,13 @@ describe("internal/mux", () => {
     expect(muxThumbnailUrl("abc123", null)).toBe(
       "https://image.mux.com/abc123/thumbnail.webp"
     );
+  });
+
+  test("muxThumbnailSrcSet lists one candidate per width with the frame pinned", () => {
+    expect(muxThumbnailSrcSet("abc123", 4, [640, 1440])).toBe(
+      "https://image.mux.com/abc123/thumbnail.webp?time=4&width=640 640w, https://image.mux.com/abc123/thumbnail.webp?time=4&width=1440 1440w"
+    );
+    expect(muxThumbnailSrcSet(null)).toBeUndefined();
   });
 
   test("muxThumbnailUrl returns undefined without a playback id", () => {

@@ -1,8 +1,12 @@
 const ALLOWED_PROTOCOLS = new Set(["http:", "https:", "mailto:", "tel:"]);
 
 export const isSafeHref = (href: string): boolean => {
-  if (href.startsWith("/") || href.startsWith("#")) {
+  if (href.startsWith("#")) {
     return true;
+  }
+  // `//host` and `/\host` resolve to another origin; only a plain path is internal.
+  if (href.startsWith("/")) {
+    return !(href.startsWith("//") || href.startsWith("/\\"));
   }
   try {
     return ALLOWED_PROTOCOLS.has(new URL(href).protocol);

@@ -1,8 +1,6 @@
-"use client";
-
 import { cn } from "cn";
 
-import { useBlockLabels } from "../../components/block-labels";
+import { BlockLabel, VisitLabel } from "../../components/labels";
 import { resolveAssetId, SanityImage } from "../../components/sanity-image";
 import type { SanityImageData } from "../../components/sanity-image";
 import { normalizedLogoHeight } from "../../lib/logo-height";
@@ -22,6 +20,8 @@ export interface ShowcaseGridProps {
   title?: string | null;
   description?: string | null;
   items?: ShowcaseGridItem[] | null;
+  /** Leads the page: the featured screenshot is then the likely LCP image. */
+  isFirst?: boolean;
 }
 
 type ImageSource =
@@ -74,6 +74,7 @@ const AttributionLogo = ({
       className={cn("w-auto shrink-0 object-contain", className)}
       height={24}
       image={item.logo}
+      sizes="96px"
       style={{
         height: normalizedLogoHeight(item.logo, {
           base,
@@ -94,6 +95,7 @@ const AttributionMark = ({ item }: Readonly<{ item: CardView }>) => (
         className="size-full object-contain"
         height={24}
         image={item.logo}
+        sizes="24px"
         width={24}
       />
     ) : (
@@ -110,21 +112,27 @@ const ScreenshotImage = ({
   sizes,
   className,
   loading,
+  fetchPriority,
 }: Readonly<{
   screenshot: ImageSource;
   name: string;
   sizes: string;
   className?: string;
   loading?: "eager" | "lazy";
+  fetchPriority?: "high" | "low" | "auto";
 }>) => {
   if (screenshot.kind === "sanity") {
     return (
+      // A fixed 16:9 box: cover mode lets the CDN crop around the editor's
+      // hotspot instead of the browser cropping around the centre.
       <SanityImage
         alt={`${name} website screenshot`}
         className={cn("absolute inset-0 size-full object-cover", className)}
+        fetchPriority={fetchPriority}
         height={810}
         image={screenshot.image}
         loading={loading}
+        mode="cover"
         sizes={sizes}
         width={1440}
       />
@@ -187,8 +195,13 @@ const ShowcaseHeader = ({
 const FeaturedBanner = ({
   featured,
   side = "left",
-}: Readonly<{ featured: CardView; side?: "left" | "right" }>) => {
-  const labels = useBlockLabels();
+  eager = false,
+}: Readonly<{
+  featured: CardView;
+  side?: "left" | "right";
+  /** The banner leads the page, so its screenshot loads at high priority. */
+  eager?: boolean;
+}>) => {
   const panelRight = side === "right";
   const clickable = Boolean(featured.url);
 
@@ -227,10 +240,11 @@ const FeaturedBanner = ({
       data-nav-contrast="dark"
     >
       <ScreenshotImage
-        loading="lazy"
+        fetchPriority={eager ? "high" : undefined}
+        loading={eager ? "eager" : "lazy"}
         name={featured.name}
         screenshot={featured.screenshot}
-        sizes="(min-width: 1024px) calc(100vw - 376px), 100vw"
+        sizes="(min-width: 1440px) 1024px, (min-width: 1024px) calc(100vw - 416px), calc(100vw - 40px)"
       />
     </div>
   );
@@ -265,7 +279,9 @@ const FeaturedBanner = ({
           rel="noopener noreferrer"
           target="_blank"
         >
-          <span className="sr-only">{labels.visit(featured.name)}</span>
+          <span className="sr-only">
+            <VisitLabel name={featured.name} />
+          </span>
           {inner}
         </a>
       ) : (
@@ -318,7 +334,6 @@ const CardCaption = ({
 };
 
 const ShowcaseCard = ({ item }: Readonly<{ item: CardView }>) => {
-  const labels = useBlockLabels();
   const clickable = Boolean(item.url);
 
   const body = (
@@ -346,7 +361,9 @@ const ShowcaseCard = ({ item }: Readonly<{ item: CardView }>) => {
         rel="noopener noreferrer"
         target="_blank"
       >
-        <span className="sr-only">{labels.visit(item.name)}</span>
+        <span className="sr-only">
+          <VisitLabel name={item.name} />
+        </span>
         {body}
       </a>
     );
@@ -363,10 +380,15 @@ export const ShowcaseGrid = ({
   title,
   description,
   items,
+  isFirst = false,
 }: Readonly<ShowcaseGridProps>) => {
-  const labels = useBlockLabels();
   const cmsItems = items ?? [];
-  const label = title?.trim() || labels.showcase;
+  // The visible heading names the region; without one, the translated label does.
+  const label = title?.trim() ? null : (
+    <h2 className="sr-only">
+      <BlockLabel name="showcase" />
+    </h2>
+  );
   const allViews = cmsItems.map(cmsToView);
 
   const explicitFeaturedKeys = new Set(
@@ -384,7 +406,7 @@ export const ShowcaseGrid = ({
   if (featuredItems.length === 0) {
     return (
       <section className="block-section" id="showcase">
-        {title ? null : <h2 className="sr-only">{label}</h2>}
+        {label}
         <div className="container">
           <ShowcaseHeader description={description} title={title} />
         </div>
@@ -394,14 +416,14 @@ export const ShowcaseGrid = ({
 
   return (
     <section className="block-section" id="showcase">
-      {title ? null : <h2 className="sr-only">{label}</h2>}
+      {label}
       <div className="flex flex-col gap-16">
         <div className="container">
           <ShowcaseHeader description={description} title={title} />
         </div>
 
         {leadBanner ? (
-          <FeaturedBanner featured={leadBanner} side="left" />
+          <FeaturedBanner eager={isFirst} featured={leadBanner} side="left" />
         ) : null}
 
         {cards.length > 0 ? (
