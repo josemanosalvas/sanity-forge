@@ -145,10 +145,43 @@ test.describe("Published content", { tag: "@content" }, () => {
       const headers = { host: `${site}.example` };
       const response = await request.get("/", { headers });
       expect(response.status()).toBe(200);
-      expect(await response.text()).toContain(`data-site="${site}"`);
+      const html = await response.text();
+      expect(html).toContain(`data-site="${site}"`);
+      expect(html).toMatch(/<main[^>]*>[\s\S]*<h1/u);
+      expect(html).toContain(
+        `<link rel="canonical" href="https://${site}.example/"`
+      );
+      expect(html).toMatch(/property="og:title" content="[^"]+"/u);
+      expect(html).toContain('type="application/ld+json"');
+      if (process.env.SANITY_API_READ_TOKEN) {
+        expect(html).not.toContain(process.env.SANITY_API_READ_TOKEN);
+      }
       const sitemap = await request.get("/sitemap.xml", { headers });
       expect(sitemap.status()).toBe(200);
       expect(await sitemap.text()).toContain(`https://${site}.example`);
     });
   }
+
+  test("switching language navigates without a document load", async ({
+    page,
+  }) => {
+    const base = new URL(
+      process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000"
+    );
+    const local =
+      base.hostname === "localhost" || base.hostname === "127.0.0.1";
+    const origin = local
+      ? `${base.protocol}//brand-a.localhost${base.port ? `:${base.port}` : ""}`
+      : base.origin;
+    await page.goto(`${origin}/`);
+    // A DOM stamp cannot tell a client transition from a rebuilt or retained layout; only a document load resets window.
+    await page.evaluate(() => Reflect.set(window, "e2eStamp", "kept"));
+    await page.getByRole("button", { name: "Switch language" }).first().click();
+    await page.getByRole("menuitem", { name: "Deutsch" }).click();
+    await page.waitForURL(/\/de(?:\/|$)/u);
+    await expect(page.locator("html")).toHaveAttribute("lang", "de");
+    expect(await page.evaluate(() => Reflect.get(window, "e2eStamp"))).toBe(
+      "kept"
+    );
+  });
 });
