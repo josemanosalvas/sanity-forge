@@ -1,6 +1,6 @@
 import { isLocale } from "@repo/internationalization/locales";
 import type { SettingsQueryResult } from "@repo/sanity/types";
-import { createMetadata } from "@repo/seo/metadata";
+import { createMetadata, titleTemplate } from "@repo/seo/metadata";
 import type { RouteAlternate } from "@repo/seo/route";
 import type { Metadata } from "next";
 
@@ -64,17 +64,21 @@ export const pageMetadata = (
     twitterHandle: twitterHandle(settings),
   });
 
-/** Metadata for routes without a CMS document (404, errors): site defaults only. */
 export const siteMetadata = (
   context: SiteContext,
   settings: SettingsQueryResult
-): Metadata => ({
-  ...createMetadata({
-    description: settings?.siteDescription,
-    icons: faviconIcons(settings),
-    image: settings?.ogImage,
-    route: { locale: context.locale, path: "/", site: context.site },
-    siteName: settings?.siteTitle ?? context.site.name,
-  }),
-  alternates: undefined,
-});
+): Metadata => {
+  const siteName = settings?.siteTitle ?? context.site.name;
+  return {
+    ...createMetadata({
+      description: settings?.siteDescription,
+      icons: faviconIcons(settings),
+      image: settings?.ogImage,
+      route: { locale: context.locale, path: "/", site: context.site },
+      siteName,
+    }),
+    alternates: undefined,
+    robots: undefined,
+    title: { default: siteName, template: titleTemplate(siteName) },
+  };
+};

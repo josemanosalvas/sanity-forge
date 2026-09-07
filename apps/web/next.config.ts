@@ -92,8 +92,8 @@ const transportHeaders = () =>
   );
 
 const baseConfig: NextConfig = createNextConfig({
-  // Sanity Live invalidates by tag, so cached reads live until content changes.
-  cacheLife: { default: sanityCacheLife },
+  // Sanity Live invalidates these caches by tag.
+  cacheLife: { default: sanityCacheLife, sanity: sanityCacheLife },
   experimental: {
     globalNotFound: true,
   },
