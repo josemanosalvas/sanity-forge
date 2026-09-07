@@ -2,6 +2,7 @@ import withBundleAnalyzer from "@next/bundle-analyzer";
 import type { NextConfig } from "next";
 
 export const baseConfig = {
+  agentRules: false,
   cacheComponents: true,
   images: {
     formats: ["image/avif", "image/webp"],
@@ -14,7 +15,7 @@ export const baseConfig = {
   // Requires babel-plugin-react-compiler in the app.
   reactCompiler: true,
   reactStrictMode: true,
-  typedRoutes: true,
+  // typedRoutes cannot validate public paths rewritten to site/locale routes.
 } satisfies NextConfig;
 
 /** `images.remotePatterns` entry for a Sanity project's image CDN. */
