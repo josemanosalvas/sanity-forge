@@ -14,6 +14,7 @@ Before any Next.js work, find and read the relevant doc in `apps/web/node_module
 - Edit schemas and queries, then run `pnpm typegen`. Do not hand-edit `apps/studio/schema.json` or `packages/sanity/src/sanity.types.ts`.
 - Packages keep source under `src/`: React components in `src/components`, hooks in `src/hooks`, helpers in `src/lib`. The blocks package adds `src/blocks/<block>/`: a vertical folder whose renderer is named after the folder (`@repo/blocks/cta` resolves to `src/blocks/cta/cta.tsx`) beside `schema.ts`, `query.ts`, `markdown.ts`, tests and stories; code shared across blocks lives in `src/components`, `src/hooks` and `src/lib` (`@repo/blocks/components/*`, `@repo/blocks/lib/*`).
 - Import concrete modules through `package.json` exports. Do not add barrel files (re-export-only modules such as `index.ts`); registries that build an array or a projection are fine.
+- `typedRoutes` stays off: public hrefs are proxy-rewritten paths the router never sees.
 
 # Verification
 

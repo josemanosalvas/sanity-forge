@@ -22,6 +22,16 @@ describe(createSecurityHeaders, () => {
     expect(framed.get("permissions-policy")).toContain("camera=()");
   });
 
+  // Sanity file assets (hero video uploads) are served from the image CDN host.
+  test("media uploaded to Sanity may play alongside caller-added media origins", () => {
+    const headers = createSecurityHeaders({
+      csp: { mediaSrc: ["https://stream.mux.com"] },
+    });
+    expect(headers.get("content-security-policy")).toMatch(
+      /media-src 'self' blob: https:\/\/cdn\.sanity\.io https:\/\/stream\.mux\.com/u
+    );
+  });
+
   test("without frame ancestors the site refuses to be framed cross-origin", () => {
     const headers = createSecurityHeaders();
     expect(headers.get("content-security-policy")).toContain(
