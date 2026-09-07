@@ -154,6 +154,8 @@ describe(proxy, () => {
     "/_next/image",
     "/monitoring",
     "/monitoring/tunnel",
+    "/_vercel/insights/event",
+    "/_vercel/speed-insights/vitals",
   ])("the matcher excludes %s", (path) => {
     expect(matchesPattern(path)).toBeFalsy();
   });

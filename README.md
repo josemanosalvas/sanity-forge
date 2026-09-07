@@ -66,7 +66,22 @@ Import concrete modules through package exports, such as `@repo/blocks/hero` or 
 | `pnpm turbo gen block` | Scaffold and register a block; add its web renderer and behavior tests |
 | `pnpm turbo gen package` | Scaffold a workspace package |
 
-Sentry and Google Analytics activate when configured in `apps/web/.env`. Vercel Analytics is enabled by default; disable it with `NEXT_PUBLIC_VERCEL_ANALYTICS=false`. See the `.env.example` files for all options.
+### Third-party scripts
+
+Configure these integrations in `apps/web/.env.example`.
+
+| Provider | Origins | Purpose | Loading | Key |
+| --- | --- | --- | --- | --- |
+| Vercel Web Analytics | own origin (`/_vercel/insights`) | page views, custom events | `@vercel/analytics/next`, after hydration | `NEXT_PUBLIC_VERCEL_ANALYTICS` (on) |
+| Vercel Speed Insights | own origin (`/_vercel/speed-insights`) | real-user LCP, INP, CLS | `@vercel/speed-insights/next`, after hydration | `NEXT_PUBLIC_VERCEL_SPEED_INSIGHTS` (on) |
+| Google Analytics | `googletagmanager.com`, `google-analytics.com` | page views | `@next/third-parties/google`, after hydration | `NEXT_PUBLIC_GA_MEASUREMENT_ID` (off) |
+| Sentry | `*.ingest.sentry.io` through the `/monitoring` tunnel | errors, traces; Session Replay opt-in | `instrumentation-client.ts`, before hydration | `NEXT_PUBLIC_SENTRY_DSN` (off) |
+| Mux | `stream.mux.com`, `image.mux.com` | video playback and stills | dynamic import on play; Mux Data off | per block |
+| Sanity Live | `*.api.sanity.io` | content updates | `next-sanity/live`, every page | always |
+
+Performance targets: LCP under 2.5 s, INP under 200 ms, and CLS under 0.1 at the 75th percentile. Measure mobile and desktop separately in Speed Insights.
+
+Draft Mode exits through the preview bar's Server Action; `POST /api/draft-mode/disable?to=/path` is the equivalent endpoint for tooling outside the site.
 
 The newsletter block needs an `action` or `onSubmit` handler to render a subscription form. The strings blocks render themselves (form labels, the copy and play buttons, screen-reader text) come from the `blocks` namespace of `packages/internationalization/messages/` through `BlockLabelsProvider` (`@repo/blocks/components/block-labels`), which the layout mounts; without a provider, as in Storybook, the English defaults apply. Markdown serializers are available per block; there is no Markdown HTTP route.
 
