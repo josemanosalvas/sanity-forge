@@ -30,17 +30,19 @@ type Params = Awaited<PageProps<"/[site]/[locale]/[[...slug]]">["params"]>;
 /** Prerendered without a document yet, so the site × locale shell always exists. */
 const PLACEHOLDER_SLUG = "__placeholder__";
 
+/** Navigations may block: a missing slug must answer with a real 404. */
+export const instant = false;
+
 const toPath = (slug: string[] | undefined) =>
   slug?.length ? `/${slug.join("/")}` : "/";
 
 export const generateStaticParams = async (): Promise<
   Pick<Params, "slug">[]
 > => {
+  const pagesPromise = sanityFetchStaticParams({ query: pagePathsQuery });
   const [site, locale] = await Promise.all([siteParam(), localeParam()]);
   try {
-    const { data: pages } = await sanityFetchStaticParams({
-      query: pagePathsQuery,
-    });
+    const { data: pages } = await pagesPromise;
     const params = pages.flatMap((page) =>
       page.site === site && page.language === locale && page.slug
         ? [
@@ -53,6 +55,9 @@ export const generateStaticParams = async (): Promise<
     );
     return params.length > 0 ? params : [{ slug: [PLACEHOLDER_SLUG] }];
   } catch (error) {
+    if (process.env.NEXT_PHASE === "phase-production-build") {
+      throw error;
+    }
     console.warn(
       `[web] Could not list pages for ${site}/${locale}:`,
       (error as Error).message
