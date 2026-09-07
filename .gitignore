@@ -52,3 +52,6 @@ Thumbs.db
 .vscode/*
 !.vscode/settings.json
 !.vscode/extensions.json
+
+# Local pnpm store (created when pnpm runs with a repo-local store path)
+.pnpm-store/

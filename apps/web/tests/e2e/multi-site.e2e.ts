@@ -147,10 +147,45 @@ test.describe("Published content", { tag: "@content" }, () => {
       const headers = { host: `${site}.example` };
       const response = await request.get("/", { headers });
       expect(response.status()).toBe(200);
-      expect(await response.text()).toContain(`data-site="${site}"`);
+      const html = await response.text();
+      expect(html).toContain(`data-site="${site}"`);
+      // Server-rendered content, canonical and social tags in the document itself.
+      expect(html).toMatch(/<main[^>]*>[\s\S]*<h1/u);
+      expect(html).toContain(
+        `<link rel="canonical" href="https://${site}.example/"`
+      );
+      expect(html).toMatch(/property="og:title" content="[^"]+"/u);
+      expect(html).toContain('type="application/ld+json"');
+      if (process.env.SANITY_API_READ_TOKEN) {
+        expect(html).not.toContain(process.env.SANITY_API_READ_TOKEN);
+      }
       const sitemap = await request.get("/sitemap.xml", { headers });
       expect(sitemap.status()).toBe(200);
       expect(await sitemap.text()).toContain(`https://${site}.example`);
     });
   }
+
+  // Playwright's host header only reaches the first document; navigation
+  // goes through the site's development hostname (README: Setup).
+  test("in-app links navigate without a document load and keep the layout", async ({
+    page,
+  }) => {
+    const base = new URL(
+      process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000"
+    );
+    const port = base.port ? `:${base.port}` : "";
+    await page.goto(`${base.protocol}//brand-a.localhost${port}/`);
+    const link = page.locator('main a[href^="/"]:not([href="/"])').first();
+    await expect(link).toBeVisible();
+    // A document load would replace the header and lose the stamp.
+    await page.evaluate(() => {
+      const header = document.querySelector("header");
+      if (header) {
+        header.dataset.stamp = "kept";
+      }
+    });
+    await link.click();
+    await page.waitForURL((url) => url.pathname !== "/");
+    await expect(page.locator("header[data-stamp=kept]")).toHaveCount(1);
+  });
 });
