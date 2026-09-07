@@ -2,16 +2,13 @@ import "@/app/globals.css";
 import { AnalyticsProvider } from "@repo/analytics/provider";
 import { SiteProvider } from "@repo/internationalization/navigation";
 import { siteList } from "@repo/internationalization/sites";
-import {
-  getDynamicFetchOptions,
-  sanityFetchMetadata,
-  SanityLive,
-} from "@repo/sanity/live";
+import { getDynamicFetchOptions, SanityLive } from "@repo/sanity/live";
 import type { DynamicFetchOptions } from "@repo/sanity/live";
-import { settingsQuery } from "@repo/sanity/queries";
 import { UIProvider } from "@repo/ui/provider";
 import { NextIntlClientProvider } from "next-intl";
+import { stegaClean } from "next-sanity";
 import { VisualEditing } from "next-sanity/visual-editing";
+import { cacheLife } from "next/cache";
 import { Geist, Geist_Mono } from "next/font/google";
 import { draftMode } from "next/headers";
 import { Suspense } from "react";
@@ -26,11 +23,7 @@ import { SiteJsonLd } from "@/components/site-json-ld";
 import { TranslationsProvider } from "@/components/translations";
 import { fetchFooter, fetchNavigation, fetchSettings } from "@/lib/content";
 import { siteMetadata } from "@/lib/seo";
-import {
-  getSiteContext,
-  toQueryParams,
-  toSettingsParams,
-} from "@/lib/site-context";
+import { getSiteContext, toQueryParams } from "@/lib/site-context";
 import type { SiteContext } from "@/types";
 
 const fontSans = Geist({ subsets: ["latin"], variable: "--font-sans" });
@@ -43,15 +36,18 @@ export const generateStaticParams = () =>
   );
 
 export const generateMetadata = async () => {
-  const [context, { perspective }] = await Promise.all([
+  const [context, { perspective, variant }] = await Promise.all([
     getSiteContext(),
     getDynamicFetchOptions(),
   ]);
-  const { data: settings } = await sanityFetchMetadata({
-    params: toSettingsParams(context),
-    perspective,
-    query: settingsQuery,
-  });
+  const settings = stegaClean(
+    await fetchSettings({
+      ...toQueryParams(context),
+      perspective,
+      stega: false,
+      variant,
+    })
+  );
   return siteMetadata(context, settings);
 };
 
@@ -59,6 +55,7 @@ type CachedProps = { context: SiteContext } & DynamicFetchOptions;
 
 const CachedHeader = async ({ context, ...options }: CachedProps) => {
   "use cache";
+  cacheLife("sanity");
   const data = await fetchNavigation({ ...toQueryParams(context), ...options });
   return <Header context={context} data={data} />;
 };
@@ -74,6 +71,7 @@ const HeaderFallback = () => (
 
 const CachedFooter = async ({ context, ...options }: CachedProps) => {
   "use cache";
+  cacheLife("sanity");
   const params = { ...toQueryParams(context), ...options };
   const [footer, settings] = await Promise.all([
     fetchFooter(params),
@@ -144,13 +142,15 @@ const RootLayout = async ({ children }: LayoutProps<"/[site]/[locale]">) => {
                       )}
                     </ChromeBoundary>
                     {/* Structured data is for crawlers, which never hold a draft session. */}
-                    <ChromeBoundary slot="data">
-                      <SiteJsonLd
-                        context={context}
-                        perspective="published"
-                        stega={false}
-                      />
-                    </ChromeBoundary>
+                    {!isDraftMode && (
+                      <ChromeBoundary slot="data">
+                        <SiteJsonLd
+                          context={context}
+                          perspective="published"
+                          stega={false}
+                        />
+                      </ChromeBoundary>
+                    )}
                     {/* The default Live action handles refresh and invalidation for each mode. */}
                     <SanityLive includeDrafts={isDraftMode} />
                     {isDraftMode && (

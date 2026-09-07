@@ -79,15 +79,19 @@ export const sanityFetchStaticParams = async <
   return { data };
 };
 
-// For usage within `generateMetadata`, `generateViewport` and metadata routes
+// For usage within `generateMetadata`, `generateViewport` and metadata routes.
+// Never stega-encoded: invisible characters must not reach the head.
 export const sanityFetchMetadata = async <const QueryString extends string>({
   query,
   params = {},
   perspective,
+  variant,
 }: {
   query: QueryString;
   params?: QueryParams;
   perspective: LivePerspective;
+  /** Editing variant Presentation is previewing, so preview metadata tracks the previewed release. */
+  variant?: string;
 }) => {
   "use cache";
   const { data } = await sanityFetch({
@@ -95,6 +99,7 @@ export const sanityFetchMetadata = async <const QueryString extends string>({
     perspective,
     query,
     stega: false,
+    variant,
   });
   return { data };
 };

@@ -59,6 +59,21 @@ export const pageQuery = defineQuery(`
   }
 `);
 
+/** Page head fields, without the page builder. */
+export const pageMetadataQuery = defineQuery(`
+  *[_type == "page" && site == $site && language == $locale && slug.current == $path][0]{
+    _id,
+    _type,
+    site,
+    language,
+    title,
+    description,
+    "slug": slug.current,
+    ${seoFragment},
+    ${translationsFragment}
+  }
+`);
+
 export const pagePathsQuery = defineQuery(`
   *[_type == "page" && defined(site) && defined(language) && defined(slug.current)]{
     site,

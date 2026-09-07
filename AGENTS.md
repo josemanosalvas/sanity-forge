@@ -16,6 +16,8 @@ Before any Next.js work, find and read the relevant doc in `apps/web/node_module
 - Import concrete modules through `package.json` exports. Do not add barrel files (re-export-only modules such as `index.ts`); registries that build an array or a projection are fine.
 - Components are Server Components unless they call a hook, attach a handler or use a browser API; keep client boundaries small and pass server-rendered elements as props or children. For translated block labels, use `@repo/blocks/components/labels`.
 - CMS images render through `@repo/blocks/components/sanity-image` against the Sanity CDN (resizing, `auto=format`, hotspot and crop); `next/image` is not used. Mark the page's one LCP candidate with `loading="eager"` and `fetchPriority="high"` (never both theme variants), give every other image `sizes`, and pass `mode="cover"` on fixed-shape boxes so the editor's hotspot applies.
+- All Sanity reads go through `apps/web/src/lib/content.ts` or `packages/sanity/src/live.ts`; independent reads are batched with `Promise.all`, and every outer `use cache` scope (layout, page, structured data) sets `cacheLife("sanity")`; the inner helpers in `content.ts` and `live.ts` inherit it.
+- `partialPrefetching` stays off: the single catch-all route awaits its params outside Suspense so a missing page can return HTTP 404, which leaves no App Shell to prefetch. Revisit only together with that contract.
 - `typedRoutes` stays off: public hrefs are proxy-rewritten paths the router never sees.
 
 # Verification

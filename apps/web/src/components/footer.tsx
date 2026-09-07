@@ -69,7 +69,7 @@ export const Footer = async ({
 }) => {
   const t = await getTranslations("footer");
   const siteName = settings?.siteTitle ?? context.site.name;
-  const year = new Date().getFullYear();
+  // A computed year would remain in the cache until content changes.
   const logo = settings?.logos?.footerLogo ?? settings?.logos?.logo;
 
   return (
@@ -120,7 +120,7 @@ export const Footer = async ({
         ) : null}
       </div>
       <div className="border-border text-muted-foreground container flex flex-col gap-4 border-t py-6 text-sm sm:flex-row sm:items-center sm:justify-between">
-        <p>{footer?.copyright ?? t("copyright", { siteName, year })}</p>
+        <p>{footer?.copyright ?? t("copyright", { siteName })}</p>
         {footer?.credits?.length ? (
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             {footer.credits.map((credit, index) => {

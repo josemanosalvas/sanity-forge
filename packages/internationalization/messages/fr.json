@@ -55,6 +55,6 @@
     "tryAgain": "Réessayer"
   },
   "footer": {
-    "copyright": "© {year} {siteName}. Tous droits réservés."
+    "copyright": "© {siteName}. Tous droits réservés."
   }
 }

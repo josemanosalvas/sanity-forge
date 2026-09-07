@@ -55,6 +55,6 @@
     "tryAgain": "Erneut versuchen"
   },
   "footer": {
-    "copyright": "© {year} {siteName}. Alle Rechte vorbehalten."
+    "copyright": "© {siteName}. Alle Rechte vorbehalten."
   }
 }
