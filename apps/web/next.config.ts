@@ -70,6 +70,13 @@ const siteRedirects = async () => {
       });
     });
   } catch (error) {
+    // NEXT_PHASE is unavailable while Next loads the config.
+    if (
+      process.env.NODE_ENV === "production" &&
+      process.env.NEXT_PUBLIC_SANITY_PROJECT_ID !== "placeholder"
+    ) {
+      throw error;
+    }
     console.warn(
       "[next.config] Skipping Sanity redirects:",
       (error as Error).message
