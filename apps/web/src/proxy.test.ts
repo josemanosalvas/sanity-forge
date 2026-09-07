@@ -157,4 +157,17 @@ describe(proxy, () => {
   ])("the matcher excludes %s", (path) => {
     expect(matchesPattern(path)).toBeFalsy();
   });
+
+  test("the www twin of a production host is redirected before any rewrite", () => {
+    const response = run(
+      "http://www.brand-b.example/about",
+      "www.brand-b.example"
+    );
+    expect(response.status).toBe(308);
+    expect(response.headers.get("location")).toBe(
+      "https://brand-b.example/about"
+    );
+    expect(response.headers.get("x-middleware-rewrite")).toBeNull();
+    expect(response.headers.get("x-content-type-options")).toBe("nosniff");
+  });
 });

@@ -5,15 +5,24 @@ import { defineField, defineType } from "sanity";
 import { singletonIdRule } from "../../lib/singletons";
 import { siteField } from "../fields/site";
 
+/** Rendered as plain anchors and as JSON-LD `sameAs`, so only web URLs are accepted. */
+const socialLink = (name: string, title: string) =>
+  defineField({
+    name,
+    title,
+    type: "url",
+    validation: (rule) => rule.uri({ scheme: ["http", "https"] }),
+  });
+
 const socialLinks = defineField({
   description: "Add links to your social media profiles",
   fields: [
-    defineField({ name: "linkedin", title: "LinkedIn URL", type: "string" }),
-    defineField({ name: "facebook", title: "Facebook URL", type: "string" }),
-    defineField({ name: "twitter", title: "Twitter/X URL", type: "string" }),
-    defineField({ name: "instagram", title: "Instagram URL", type: "string" }),
-    defineField({ name: "youtube", title: "YouTube URL", type: "string" }),
-    defineField({ name: "reddit", title: "Reddit URL", type: "string" }),
+    socialLink("linkedin", "LinkedIn URL"),
+    socialLink("facebook", "Facebook URL"),
+    socialLink("twitter", "Twitter/X URL"),
+    socialLink("instagram", "Instagram URL"),
+    socialLink("youtube", "YouTube URL"),
+    socialLink("reddit", "Reddit URL"),
   ],
   name: "socialLinks",
   title: "Social Media Links",

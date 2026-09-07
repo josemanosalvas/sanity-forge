@@ -12,6 +12,7 @@ import {
 import { withObservability } from "@repo/observability/next-config";
 import { keys } from "@repo/sanity/keys";
 import { redirectsQuery } from "@repo/sanity/queries";
+import { createSecurityHeaders } from "@repo/security/headers";
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 import { createClient } from "next-sanity";
@@ -77,9 +78,22 @@ const siteRedirects = async () => {
   }
 };
 
+/** API routes and the Sentry tunnel bypass the proxy and need transport headers here. */
+const transportHeaders = () =>
+  [...createSecurityHeaders({ contentSecurityPolicy: false })].map(
+    ([key, value]) => ({ key, value })
+  );
+
 const baseConfig: NextConfig = createNextConfig({
   // Sanity Live invalidates by tag, so cached reads live until content changes.
   cacheLife: { default: sanityCacheLife },
+  headers: () =>
+    Promise.resolve(
+      ["/api/:path*", "/monitoring", "/monitoring/:path*"].map((source) => ({
+        headers: transportHeaders(),
+        source,
+      }))
+    ),
   images: {
     remotePatterns: [
       sanityImageRemotePattern(env.NEXT_PUBLIC_SANITY_PROJECT_ID),

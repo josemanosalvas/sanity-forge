@@ -69,6 +69,30 @@ test.describe("Routing", { tag: "@smoke" }, () => {
     expect(response.status()).toBe(404);
   });
 
+  test("the www twin of a production host redirects to the canonical host", async ({
+    request,
+  }) => {
+    const response = await request.get("/about", {
+      headers: { host: "www.brand-a.example" },
+      maxRedirects: 0,
+    });
+    expect(response.status()).toBe(308);
+    expect(response.headers().location).toBe("https://brand-a.example/about");
+  });
+
+  test("API responses carry the transport security headers", async ({
+    request,
+  }) => {
+    const response = await request.post("/api/revalidate", {
+      headers: { host: "brand-a.example" },
+    });
+    expect([400, 401, 501]).toContain(response.status());
+    expect(response.headers()["x-content-type-options"]).toBe("nosniff");
+    expect(response.headers()["referrer-policy"]).toBe(
+      "strict-origin-when-cross-origin"
+    );
+  });
+
   for (const site of ["brand-a", "brand-b"]) {
     test(`${site} serves its own robots and sitemap`, async ({ request }) => {
       const headers = { host: `${site}.example` };
