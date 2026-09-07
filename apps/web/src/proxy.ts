@@ -14,6 +14,10 @@ const studioOrigin = new URL(env.NEXT_PUBLIC_SANITY_STUDIO_URL).origin;
 const googleScriptSources = env.NEXT_PUBLIC_GA_MEASUREMENT_ID
   ? ["https://www.googletagmanager.com"]
   : [];
+const vercelScriptSources =
+  process.env.NODE_ENV === "development"
+    ? ["https://va.vercel-scripts.com"]
+    : [];
 const googleAnalyticsSources = env.NEXT_PUBLIC_GA_MEASUREMENT_ID
   ? [
       "https://*.google-analytics.com",
@@ -79,14 +83,14 @@ export const proxy: NextProxy = (request) => {
       ],
       imgSrc: ["https://image.mux.com", ...googleAnalyticsSources],
       mediaSrc: ["https://stream.mux.com"],
-      scriptSrc: googleScriptSources,
+      scriptSrc: [...googleScriptSources, ...vercelScriptSources],
     },
     frameAncestors: [studioOrigin],
   });
 };
 
 export const config = {
-  // Everything except API routes, the Sentry tunnel and Next internals; API
-  // and tunnel responses get their headers from next.config.ts.
-  matcher: ["/((?!api/|monitoring(?:/|$)|_next/).*)"],
+  // Everything except API routes, the Sentry tunnel, Vercel beacons and Next
+  // internals; API and tunnel responses get their headers from next.config.ts.
+  matcher: ["/((?!api/|monitoring(?:/|$)|_next/|_vercel/).*)"],
 };

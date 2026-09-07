@@ -26,3 +26,5 @@ Before any Next.js work, find and read the relevant doc in `apps/web/node_module
 - Run `pnpm verify` before finishing. On an unconfigured checkout, prefix it with `SANITY_STUDIO_PROJECT_ID=placeholder SANITY_STUDIO_DATASET=production NEXT_PUBLIC_SANITY_PROJECT_ID=placeholder NEXT_PUBLIC_SANITY_DATASET=production`.
 - For routing, caching or rendering changes, run `pnpm turbo run build --filter=web` and `pnpm test:e2e` with a real Sanity project and Viewer token. Report unavailable checks explicitly.
 - Verify published and Draft Mode separately for preview changes. Add regressions for behavior; avoid tests of mocks, implementation spelling or unused helpers.
+- Targets are the Core Web Vitals field thresholds (LCP < 2.5 s, INP < 200 ms, CLS < 0.1 at the 75th percentile). For image, font, script or rendering changes, check Speed Insights on a deployment with traffic when one exists; otherwise a Lighthouse comparison is enough. Keep the verification proportional to the change.
+- Analytics changes: confirm one page view per navigation in GA DebugView or the Vercel Analytics dashboard; investigate duplicate events before merging.

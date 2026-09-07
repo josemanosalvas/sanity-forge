@@ -18,6 +18,7 @@
     "@next/third-parties": "catalog:",
     "@t3-oss/env-nextjs": "catalog:",
     "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "catalog:",
     "server-only": "catalog:",
     "zod": "catalog:"
   },
