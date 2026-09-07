@@ -11,11 +11,14 @@ const GlobalError = ({
   retry: () => void;
 }) => {
   useEffect(() => {
-    captureException(error);
+    captureException(error, { tags: { digest: error.digest } });
   }, [error]);
 
   return (
     <html lang="en">
+      <head>
+        <title>Could not load this page</title>
+      </head>
       <body
         style={{
           fontFamily: "system-ui, sans-serif",
@@ -23,11 +26,20 @@ const GlobalError = ({
           textAlign: "center",
         }}
       >
-        <h1>Something went wrong</h1>
-        <p>The application failed to render.</p>
-        <button onClick={() => retry()} type="button">
-          Try again
-        </button>
+        <h1>Could not load this page</h1>
+        <p>Try again in a moment.</p>
+        {error.digest && (
+          <p style={{ fontFamily: "monospace", fontSize: "0.8rem" }}>
+            Error ID: {error.digest}
+          </p>
+        )}
+        <p style={{ display: "flex", gap: "1rem", justifyContent: "center" }}>
+          <button onClick={() => retry()} type="button">
+            Try again
+          </button>
+          {/* oxlint-disable-next-line next/no-html-link-for-pages -- the document was replaced; the router tree is gone */}
+          <a href="/">Return home</a>
+        </p>
       </body>
     </html>
   );

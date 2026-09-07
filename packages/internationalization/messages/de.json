@@ -21,6 +21,14 @@
     "title": "Die gesuchte Seite existiert nicht.",
     "cta": "Zur Startseite"
   },
+  "error": {
+    "title": "Diese Seite konnte nicht geladen werden",
+    "body": "Versuchen Sie es gleich noch einmal.",
+    "retry": "Erneut versuchen",
+    "home": "Zur Startseite",
+    "errorId": "Fehler-ID",
+    "chrome": "Dieser Teil der Seite konnte nicht geladen werden."
+  },
   "preview": {
     "message": "Sie sehen die Website im Vorschaumodus.",
     "exit": "Beenden",
@@ -42,7 +50,9 @@
       "subscribe": "Abonnieren",
       "subscribeToNewsletter": "Newsletter abonnieren",
       "subscribing": "Wird abonniert…"
-    }
+    },
+    "sectionFailed": "Dieser Abschnitt konnte nicht angezeigt werden.",
+    "tryAgain": "Erneut versuchen"
   },
   "footer": {
     "copyright": "© {year} {siteName}. Alle Rechte vorbehalten."
