@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 
-import { resolveAssetId, svgUrlFromAssetId } from "./sanity-image";
+import { resolveAssetId } from "../lib/sanity-image";
+import { svgUrlFromAssetId } from "./sanity-image";
 
 describe("internal/sanity-image", () => {
   test("resolveAssetId returns the id for a valid canonical asset id", () => {

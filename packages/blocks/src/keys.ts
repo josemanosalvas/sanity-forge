@@ -6,11 +6,13 @@ export const keys = () =>
     client: {
       NEXT_PUBLIC_SANITY_DATASET: z.string().min(1),
       NEXT_PUBLIC_SANITY_PROJECT_ID: z.string().min(1),
+      NEXT_PUBLIC_SANITY_STUDIO_URL: z.url().default("http://localhost:3333"),
     },
     emptyStringAsUndefined: true,
     runtimeEnv: {
       NEXT_PUBLIC_SANITY_DATASET: process.env.NEXT_PUBLIC_SANITY_DATASET,
       NEXT_PUBLIC_SANITY_PROJECT_ID: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
+      NEXT_PUBLIC_SANITY_STUDIO_URL: process.env.NEXT_PUBLIC_SANITY_STUDIO_URL,
     },
     skipValidation: process.env.SKIP_ENV_VALIDATION === "true",
   });

@@ -3,8 +3,9 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 
 import { sanitizeHref } from "../lib/safe-href";
+import { resolveAssetId } from "../lib/sanity-image";
 import type { SanityImageData } from "./sanity-image";
-import { resolveAssetId, SanityImage } from "./sanity-image";
+import { SanityImage } from "./sanity-image";
 
 export interface LogoLinkCellProps {
   image?: SanityImageData | null;

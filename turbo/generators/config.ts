@@ -165,7 +165,7 @@ const generator = (plop: PlopTypes.NodePlopAPI): void => {
           `packages/blocks/src/blocks/${String((answers as { name: string }).name)} packages/blocks/src`
         ),
       () =>
-        "Block scaffolded. Next: add a dynamic import and a `case` for it in apps/web/src/components/page-builder.tsx, run `pnpm typegen`, and add tests for the block's behavior.",
+        "Block scaffolded. Next: import it and add a `case` in apps/web/src/components/page-blocks.tsx, run `pnpm typegen`, and add tests for the block's behavior.",
     ],
     description: "Scaffold a new page-builder block in packages/blocks",
     prompts: [
