@@ -4,13 +4,10 @@ import type { ElementType } from "react";
 import { SanityImage as BaseSanityImage } from "sanity-image";
 import type { WrapperProps } from "sanity-image";
 
-import { keys } from "../keys";
-import { resolveAssetId } from "../lib/sanity-image";
+import { getImageDimensions, resolveAssetId } from "../lib/sanity-image";
 
-const env = keys();
-
-const SANITY_BASE_URL =
-  `https://cdn.sanity.io/images/${env.NEXT_PUBLIC_SANITY_PROJECT_ID}/${env.NEXT_PUBLIC_SANITY_DATASET}/` as const;
+// Direct property access lets Next inline public values into the client bundle.
+const SANITY_BASE_URL = `https://cdn.sanity.io/images/${process.env.NEXT_PUBLIC_SANITY_PROJECT_ID}/${process.env.NEXT_PUBLIC_SANITY_DATASET}/`;
 
 export interface SanityImageData {
   id?: string | null;
@@ -27,6 +24,7 @@ export interface SanityImageData {
 
 export type SanityImageProps = {
   image: SanityImageData;
+  placeholder?: boolean;
 } & Omit<WrapperProps<"img">, "id">;
 
 const ImageWrapper = <T extends ElementType = "img">(
@@ -58,7 +56,47 @@ const isFiniteAll = (
   return fields.every((field) => Number.isFinite(record[field]));
 };
 
-export const SanityImage = ({ image, ...props }: SanityImageProps) => {
+const MIN_PREVIEW_WIDTH = 64;
+
+/** LQIP hides the full image until hydration; omit it for priority images. */
+type ImgProps = Omit<SanityImageProps, "image" | "placeholder">;
+
+const wantsPreview = (
+  image: SanityImageData,
+  props: ImgProps,
+  placeholder: boolean
+) =>
+  placeholder &&
+  Boolean(image.preview) &&
+  props.loading !== "eager" &&
+  props.fetchPriority !== "high" &&
+  (typeof props.width !== "number" || props.width >= MIN_PREVIEW_WIDTH);
+
+const svgBox = (image: SanityImageData, props: ImgProps) => {
+  const dimensions = getImageDimensions(image);
+  if (!dimensions) {
+    return { height: props.height, width: props.width };
+  }
+  if (typeof props.height === "number") {
+    return {
+      height: props.height,
+      width: Math.round(props.height * dimensions.aspectRatio),
+    };
+  }
+  if (typeof props.width === "number") {
+    return {
+      height: Math.round(props.width / dimensions.aspectRatio),
+      width: props.width,
+    };
+  }
+  return { height: dimensions.height, width: dimensions.width };
+};
+
+export const SanityImage = ({
+  image,
+  placeholder = true,
+  ...props
+}: SanityImageProps) => {
   const id = resolveAssetId(image);
   if (!(id && image)) {
     return null;
@@ -66,25 +104,31 @@ export const SanityImage = ({ image, ...props }: SanityImageProps) => {
 
   const svgUrl = svgUrlFromAssetId(id);
   if (svgUrl) {
+    const box = svgBox(image, props);
     return (
       // oxlint-disable-next-line next/no-img-element -- serves the original SVG untouched by the CDN transform pipeline
       <img
         alt={props.alt ?? image.alt ?? ""}
         className={cn("object-contain", props.className)}
         decoding="async"
-        height={props.height}
+        fetchPriority={props.fetchPriority}
+        height={box.height}
         loading={props.loading ?? "lazy"}
+        sizes={props.sizes}
         src={svgUrl}
         style={props.style}
-        width={props.width}
+        width={box.width}
       />
     );
   }
 
+  const preview = wantsPreview(image, props, placeholder)
+    ? image.preview
+    : undefined;
   const processedData = {
     alt: props.alt ?? image.alt ?? "",
     id,
-    ...(image.preview && { preview: image.preview }),
+    ...(preview && { preview }),
     ...(isFiniteAll(image.hotspot, HOTSPOT_KEYS) && { hotspot: image.hotspot }),
     ...(isFiniteAll(image.crop, CROP_KEYS) && { crop: image.crop }),
   };

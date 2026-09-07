@@ -83,6 +83,8 @@ const TestimonialPanel = ({
                   height={42}
                   image={authorImage}
                   loading="lazy"
+                  mode="cover"
+                  sizes="42px"
                   width={42}
                 />
               </div>
@@ -153,7 +155,12 @@ export const SubscribeNewsletter = ({
                 <form
                   action={action}
                   className="bg-muted flex w-full items-center gap-1.5 py-1.5 pr-1.5 pl-4 has-[input:focus-visible]:[outline:2px_dotted_var(--foreground)] has-[input:focus-visible]:outline-offset-2"
-                  method={method ?? "post"}
+                  // React owns the request for a function action; a method there is rejected.
+                  method={
+                    typeof action === "function"
+                      ? undefined
+                      : (method ?? "post")
+                  }
                   onSubmit={onSubmit}
                 >
                   <input

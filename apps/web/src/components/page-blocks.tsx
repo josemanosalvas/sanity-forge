@@ -47,7 +47,7 @@ const renderBlock = (
       return <SocialGrid {...block} />;
     }
     case "showcaseGrid": {
-      return <ShowcaseGrid {...block} />;
+      return <ShowcaseGrid {...block} isFirst={isFirst} />;
     }
     case "richTextBlock": {
       return <RichTextBlock {...block} />;
