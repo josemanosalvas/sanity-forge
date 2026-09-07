@@ -14,8 +14,9 @@ export const initializeObservability = (): void => {
   init({
     dsn,
     enableLogs: true,
-    includeLocalVariables: true,
+    // Local variables can hold the Sanity token; never send them from production.
+    includeLocalVariables: process.env.NODE_ENV !== "production",
     integrations: [consoleLoggingIntegration({ levels: ["error", "warn"] })],
-    tracesSampleRate: 1,
+    tracesSampleRate: keys().NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE ?? 1,
   });
 };
