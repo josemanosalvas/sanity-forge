@@ -18,6 +18,7 @@ import { Suspense } from "react";
 import { preconnect, prefetchDNS } from "react-dom";
 
 import { BlockLabels } from "@/components/block-labels";
+import { ChromeBoundary } from "@/components/chrome-boundary";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { PreviewBar } from "@/components/preview-bar";
@@ -113,37 +114,43 @@ const RootLayout = async ({ children }: LayoutProps<"/[site]/[locale]">) => {
               <SiteProvider site={context.site}>
                 <TranslationsProvider>
                   <AnalyticsProvider>
-                    {isDraftMode ? (
-                      <Suspense fallback={<HeaderFallback />}>
-                        <DynamicHeader context={context} />
-                      </Suspense>
-                    ) : (
-                      <CachedHeader
-                        context={context}
-                        perspective="published"
-                        stega={false}
-                      />
-                    )}
+                    <ChromeBoundary slot="header">
+                      {isDraftMode ? (
+                        <Suspense fallback={<HeaderFallback />}>
+                          <DynamicHeader context={context} />
+                        </Suspense>
+                      ) : (
+                        <CachedHeader
+                          context={context}
+                          perspective="published"
+                          stega={false}
+                        />
+                      )}
+                    </ChromeBoundary>
                     <main className="min-h-dvh" id="main">
                       {children}
                     </main>
-                    {isDraftMode ? (
-                      <Suspense fallback={<FooterFallback />}>
-                        <DynamicFooter context={context} />
-                      </Suspense>
-                    ) : (
-                      <CachedFooter
+                    <ChromeBoundary slot="footer">
+                      {isDraftMode ? (
+                        <Suspense fallback={<FooterFallback />}>
+                          <DynamicFooter context={context} />
+                        </Suspense>
+                      ) : (
+                        <CachedFooter
+                          context={context}
+                          perspective="published"
+                          stega={false}
+                        />
+                      )}
+                    </ChromeBoundary>
+                    {/* Structured data is for crawlers, which never hold a draft session. */}
+                    <ChromeBoundary slot="data">
+                      <SiteJsonLd
                         context={context}
                         perspective="published"
                         stega={false}
                       />
-                    )}
-                    {/* Structured data is for crawlers, which never hold a draft session. */}
-                    <SiteJsonLd
-                      context={context}
-                      perspective="published"
-                      stega={false}
-                    />
+                    </ChromeBoundary>
                     {/* The default Live action handles refresh and invalidation for each mode. */}
                     <SanityLive includeDrafts={isDraftMode} />
                     {isDraftMode && (

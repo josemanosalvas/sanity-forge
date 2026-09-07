@@ -69,6 +69,30 @@ test.describe("Routing", { tag: "@smoke" }, () => {
     expect(response.status()).toBe(404);
   });
 
+  // The published render path stays outside Suspense, so a missing CMS slug
+  // is a real 404 status with the branded, translated body.
+  test("a slug the CMS does not have returns a branded 404", async ({
+    request,
+  }) => {
+    const response = await request.get("/this-page-does-not-exist", {
+      headers: { host: "brand-a.example" },
+    });
+    expect(response.status()).toBe(404);
+    const html = await response.text();
+    expect(html).toContain('data-site="brand-a"');
+    expect(html).toContain("Return home");
+  });
+
+  test("a dotted path that matches no file returns the global 404", async ({
+    request,
+  }) => {
+    const response = await request.get("/about.html", {
+      headers: { host: "brand-a.example" },
+    });
+    expect(response.status()).toBe(404);
+    expect(await response.text()).toContain("Return home");
+  });
+
   test("the www twin of a production host redirects to the canonical host", async ({
     request,
   }) => {
