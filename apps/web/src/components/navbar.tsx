@@ -20,6 +20,12 @@ export const Navbar = ({
 }: NavigationData & { siteName: string }) => {
   const t = useTranslations("common");
   const { columns, buttons } = navigation ?? {};
+  const themeLabels = {
+    dark: t("theme.dark"),
+    light: t("theme.light"),
+    system: t("theme.system"),
+    toggle: t("theme.label"),
+  };
 
   return (
     <header className="border-border bg-background/80 sticky top-0 z-40 w-full border-b backdrop-blur">
@@ -53,12 +59,12 @@ export const Navbar = ({
             size="sm"
           />
           <LanguageSwitcher />
-          <ModeToggle />
+          <ModeToggle labels={themeLabels} />
         </div>
 
         <div className="flex flex-1 items-center justify-end gap-1 lg:hidden">
           <LanguageSwitcher />
-          <ModeToggle />
+          <ModeToggle labels={themeLabels} />
           <MobileMenu navigation={navigation} siteName={siteName} />
         </div>
       </div>

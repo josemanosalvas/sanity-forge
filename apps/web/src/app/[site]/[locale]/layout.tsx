@@ -6,6 +6,7 @@ import { getDynamicFetchOptions, SanityLive } from "@repo/sanity/live";
 import type { DynamicFetchOptions } from "@repo/sanity/live";
 import { UIProvider } from "@repo/ui/provider";
 import { NextIntlClientProvider } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { stegaClean } from "next-sanity";
 import { VisualEditing } from "next-sanity/visual-editing";
 import { cacheLife } from "next/cache";
@@ -26,8 +27,18 @@ import { siteMetadata } from "@/lib/seo";
 import { getSiteContext, toQueryParams } from "@/lib/site-context";
 import type { SiteContext } from "@/types";
 
-const fontSans = Geist({ subsets: ["latin"], variable: "--font-sans" });
-const fontMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" });
+// Distinct from the design-system tokens, which would otherwise reference themselves.
+const fontSans = Geist({
+  display: "swap",
+  subsets: ["latin"],
+  variable: "--font-app-sans",
+});
+const fontMono = Geist_Mono({
+  display: "swap",
+  preload: false,
+  subsets: ["latin"],
+  variable: "--font-app-mono",
+});
 
 /** Every site × locale pair is prerendered; a slug the page did not list renders on its first request. */
 export const generateStaticParams = () =>
@@ -90,22 +101,28 @@ const FooterFallback = () => (
 );
 
 const RootLayout = async ({ children }: LayoutProps<"/[site]/[locale]">) => {
-  const [context, { isEnabled: isDraftMode }] = await Promise.all([
+  const [context, { isEnabled: isDraftMode }, t] = await Promise.all([
     getSiteContext(),
     draftMode(),
+    getTranslations("common"),
   ]);
   preconnect("https://cdn.sanity.io");
   prefetchDNS("https://cdn.sanity.io");
 
   return (
     <html
+      className={`${fontSans.variable} ${fontMono.variable}`}
       data-site={context.site.key}
       lang={context.locale}
       suppressHydrationWarning
     >
-      <body
-        className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased`}
-      >
+      <body className="font-sans antialiased">
+        <a
+          className="focus-ring bg-background text-foreground sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:px-4 focus:py-2"
+          href="#main"
+        >
+          {t("skipToContent")}
+        </a>
         <UIProvider>
           <NextIntlClientProvider>
             <BlockLabels>
@@ -125,7 +142,11 @@ const RootLayout = async ({ children }: LayoutProps<"/[site]/[locale]">) => {
                         />
                       )}
                     </ChromeBoundary>
-                    <main className="min-h-dvh" id="main">
+                    <main
+                      className="min-h-dvh outline-none"
+                      id="main"
+                      tabIndex={-1}
+                    >
                       {children}
                     </main>
                     <ChromeBoundary slot="footer">

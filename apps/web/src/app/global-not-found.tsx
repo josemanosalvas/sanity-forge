@@ -5,13 +5,13 @@ import { Geist, Geist_Mono } from "next/font/google";
 const fontSans = Geist({
   display: "swap",
   subsets: ["latin"],
-  variable: "--font-sans",
+  variable: "--font-app-sans",
 });
 const fontMono = Geist_Mono({
   display: "swap",
   preload: false,
   subsets: ["latin"],
-  variable: "--font-mono",
+  variable: "--font-app-mono",
 });
 
 export const metadata: Metadata = {
