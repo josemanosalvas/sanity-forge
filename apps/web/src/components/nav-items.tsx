@@ -11,6 +11,7 @@ import { useMounted } from "@repo/ui/hooks/use-mounted";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { LinkStatus } from "@/components/link-status";
 import { MenuLink } from "@/components/menu-link";
 import type { NavigationData } from "@/types";
 
@@ -63,6 +64,7 @@ export const NavItems = ({
             }
           >
             {column.name}
+            <LinkStatus />
           </NavigationMenuLink>
         </NavigationMenuItem>
       );
