@@ -25,7 +25,9 @@ export const BlockLabels = ({ children }: { children: ReactNode }) => {
       opensInNewTab: t("opensInNewTab"),
       playVideo: (title) =>
         title ? t("playVideoTitled", { title }) : t("playVideo"),
+      sectionFailed: t("sectionFailed"),
       showcase: t("showcase"),
+      tryAgain: t("tryAgain"),
       visit: (name) => t("visit", { name }),
     }),
     [t]

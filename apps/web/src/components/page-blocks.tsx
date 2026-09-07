@@ -1,3 +1,4 @@
+import { BlockErrorBoundary } from "@repo/blocks/components/block-error";
 import { CTABlock } from "@repo/blocks/cta";
 import { FaqAccordion } from "@repo/blocks/faq-accordion";
 import { FeatureCardsWithIcon } from "@repo/blocks/feature-cards-icon";
@@ -103,7 +104,7 @@ export const renderPageBlocks = ({
     ) : null;
     return {
       key: block._key,
-      node: content ?? fallback,
+      node: <BlockErrorBoundary>{content ?? fallback}</BlockErrorBoundary>,
       type: block._type,
     };
   });

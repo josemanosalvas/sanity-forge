@@ -32,8 +32,12 @@ export interface BlockLabels {
   opensInNewTab: string;
   /** Accessible name of a video's play button, with the clip's title when it has one. */
   playVideo: (title?: string) => string;
+  /** Shown in place of a block whose renderer threw. */
+  sectionFailed: string;
   /** Heading of a showcase grid that has no title of its own. */
   showcase: string;
+  /** Retry control of a failed block. */
+  tryAgain: string;
   /** Accessible name of a showcase card that links out to the named project. */
   visit: (name: string) => string;
 }
@@ -52,7 +56,9 @@ export const defaultBlockLabels: BlockLabels = {
   },
   opensInNewTab: "(opens in a new tab)",
   playVideo: (title) => (title ? `Play video: ${title}` : "Play video"),
+  sectionFailed: "This section could not be displayed.",
   showcase: "Showcase",
+  tryAgain: "Try again",
   visit: (name) => `Visit ${name}`,
 };
 

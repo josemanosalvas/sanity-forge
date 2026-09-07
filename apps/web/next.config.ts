@@ -94,6 +94,9 @@ const transportHeaders = () =>
 const baseConfig: NextConfig = createNextConfig({
   // Sanity Live invalidates by tag, so cached reads live until content changes.
   cacheLife: { default: sanityCacheLife },
+  experimental: {
+    globalNotFound: true,
+  },
   headers: () =>
     Promise.resolve(
       ["/api/:path*", "/monitoring", "/monitoring/:path*"].map((source) => ({
