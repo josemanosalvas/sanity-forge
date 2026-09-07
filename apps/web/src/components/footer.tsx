@@ -8,6 +8,7 @@ import {
 } from "@repo/blocks/components/icons";
 import { SanityImage } from "@repo/blocks/components/sanity-image";
 import { normalizedLogoHeight } from "@repo/blocks/lib/logo-height";
+import { sanitizeHref } from "@repo/blocks/lib/safe-href";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { Fragment } from "react";
@@ -30,7 +31,9 @@ const SocialLinks = ({
     { Icon: LinkedinBrandIcon, label: "LinkedIn", url: data.linkedin },
     { Icon: YoutubeIcon, label: "YouTube", url: data.youtube },
     { Icon: RedditBrandIcon, label: "Reddit", url: data.reddit },
-  ].filter((link): link is typeof link & { url: string } => Boolean(link.url));
+  ]
+    .map((link) => ({ ...link, url: sanitizeHref(link.url) }))
+    .filter((link): link is typeof link & { url: string } => Boolean(link.url));
 
   if (!links.length) {
     return null;

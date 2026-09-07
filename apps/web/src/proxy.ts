@@ -1,4 +1,5 @@
 import {
+  canonicalHostRedirect,
   resolveSite,
   rewriteToSiteRoute,
 } from "@repo/internationalization/proxy";
@@ -53,7 +54,10 @@ export const proxy: NextProxy = (request) => {
   const pathname = decodePathname(request.nextUrl.pathname);
 
   let response: NextResponse;
-  if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
+  const canonical = canonicalHostRedirect(request, site);
+  if (canonical) {
+    response = canonical;
+  } else if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
     const url = request.nextUrl.clone();
     url.pathname =
       pathname === "/sitemap.xml"
@@ -82,8 +86,7 @@ export const proxy: NextProxy = (request) => {
 };
 
 export const config = {
-  // Everything except API routes, the Sentry tunnel (`/monitoring` itself,
-  // not `/monitoring-report`) and Next internals. Static files and the
-  // internal route namespace stay in scope so the proxy decides what they do.
+  // Everything except API routes, the Sentry tunnel and Next internals; API
+  // and tunnel responses get their headers from next.config.ts.
   matcher: ["/((?!api/|monitoring(?:/|$)|_next/).*)"],
 };

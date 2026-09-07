@@ -81,7 +81,7 @@ For revalidation when no browser has Sanity Live open, configure a GROQ-powered 
 | URL               | `https://your-site/api/revalidate`                  |
 | Method / triggers | POST; create, update, delete; draft events disabled |
 | Projection        | `{_type, site}`                                     |
-| Secret            | Same as `SANITY_REVALIDATE_SECRET`                  |
+| Secret            | Same as `SANITY_REVALIDATE_SECRET` (32+ characters) |
 
 Filter:
 
@@ -90,6 +90,20 @@ _type in ["page", "settings", "navigation", "footer", "faq", "translation.metada
 ```
 
 Site documents invalidate that site's reads; shared documents invalidate all sites. The next request can receive stale content while the cache refreshes. Redirect edits require a rebuild.
+
+## Deployment
+
+One Vercel project serves every hostname in `sites.ts`; attach all production domains to it and `DEFAULT_SITE` answers preview URLs. Settings:
+
+| Setting | Value |
+| --- | --- |
+| Root Directory | repository root (empty): the web build runs the Studio's schema extraction through Turborepo |
+| Install Command | `pnpm install --frozen-lockfile` |
+| Build Command | `pnpm turbo run build --filter=web` |
+| Output Directory | `apps/web/.next` |
+| Node.js | 24.x (`engines.node` in `package.json`) |
+
+Environment variables: everything in `apps/web/.env.example` marked required, plus `SANITY_STUDIO_PROJECT_ID` and `SANITY_STUDIO_DATASET` for the build, `NEXT_PUBLIC_SANITY_STUDIO_URL` set to the deployed Studio origin (a loopback value is dropped from the frame-ancestors policy), and `SANITY_REVALIDATE_SECRET` (at least 32 characters; shorter values are refused by the route) if the webhook is used. After 30 failed webhook requests or 20 failed Draft Mode handshakes per minute, that address receives HTTP 429 until its window resets. Successful requests do not consume the budget, but an exhausted address is blocked before authentication. Limits apply per server instance. `SANITY_API_READ_TOKEN` must be a Viewer token: validated Draft Mode sessions receive it in the browser for Sanity Live. Reverse proxies must overwrite `x-forwarded-host` for site selection and `x-forwarded-for` for rate limiting. Requests on a site's `www.`/apex twin are redirected to the production hostname with a 308.
 
 ## CI and verification
 
