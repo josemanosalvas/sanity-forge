@@ -19,7 +19,7 @@ const toAlternates = (
       : []
   );
 
-/** Favicons from the site settings; none until the site uploads them. */
+/** Favicons from the site settings; the neutral mark in public/ until the site uploads its own. */
 export const faviconIcons = (
   settings: SettingsQueryResult
 ): Metadata["icons"] => {
@@ -31,7 +31,9 @@ export const faviconIcons = (
       ? [{ sizes: "16x16 32x32 48x48", url: settings.favicon.ico }]
       : []),
   ];
-  return icon.length > 0 ? { icon } : undefined;
+  return icon.length > 0
+    ? { icon }
+    : { icon: [{ type: "image/svg+xml", url: "/icon.svg" }] };
 };
 
 const twitterHandle = (settings: SettingsQueryResult) => {

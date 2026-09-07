@@ -1,5 +1,6 @@
 import { SanityImage } from "@repo/blocks/components/sanity-image";
 import type { SanityImageData } from "@repo/blocks/components/sanity-image";
+import { getImageDimensions } from "@repo/blocks/lib/sanity-image";
 import { Link } from "@repo/internationalization/navigation";
 import { cn } from "cn";
 
@@ -27,11 +28,16 @@ export const Logo = ({
   }
 
   const loading = priority ? "eager" : "lazy";
+  // Match the 20px header logo height and 176px width cap.
+  const renderedWidth = Math.min(
+    176,
+    Math.round(20 * (getImageDimensions(image)?.aspectRatio ?? 5))
+  );
   const shared = {
     alt,
     height: 32,
-    loading,
-    sizes: "210px",
+    placeholder: false,
+    sizes: `${renderedWidth}px`,
     width: 210,
   } as const;
 
@@ -43,11 +49,14 @@ export const Logo = ({
             {...shared}
             className={cn("h-auto w-44 dark:hidden", className)}
             image={{ ...image, alt }}
+            loading={loading}
           />
+          {/* Hidden in light mode: lazy, so it is only fetched when shown. */}
           <SanityImage
             {...shared}
             className={cn("hidden h-auto w-44 dark:block", className)}
             image={{ ...imageDark, alt }}
+            loading="lazy"
           />
         </>
       ) : (
@@ -55,6 +64,7 @@ export const Logo = ({
           {...shared}
           className={cn("h-auto w-44", className)}
           image={{ ...image, alt }}
+          loading={loading}
         />
       )}
     </Link>

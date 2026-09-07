@@ -138,6 +138,7 @@ export const Footer = async ({
                       height={logoHeight}
                       image={credit.logo}
                       loading="lazy"
+                      sizes="75px"
                       style={{ height: logoHeight }}
                       width={75}
                     />

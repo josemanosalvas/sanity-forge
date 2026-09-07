@@ -1,10 +1,11 @@
 import { cn } from "cn";
 
 import { BlockLabel, VisitLabel } from "../../components/labels";
-import { resolveAssetId, SanityImage } from "../../components/sanity-image";
+import { SanityImage } from "../../components/sanity-image";
 import type { SanityImageData } from "../../components/sanity-image";
 import { normalizedLogoHeight } from "../../lib/logo-height";
 import { sanitizeHref } from "../../lib/safe-href";
+import { resolveAssetId } from "../../lib/sanity-image";
 
 export interface ShowcaseGridItem {
   _key: string;
@@ -20,6 +21,8 @@ export interface ShowcaseGridProps {
   title?: string | null;
   description?: string | null;
   items?: ShowcaseGridItem[] | null;
+  /** Leads the page: the featured screenshot is then the likely LCP image. */
+  isFirst?: boolean;
 }
 
 type ImageSource =
@@ -72,6 +75,7 @@ const AttributionLogo = ({
       className={cn("w-auto shrink-0 object-contain", className)}
       height={24}
       image={item.logo}
+      sizes="96px"
       style={{
         height: normalizedLogoHeight(item.logo, {
           base,
@@ -92,6 +96,7 @@ const AttributionMark = ({ item }: Readonly<{ item: CardView }>) => (
         className="size-full object-contain"
         height={24}
         image={item.logo}
+        sizes="24px"
         width={24}
       />
     ) : (
@@ -108,21 +113,26 @@ const ScreenshotImage = ({
   sizes,
   className,
   loading,
+  fetchPriority,
 }: Readonly<{
   screenshot: ImageSource;
   name: string;
   sizes: string;
   className?: string;
   loading?: "eager" | "lazy";
+  fetchPriority?: "high" | "low" | "auto";
 }>) => {
   if (screenshot.kind === "sanity") {
     return (
+      // Crop the fixed 16:9 box around the editor's hotspot.
       <SanityImage
         alt={`${name} website screenshot`}
         className={cn("absolute inset-0 size-full object-cover", className)}
+        fetchPriority={fetchPriority}
         height={810}
         image={screenshot.image}
         loading={loading}
+        mode="cover"
         sizes={sizes}
         width={1440}
       />
@@ -185,7 +195,13 @@ const ShowcaseHeader = ({
 const FeaturedBanner = ({
   featured,
   side = "left",
-}: Readonly<{ featured: CardView; side?: "left" | "right" }>) => {
+  eager = false,
+}: Readonly<{
+  featured: CardView;
+  side?: "left" | "right";
+  /** The banner leads the page, so its screenshot loads at high priority. */
+  eager?: boolean;
+}>) => {
   const panelRight = side === "right";
   const clickable = Boolean(featured.url);
 
@@ -224,10 +240,11 @@ const FeaturedBanner = ({
       data-nav-contrast="dark"
     >
       <ScreenshotImage
-        loading="lazy"
+        fetchPriority={eager ? "high" : undefined}
+        loading={eager ? "eager" : "lazy"}
         name={featured.name}
         screenshot={featured.screenshot}
-        sizes="(min-width: 1024px) calc(100vw - 376px), 100vw"
+        sizes="(min-width: 1440px) 1024px, (min-width: 1024px) calc(100vw - 416px), calc(100vw - 40px)"
       />
     </div>
   );
@@ -363,6 +380,7 @@ export const ShowcaseGrid = ({
   title,
   description,
   items,
+  isFirst = false,
 }: Readonly<ShowcaseGridProps>) => {
   const cmsItems = items ?? [];
   const label = title?.trim() ? null : (
@@ -404,7 +422,7 @@ export const ShowcaseGrid = ({
         </div>
 
         {leadBanner ? (
-          <FeaturedBanner featured={leadBanner} side="left" />
+          <FeaturedBanner eager={isFirst} featured={leadBanner} side="left" />
         ) : null}
 
         {cards.length > 0 ? (
