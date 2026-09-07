@@ -1,4 +1,5 @@
 import { cn } from "cn";
+import { preconnect } from "react-dom";
 
 import { BlockEyebrow } from "../../components/block-eyebrow";
 import type { RichTextValue } from "../../components/rich-text";
@@ -7,7 +8,11 @@ import type { ButtonProps } from "../../components/sanity-buttons";
 import { SanityButtons } from "../../components/sanity-buttons";
 import type { SanityImageData } from "../../components/sanity-image";
 import { SanityImage } from "../../components/sanity-image";
-import { muxPlaybackId, muxThumbnailUrl } from "../../lib/mux";
+import {
+  muxPlaybackId,
+  muxThumbnailSrcSet,
+  muxThumbnailUrl,
+} from "../../lib/mux";
 import { getImageDimensions } from "../../lib/sanity-image";
 import type { HeroVideoData, HeroVideoVariant } from "./hero-video";
 import { HeroVideo } from "./hero-video";
@@ -34,6 +39,7 @@ interface HeroStill {
   image?: SanityImageData;
   key: string;
   url?: string;
+  srcSet?: string;
 }
 
 const stillOf = (variant?: HeroVideoVariant | null): HeroStill | null => {
@@ -44,12 +50,19 @@ const stillOf = (variant?: HeroVideoVariant | null): HeroStill | null => {
   if (!isMuxPath(mediaTypeOf(variant))) {
     return null;
   }
+  const playbackId = muxPlaybackId(variant?.mux);
   const url = muxThumbnailUrl(
-    muxPlaybackId(variant?.mux),
+    playbackId,
     variant?.mux?.thumbTime,
     POSTER_WIDTH
   );
-  return url ? { key: url, url } : null;
+  return url
+    ? {
+        key: url,
+        srcSet: muxThumbnailSrcSet(playbackId, variant?.mux?.thumbTime),
+        url,
+      }
+    : null;
 };
 
 const HeroPoster = ({
@@ -75,7 +88,9 @@ const HeroPoster = ({
         className={shared}
         fetchPriority={eager ? "high" : undefined}
         loading={eager ? "eager" : "lazy"}
+        sizes="100vw"
         src={still.url}
+        srcSet={still.srcSet}
       />
     );
   }
@@ -94,6 +109,9 @@ const HeroPoster = ({
       }
       image={image}
       loading={eager ? "eager" : "lazy"}
+      // Omit LQIP so the visible poster can paint before hydration.
+      placeholder={false}
+      sizes="100vw"
       width={POSTER_WIDTH}
     />
   );
@@ -109,6 +127,9 @@ const HeroPosters = ({
   if (!light) {
     return null;
   }
+  if (eager && light.url) {
+    preconnect("https://image.mux.com");
+  }
 
   const split = dark !== null && dark.key !== light.key;
 
@@ -119,7 +140,7 @@ const HeroPosters = ({
         eager={eager}
         still={light}
       />
-      {/* Only prioritize the light poster to avoid preloading both theme variants. */}
+      {/* The light still is prioritized; the dark one is lazy and fetched only when shown. */}
       {split && <HeroPoster className="hidden dark:block" still={dark} />}
     </>
   );
@@ -136,7 +157,7 @@ export const HeroBlock = ({
 }: Readonly<HeroBlockProps>) => {
   const banner = (
     <>
-      <HeroPosters eager video={video} />
+      <HeroPosters eager={isFirst} video={video} />
       <HeroVideo className={bannerFill} video={video} />
     </>
   );

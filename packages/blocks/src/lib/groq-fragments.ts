@@ -1,13 +1,7 @@
 export const imageFields = `
   "id": asset._ref,
   "preview": asset->metadata.lqip,
-  "alt": coalesce(
-    alt,
-    asset->altText,
-    caption,
-    asset->originalFilename,
-    "untitled"
-  ),
+  "alt": coalesce(alt, asset->altText, caption),
   hotspot {
     x,
     y

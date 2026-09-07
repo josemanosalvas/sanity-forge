@@ -59,6 +59,20 @@ export const muxThumbnailUrl = (
   return `https://image.mux.com/${playbackId}/thumbnail.webp${query}`;
 };
 
+const MUX_STILL_WIDTHS = [640, 960, 1440, 1920] as const;
+
+export const muxThumbnailSrcSet = (
+  playbackId?: string | null,
+  thumbTime?: number | null
+): string | undefined => {
+  if (!playbackId) {
+    return undefined;
+  }
+  return MUX_STILL_WIDTHS.map(
+    (width) => `${muxThumbnailUrl(playbackId, thumbTime, width)} ${width}w`
+  ).join(", ");
+};
+
 export type MuxMp4Resolution = "1080p" | "720p" | "480p" | "270p";
 
 /**

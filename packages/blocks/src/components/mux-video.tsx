@@ -6,7 +6,12 @@ import { stegaClean } from "next-sanity";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 
-import { muxAspectRatio, muxPlaybackId, muxThumbnailUrl } from "../lib/mux";
+import {
+  muxAspectRatio,
+  muxPlaybackId,
+  muxThumbnailSrcSet,
+  muxThumbnailUrl,
+} from "../lib/mux";
 import type { MuxVideoData } from "../lib/mux";
 import { useBlockLabels } from "./block-labels";
 
@@ -62,7 +67,9 @@ export const MuxVideo = ({
           alt=""
           className="absolute inset-0 size-full object-cover"
           loading="lazy"
+          sizes="(min-width: 1440px) 1200px, 100vw"
           src={poster}
+          srcSet={muxThumbnailSrcSet(playbackId, video?.thumbTime)}
         />
       )}
       {playing ? (
