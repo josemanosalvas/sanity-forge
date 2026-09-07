@@ -4,6 +4,7 @@ import { JsonLd } from "@repo/seo/json-ld";
 import type { Organization, WebSite } from "@repo/seo/json-ld";
 import { canonicalOrigin } from "@repo/seo/route";
 import { stegaClean } from "next-sanity";
+import { cacheLife } from "next/cache";
 
 import { fetchSettings } from "@/lib/content";
 import { toQueryParams } from "@/lib/site-context";
@@ -15,6 +16,7 @@ export const SiteJsonLd = async ({
   ...options
 }: { context: SiteContext } & DynamicFetchOptions) => {
   "use cache";
+  cacheLife("sanity");
   const settings = stegaClean(
     await fetchSettings({ ...toQueryParams(context), ...options })
   );

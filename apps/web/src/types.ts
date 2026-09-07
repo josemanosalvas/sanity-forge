@@ -1,6 +1,6 @@
 import type { Locale } from "@repo/internationalization/locales";
 import type { Site } from "@repo/internationalization/sites";
-import type { PageQueryResult } from "@repo/sanity/types";
+import type { PageMetadataQueryResult } from "@repo/sanity/types";
 import type { FilterByType, Get } from "@sanity/codegen";
 
 import type {
@@ -24,8 +24,8 @@ export interface SiteQueryParams {
   readonly defaultLocale: Locale;
 }
 
-/** A page as `generateMetadata` reads it: never stega-encoded. */
-export type PageDocument = NonNullable<PageQueryResult>;
+/** A page as `generateMetadata` reads it: the head fields only, never stega-encoded. */
+export type PageDocument = NonNullable<PageMetadataQueryResult>;
 
 /**
  * Rendered data comes from the `fetch*` helpers, whose `stega` flag is a
