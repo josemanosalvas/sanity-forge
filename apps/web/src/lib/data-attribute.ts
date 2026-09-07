@@ -1,6 +1,7 @@
-import { keys } from "@repo/sanity/keys";
+import { keys } from "@repo/blocks/keys";
 import { createDataAttribute } from "next-sanity";
 
+// Presentation uses this module in the browser; import only the public env schema.
 const env = keys();
 
 /** `data-sanity` attribute for a document path, so Presentation overlays map back to the Studio. */

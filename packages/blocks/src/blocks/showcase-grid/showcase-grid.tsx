@@ -1,8 +1,6 @@
-"use client";
-
 import { cn } from "cn";
 
-import { useBlockLabels } from "../../components/block-labels";
+import { BlockLabel, VisitLabel } from "../../components/labels";
 import { resolveAssetId, SanityImage } from "../../components/sanity-image";
 import type { SanityImageData } from "../../components/sanity-image";
 import { normalizedLogoHeight } from "../../lib/logo-height";
@@ -188,7 +186,6 @@ const FeaturedBanner = ({
   featured,
   side = "left",
 }: Readonly<{ featured: CardView; side?: "left" | "right" }>) => {
-  const labels = useBlockLabels();
   const panelRight = side === "right";
   const clickable = Boolean(featured.url);
 
@@ -265,7 +262,9 @@ const FeaturedBanner = ({
           rel="noopener noreferrer"
           target="_blank"
         >
-          <span className="sr-only">{labels.visit(featured.name)}</span>
+          <span className="sr-only">
+            <VisitLabel name={featured.name} />
+          </span>
           {inner}
         </a>
       ) : (
@@ -318,7 +317,6 @@ const CardCaption = ({
 };
 
 const ShowcaseCard = ({ item }: Readonly<{ item: CardView }>) => {
-  const labels = useBlockLabels();
   const clickable = Boolean(item.url);
 
   const body = (
@@ -346,7 +344,9 @@ const ShowcaseCard = ({ item }: Readonly<{ item: CardView }>) => {
         rel="noopener noreferrer"
         target="_blank"
       >
-        <span className="sr-only">{labels.visit(item.name)}</span>
+        <span className="sr-only">
+          <VisitLabel name={item.name} />
+        </span>
         {body}
       </a>
     );
@@ -364,9 +364,12 @@ export const ShowcaseGrid = ({
   description,
   items,
 }: Readonly<ShowcaseGridProps>) => {
-  const labels = useBlockLabels();
   const cmsItems = items ?? [];
-  const label = title?.trim() || labels.showcase;
+  const label = title?.trim() ? null : (
+    <h2 className="sr-only">
+      <BlockLabel name="showcase" />
+    </h2>
+  );
   const allViews = cmsItems.map(cmsToView);
 
   const explicitFeaturedKeys = new Set(
@@ -384,7 +387,7 @@ export const ShowcaseGrid = ({
   if (featuredItems.length === 0) {
     return (
       <section className="block-section" id="showcase">
-        {title ? null : <h2 className="sr-only">{label}</h2>}
+        {label}
         <div className="container">
           <ShowcaseHeader description={description} title={title} />
         </div>
@@ -394,7 +397,7 @@ export const ShowcaseGrid = ({
 
   return (
     <section className="block-section" id="showcase">
-      {title ? null : <h2 className="sr-only">{label}</h2>}
+      {label}
       <div className="flex flex-col gap-16">
         <div className="container">
           <ShowcaseHeader description={description} title={title} />

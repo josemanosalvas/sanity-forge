@@ -1,5 +1,3 @@
-"use client";
-
 import { cn } from "cn";
 import { PortableText } from "next-sanity";
 import type {
@@ -11,8 +9,8 @@ import type { ReactNode } from "react";
 
 import { headingChildrenToSlug as parseChildrenToSlug } from "../lib/heading-slug";
 import { sanitizeHref } from "../lib/safe-href";
-import { useBlockLabels } from "./block-labels";
 import { CodeBlock } from "./code-block";
+import { BlockLabel } from "./labels";
 import { SanityImage } from "./sanity-image";
 import { TableBlock } from "./table-block";
 
@@ -25,12 +23,11 @@ const CustomLinkMark = ({
   children,
   value,
 }: Readonly<{ children?: ReactNode; value?: CustomLinkValue }>) => {
-  const labels = useBlockLabels();
   const safeHref = sanitizeHref(value?.href);
   if (!safeHref || safeHref === "#") {
     return (
       <span className="underline decoration-dotted underline-offset-2">
-        {labels.linkBroken}
+        <BlockLabel name="linkBroken" />
       </span>
     );
   }
@@ -45,7 +42,10 @@ const CustomLinkMark = ({
     >
       {children}
       {value?.openInNewTab ? (
-        <span className="sr-only"> {labels.opensInNewTab}</span>
+        <span className="sr-only">
+          {" "}
+          <BlockLabel name="opensInNewTab" />
+        </span>
       ) : null}
     </Link>
   );

@@ -13,6 +13,7 @@ import { notFound } from "next/navigation";
 import { locale as localeParam, site as siteParam } from "next/root-params";
 import { Suspense } from "react";
 
+import { PageBlocks, renderPageBlocks } from "@/components/page-blocks";
 import { PageBuilder } from "@/components/page-builder";
 import { PageBuilderJsonLd } from "@/components/page-builder-json-ld";
 import { RegisterTranslations } from "@/components/translations";
@@ -136,28 +137,38 @@ const CachedPage = async ({
       : []
   );
 
+  const blocks = renderPageBlocks({
+    blocks: page.pageBuilder ?? [],
+    editable: stega,
+    id: page._id,
+    type: page._type,
+  });
+
+  let content;
+  if (blocks.length === 0) {
+    content = (
+      <section className="block-section">
+        <div className="container">
+          <h1 className="block-title">{page.title}</h1>
+          {page.description && (
+            <p className="body-text text-muted-foreground mt-4 max-w-2xl">
+              {page.description}
+            </p>
+          )}
+        </div>
+      </section>
+    );
+  } else if (stega) {
+    content = <PageBuilder blocks={blocks} id={page._id} type={page._type} />;
+  } else {
+    content = <PageBlocks blocks={blocks} />;
+  }
+
   return (
     <>
       <RegisterTranslations translations={translations} />
       <PageBuilderJsonLd pageBuilder={page.pageBuilder} />
-      {page.pageBuilder?.length ? (
-        <PageBuilder
-          id={page._id}
-          pageBuilder={page.pageBuilder}
-          type={page._type}
-        />
-      ) : (
-        <section className="block-section">
-          <div className="container">
-            <h1 className="block-title">{page.title}</h1>
-            {page.description && (
-              <p className="body-text text-muted-foreground mt-4 max-w-2xl">
-                {page.description}
-              </p>
-            )}
-          </div>
-        </section>
-      )}
+      {content}
     </>
   );
 };
