@@ -36,6 +36,8 @@ export const sanitySources = {
     "wss://*.api.sanity.io",
   ],
   imgSrc: ["https://cdn.sanity.io"],
+  /** Video and audio files uploaded to Sanity are served from the same CDN. */
+  mediaSrc: ["https://cdn.sanity.io"],
 } as const;
 
 const createDirectives = ({
@@ -57,7 +59,12 @@ const createDirectives = ({
       : base.frameAncestors,
     frameSrc: csp.frameSrc?.length ? [...csp.frameSrc] : base.frameSrc,
     imgSrc: [...base.imgSrc, ...sanitySources.imgSrc, ...(csp.imgSrc ?? [])],
-    mediaSrc: [...base.mediaSrc, "blob:", ...(csp.mediaSrc ?? [])],
+    mediaSrc: [
+      ...base.mediaSrc,
+      "blob:",
+      ...sanitySources.mediaSrc,
+      ...(csp.mediaSrc ?? []),
+    ],
     // Next.js and its analytics/theme scripts inject inline bootstrap
     // code; nonces would force every page to render dynamically.
     scriptSrc: [
