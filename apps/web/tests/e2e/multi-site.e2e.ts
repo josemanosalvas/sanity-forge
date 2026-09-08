@@ -174,7 +174,6 @@ test.describe("Published content", { tag: "@content" }, () => {
       ? `${base.protocol}//brand-a.localhost${base.port ? `:${base.port}` : ""}`
       : base.origin;
     await page.goto(`${origin}/`);
-    // A DOM stamp cannot tell a client transition from a rebuilt or retained layout; only a document load resets window.
     await page.evaluate(() => Reflect.set(window, "e2eStamp", "kept"));
     await page.getByRole("button", { name: "Switch language" }).first().click();
     await page.getByRole("menuitem", { name: "Deutsch" }).click();
