@@ -1,6 +1,23 @@
 import { expect, test } from "@playwright/test";
 
 // These assertions work with an empty dataset; rendering still needs a valid project and Viewer token.
+
+// A missing page keeps HTTP 404, but Next serves a bare shell and renders the
+// site's not-found page on the client, so the layout is only in the payload.
+const expectSiteShell = (
+  html: string,
+  site: string,
+  locale: string,
+  label = site
+) => {
+  const attributes =
+    html.includes(`data-site="${site}"`) && html.includes(`lang="${locale}"`);
+  const payload =
+    html.includes(`\\"data-site\\":\\"${site}\\"`) &&
+    html.includes(`\\"lang\\":\\"${locale}\\"`);
+  expect(attributes || payload, label).toBe(true);
+};
+
 test.describe("Routing", { tag: "@smoke" }, () => {
   test("an explicit default-locale prefix redirects to the clean URL", async ({
     request,
@@ -40,9 +57,7 @@ test.describe("Routing", { tag: "@smoke" }, () => {
         headers: { host: `${site}.example` },
       });
       expect([200, 404]).toContain(response.status());
-      const html = await response.text();
-      expect(html).toContain(`data-site="${site}"`);
-      expect(html).toContain(`lang="${locale}"`);
+      expectSiteShell(await response.text(), site, locale);
     });
   }
 
@@ -55,8 +70,7 @@ test.describe("Routing", { tag: "@smoke" }, () => {
         async (path) => {
           const response = await request.get(path, { headers });
           expect(response.status(), path).toBe(404);
-          const html = await response.text();
-          expect(html, path).toContain('data-site="brand-b"');
+          expectSiteShell(await response.text(), "brand-b", "en", path);
         }
       )
     );
@@ -77,7 +91,7 @@ test.describe("Routing", { tag: "@smoke" }, () => {
     });
     expect(response.status()).toBe(404);
     const html = await response.text();
-    expect(html).toContain('data-site="brand-a"');
+    expectSiteShell(html, "brand-a", "en");
     expect(html).toContain("Return home");
   });
 
