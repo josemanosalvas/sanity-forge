@@ -124,7 +124,7 @@ Environment variables: everything in `apps/web/.env.example` marked required, pl
 
 ## Demo content
 
-`pnpm seed` fills a dataset with open-licensed content for both sites: Brand A in English, German and French about Post-Impressionism with a Vincent van Gogh page, and Brand B in English and German about ukiyo-e with a Hokusai page, each with navigation, footer, settings, translation links and images. Artworks and images come from The Met's Open Access collection (CC0); prose is the unmodified introduction of the matching Wikipedia article in each language (CC BY-SA 4.0), credited on every page and in every footer. The documents are committed as [`apps/studio/seed/dataset.ndjson`](apps/studio/seed/dataset.ndjson); the import uploads the images from The Met.
+`pnpm seed` fills a dataset with open-licensed content for both sites: Brand A in English, German and French about Post-Impressionism with a Vincent van Gogh page, and Brand B in English and German about ukiyo-e with a Hokusai page, each with navigation, footer, settings, translation links and images. Artworks and images come from The Met's Open Access collection (CC0); prose is the unmodified introduction of the matching Wikipedia article in each language (CC BY-SA 4.0), credited on every page and in every footer. The documents are committed as [`apps/studio/seed/dataset.ndjson`](apps/studio/seed/dataset.ndjson), which is what the import reads; it uploads the images from The Met.
 
 Once, create the dataset. The CLI reads the project ID from `apps/studio/.env`; log in with `pnpm --filter studio exec sanity login`, or set `SANITY_IMPORT_TOKEN` to a token with write access.
 
@@ -132,15 +132,15 @@ Once, create the dataset. The CLI reads the project ID from `apps/studio/.env`; 
 pnpm --filter studio exec sanity dataset create demo --visibility public
 ```
 
-Populate or reset it:
+Populate it:
 
 ```bash
 pnpm seed
 ```
 
-The import replaces documents by ID, so running it again restores the demo state. Set `SANITY_STUDIO_SEED_DATASET` to target another dataset. Point the apps at it with `SANITY_STUDIO_DATASET=demo` and `NEXT_PUBLIC_SANITY_DATASET=demo`; the web build then prerenders every page, and `E2E_HAS_CONTENT=true pnpm test:e2e` runs the content tests.
+The import replaces the seeded published documents by ID. Drafts, documents you added and documents no longer in the seed are left alone, so edits made in the Studio stay visible after a reseed. Set `SANITY_STUDIO_SEED_DATASET` to target another dataset. Point the apps at it with `SANITY_STUDIO_DATASET=demo` and `NEXT_PUBLIC_SANITY_DATASET=demo`; the web build then prerenders every page, and `E2E_HAS_CONTENT=true pnpm test:e2e` runs the content tests.
 
-To change the selection, edit [`apps/studio/seed/manifest.ts`](apps/studio/seed/manifest.ts) (Met object IDs, Wikipedia titles per language with their Wikidata item, and the few interface labels) and run `pnpm seed:build`. It fetches the sources, refuses any artwork The Met does not mark public domain and any article that resolves to a different Wikidata item, and rewrites the NDJSON.
+To change the selection, edit [`apps/studio/seed/manifest.ts`](apps/studio/seed/manifest.ts) (Met object IDs, Wikipedia titles per language with their Wikidata item, and the few interface labels) and run `pnpm seed:build`. It fetches the current Met records and Wikipedia introductions, refuses any artwork The Met does not mark public domain and any article that resolves to a different Wikidata item, and rewrites the NDJSON. Its output changes when those sources change, so commit the regenerated file; the committed file is what makes `pnpm seed` repeatable.
 
 ## CI and verification
 

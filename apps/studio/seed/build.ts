@@ -127,7 +127,12 @@ const sites: SeedSiteInput[] = await Promise.all(
     ]);
     return {
       home: { texts: homeTexts, works: homeWorks },
-      inner: { slug: source.inner.slug, texts: innerTexts, works: innerWorks },
+      inner: {
+        key: source.inner.key,
+        slugs: source.inner.slugs,
+        texts: innerTexts,
+        works: innerWorks,
+      },
       locales: source.locales,
       site: source.site,
     };

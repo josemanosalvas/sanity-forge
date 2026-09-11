@@ -2,6 +2,14 @@ import { describe, expect, test } from "vitest";
 
 import { strings } from "../seed/manifest.ts";
 import {
+  duplicateKeyPaths,
+  images,
+  internalLinks,
+  plainText,
+  references,
+} from "./seed-checks.ts";
+import type { SeedDocumentLike } from "./seed-checks.ts";
+import {
   buildSeedDocuments,
   metaDescription,
   workAlt,
@@ -45,7 +53,8 @@ const site: SeedSiteInput = {
     ],
   },
   inner: {
-    slug: "/vincent-van-gogh",
+    key: "vincent-van-gogh",
+    slugs: { de: "/vincent-van-gogh-de", en: "/vincent-van-gogh" },
     texts: {
       de: text("Vincent van Gogh", "Absatz eins.", "Absatz zwei."),
       en: text("Vincent van Gogh", "Paragraph one.", "Paragraph two."),
@@ -59,143 +68,146 @@ const site: SeedSiteInput = {
   site: "brand-a",
 };
 
-const build = (input: SeedSiteInput = site) =>
+const build = (input: SeedSiteInput = site): SeedDocumentLike[] =>
   buildSeedDocuments({
     openAccessUrl: "https://www.metmuseum.org/open-access",
     sites: [input],
     strings,
   });
 
-const collectKeys = (value: unknown, path: string, seen: string[]) => {
-  if (Array.isArray(value)) {
-    const keys = value
-      .map((item) => (item as { _key?: string })?._key)
-      .filter((key): key is string => typeof key === "string");
-    if (new Set(keys).size !== keys.length) {
-      seen.push(path);
-    }
-    for (const [index, item] of value.entries()) {
-      collectKeys(item, `${path}[${index}]`, seen);
-    }
-  } else if (value && typeof value === "object") {
-    for (const [key, item] of Object.entries(value)) {
-      collectKeys(item, `${path}.${key}`, seen);
-    }
-  }
-};
+const scoped = (document: SeedDocumentLike) => ({
+  language: document.language as string | undefined,
+  site: document.site as string | undefined,
+});
 
 describe(buildSeedDocuments, () => {
-  test("creates the singletons under the IDs the site reads", () => {
-    const ids = build().map((document) => document._id);
-    expect(ids).toStrictEqual(
-      expect.arrayContaining([
-        "settings-brand-a",
-        "navigation-brand-a-en",
-        "navigation-brand-a-de",
-        "footer-brand-a-en",
-        "footer-brand-a-de",
-      ])
-    );
+  test("creates the singletons under the IDs the site reads, scoped to their site and language", () => {
+    const documents = build();
+    const byId = new Map(documents.map((document) => [document._id, document]));
+    const scopes = [
+      "settings-brand-a",
+      "navigation-brand-a-en",
+      "navigation-brand-a-de",
+      "footer-brand-a-en",
+      "footer-brand-a-de",
+    ].map((id) => [id, scoped(byId.get(id) ?? { _id: id, _type: "missing" })]);
+    expect(scopes).toStrictEqual([
+      ["settings-brand-a", { language: undefined, site: "brand-a" }],
+      ["navigation-brand-a-en", { language: "en", site: "brand-a" }],
+      ["navigation-brand-a-de", { language: "de", site: "brand-a" }],
+      ["footer-brand-a-en", { language: "en", site: "brand-a" }],
+      ["footer-brand-a-de", { language: "de", site: "brand-a" }],
+    ]);
   });
 
-  test("links every page to its translations through translation metadata", () => {
+  test("links each page to its translations with weak references keyed by language", () => {
     const documents = build();
-    const pages = documents.filter((document) => document._type === "page");
+    const byId = new Map(documents.map((document) => [document._id, document]));
     const metadata = documents.filter(
       (document) => document._type === "translation.metadata"
     );
-    expect(pages).toHaveLength(4);
-    expect(metadata).toHaveLength(2);
-    for (const entry of metadata) {
-      const refs = (
+    const links = metadata.flatMap((entry) =>
+      (
         entry.translations as {
           _key: string;
-          value: { _ref: string; _weak: boolean };
+          value: { _ref: string; _weak?: boolean };
         }[]
-      ).map((translation) => translation.value);
-      expect(refs.every((ref) => ref._weak)).toBeTruthy();
-      for (const ref of refs) {
-        expect(pages.some((page) => page._id === ref._ref)).toBeTruthy();
-      }
-    }
+      ).map((translation) => ({
+        key: translation._key,
+        language: byId.get(translation.value._ref)?.language,
+        weak: translation.value._weak,
+      }))
+    );
+    expect(metadata.map((entry) => entry._id)).toStrictEqual([
+      "translation-metadata-brand-a-home",
+      "translation-metadata-brand-a-vincent-van-gogh",
+    ]);
+    expect(links).toStrictEqual([
+      { key: "en", language: "en", weak: true },
+      { key: "de", language: "de", weak: true },
+      { key: "en", language: "en", weak: true },
+      { key: "de", language: "de", weak: true },
+    ]);
   });
 
-  test("home pages use the root slug and every internal link targets a page of the same language", () => {
-    const documents = build();
-    const pages = new Map(
-      documents
-        .filter((document) => document._type === "page")
-        .map((page) => [
-          page._id,
-          page as unknown as { language: string; slug: { current: string } },
-        ])
-    );
-    expect(pages.get("page-brand-a-en-home")?.slug.current).toBe("/");
-    expect(pages.get("page-brand-a-de-vincent-van-gogh")?.slug.current).toBe(
-      "/vincent-van-gogh"
-    );
-    const refs = [
-      ...JSON.stringify(documents).matchAll(/"_ref":"(?<ref>page-[^"]+)"/gu),
-    ].map((match) => match.groups?.ref ?? "");
-    expect(refs.length).toBeGreaterThan(0);
-    expect(refs.filter((ref) => !pages.has(ref))).toStrictEqual([]);
-    const navigation = documents.find(
-      (document) => document._id === "navigation-brand-a-de"
-    ) as unknown as { columns: { url: { internal?: { _ref: string } } }[] };
-    const languages = navigation.columns
-      .map((column) => column.url.internal?._ref)
-      .filter((ref): ref is string => typeof ref === "string")
-      .map((ref) => pages.get(ref)?.language);
-    expect(languages).toStrictEqual(["de", "de"]);
+  test("uses the root slug for home pages and the localized slug for inner pages", () => {
+    const slugs = build()
+      .filter((document) => document._type === "page")
+      .map((page) => [page._id, (page.slug as { current: string }).current]);
+    expect(slugs).toStrictEqual([
+      ["page-brand-a-en-home", "/"],
+      ["page-brand-a-en-vincent-van-gogh", "/vincent-van-gogh"],
+      ["page-brand-a-de-home", "/"],
+      ["page-brand-a-de-vincent-van-gogh-de", "/vincent-van-gogh-de"],
+    ]);
   });
 
-  test("every image carries an alt text where the schema requires one", () => {
+  test("every reference resolves and every internal link targets a page of the linking document's site and language", () => {
     const documents = build();
-    const json = JSON.stringify(documents);
-    const captioned = [
-      ...json.matchAll(
-        /\{"_sanityAsset":"image@[^"]+","_type":"image"(?<rest>[^}]*"caption"[^}]*)\}/gu
-      ),
-    ].map((match) => match.groups?.rest ?? "");
-    const screenshots = [
-      ...json.matchAll(/"screenshot":\{(?<rest>[^}]*)\}/gu),
-    ].map((match) => match.groups?.rest ?? "");
-    expect(captioned.length + screenshots.length).toBeGreaterThan(0);
+    const byId = new Map(documents.map((document) => [document._id, document]));
+    const unresolved = documents.flatMap((document) =>
+      references(document).filter((found) => !byId.has(found.ref))
+    );
+    const links = documents.flatMap((document) =>
+      internalLinks(document).map((link) => ({
+        from: `${document._id} ${link.path}`,
+        matches: (() => {
+          const target = byId.get(link.ref);
+          return (
+            target?._type === "page" &&
+            target.site === document.site &&
+            target.language === document.language
+          );
+        })(),
+      }))
+    );
+    expect(unresolved).toStrictEqual([]);
+    expect(links.length).toBeGreaterThan(0);
+    expect(links.filter((link) => !link.matches)).toStrictEqual([]);
+  });
+
+  test("images that the schema requires alt text for carry a non-empty one, and array keys are unique", () => {
+    const documents = build();
+    const found = documents.flatMap(images);
+    const missingAlt = found.filter(
+      (image) =>
+        image.requiresAlt &&
+        !(typeof image.alt === "string" && image.alt.trim() !== "")
+    );
+    expect(found.filter((image) => image.requiresAlt).length).toBeGreaterThan(
+      0
+    );
+    expect(missingAlt).toStrictEqual([]);
     expect(
-      [...captioned, ...screenshots].filter((rest) => !rest.includes('"alt":"'))
-    ).toStrictEqual([]);
-    const page = documents.find((document) => document._type === "page");
-    expect((page?.image as { alt: string } | undefined)?.alt).toBe(
-      "Wheat Field with Cypresses, Vincent van Gogh, 1889"
-    );
+      found.every((image) => image.source.startsWith("image@https://"))
+    ).toBeTruthy();
+    expect(documents.flatMap(duplicateKeyPaths)).toStrictEqual([]);
   });
 
-  test("array keys are unique within every document", () => {
-    const duplicates: string[] = [];
-    for (const document of build()) {
-      collectKeys(document, document._id, duplicates);
-    }
-    expect(duplicates).toStrictEqual([]);
-  });
-
-  test("credits Wikipedia on every page and in every footer", () => {
+  test("credits Wikipedia on every page and links the licence from every footer", () => {
     const documents = build();
-    const pages = documents.filter((document) => document._type === "page");
-    for (const page of pages) {
-      expect(JSON.stringify(page)).toContain("CC BY-SA 4.0");
-    }
-    const footers = documents.filter((document) => document._type === "footer");
-    for (const footer of footers) {
-      expect(JSON.stringify(footer)).toContain(
-        "creativecommons.org/licenses/by-sa/4.0"
+    const uncredited = documents
+      .filter((document) => document._type === "page")
+      .filter((page) => !plainText(page).includes("CC BY-SA 4.0"));
+    const footersWithoutLicence = documents
+      .filter((document) => document._type === "footer")
+      .filter(
+        (footer) =>
+          !JSON.stringify(footer).includes(
+            "https://creativecommons.org/licenses/by-sa/4.0/"
+          )
       );
-    }
+    expect(uncredited).toStrictEqual([]);
+    expect(footersWithoutLicence).toStrictEqual([]);
   });
 
-  test("refuses a locale the site does not serve", () => {
+  test("refuses a locale the site does not serve, and a language without a slug", () => {
     expect(() =>
       build({ ...site, locales: ["en", "fr"], site: "brand-b" })
     ).toThrow("brand-b does not serve fr");
+    expect(() =>
+      build({ ...site, inner: { ...site.inner, slugs: { en: "/x" } } })
+    ).toThrow("Missing vincent-van-gogh slug for de");
   });
 });
 
@@ -203,9 +215,7 @@ describe(metaDescription, () => {
   test("keeps short text and cuts long text at a sentence or word boundary", () => {
     expect(metaDescription("Short.")).toBe("Short.");
     const sentence = "A sentence that ends here. ";
-    expect(metaDescription(sentence.repeat(8))).toBe(
-      `${sentence.repeat(5).trim()}`
-    );
+    expect(metaDescription(sentence.repeat(8))).toBe(sentence.repeat(5).trim());
     expect(metaDescription("word ".repeat(40))).toMatch(
       /^(?:word ){31}word…$/u
     );

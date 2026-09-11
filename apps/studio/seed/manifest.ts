@@ -3,14 +3,6 @@ import type { SiteKey } from "@repo/internationalization/sites";
 
 import type { Strings } from "../lib/seed-documents.ts";
 
-/**
- * Every source is open data. Artworks come from The Metropolitan Museum of
- * Art's Open Access collection (CC0; the build refuses anything not marked
- * public domain). Prose is the unmodified introduction of the Wikipedia article
- * named per locale (CC BY-SA 4.0; every page and footer credits it). The
- * Wikidata item ties the translations of one subject together, and the build
- * fails if a title resolves to a different item.
- */
 export const MET_API =
   "https://collectionapi.metmuseum.org/public/collection/v1";
 
@@ -21,9 +13,8 @@ export const USER_AGENT =
   "sanity-forge-seed/1.0 (https://github.com/josemanosalvas/sanity-forge)";
 
 export interface WikipediaSubject {
-  /** Wikidata item shared by every language edition, e.g. `Q5582`. */
+  /** Shared by every language edition; the build rejects a title that resolves elsewhere. */
   wikibase: string;
-  /** Article title per locale, as written in that edition's URL. */
   titles: Partial<Record<Locale, string>>;
 }
 
@@ -36,7 +27,9 @@ export interface SiteSeedSource {
     works: readonly number[];
   };
   inner: {
-    slug: string;
+    /** Names the translation metadata document; slugs are per language. */
+    key: string;
+    slugs: Partial<Record<Locale, string>>;
     subject: WikipediaSubject;
     works: readonly number[];
   };
@@ -56,7 +49,12 @@ export const sources: readonly SiteSeedSource[] = [
       works: [436_535, 438_817, 436_947, 437_984, 436_121, 438_722],
     },
     inner: {
-      slug: "/vincent-van-gogh",
+      key: "vincent-van-gogh",
+      slugs: {
+        de: "/vincent-van-gogh",
+        en: "/vincent-van-gogh",
+        fr: "/vincent-van-gogh",
+      },
       subject: {
         titles: {
           de: "Vincent van Gogh",
@@ -79,7 +77,8 @@ export const sources: readonly SiteSeedSource[] = [
       works: [45_434, 37_245, 56_895, 37_337, 56_138, 55_735],
     },
     inner: {
-      slug: "/hokusai",
+      key: "hokusai",
+      slugs: { de: "/katsushika-hokusai", en: "/hokusai" },
       subject: {
         titles: { de: "Katsushika Hokusai", en: "Hokusai" },
         wikibase: "Q5586",

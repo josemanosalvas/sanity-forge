@@ -6,7 +6,6 @@ import type { Locale } from "@repo/internationalization/locales";
 import { getSite, siteSupportsLocale } from "@repo/internationalization/sites";
 import type { SiteKey } from "@repo/internationalization/sites";
 
-/** A public-domain artwork from The Met's collection API. */
 export interface MetWork {
   objectID: number;
   title: string;
@@ -18,14 +17,12 @@ export interface MetWork {
   objectURL: string;
 }
 
-/** The introduction of one Wikipedia article, one paragraph per entry. */
 export interface WikipediaText {
   title: string;
   url: string;
   paragraphs: readonly string[];
 }
 
-/** The few labels the sites need that no open dataset provides. */
 export interface Strings {
   home: string;
   collection: string;
@@ -51,7 +48,8 @@ export interface SeedSiteInput {
     works: readonly MetWork[];
   };
   inner: {
-    slug: string;
+    key: string;
+    slugs: Partial<Record<Locale, string>>;
     texts: Partial<Record<Locale, WikipediaText>>;
     works: readonly MetWork[];
   };
@@ -218,7 +216,7 @@ const siteDocuments = (
   const { site, locales, home, inner } = input;
   const siteName = getSite(site).name;
   const homeWork = requireWork(home.works, "home");
-  const innerWork = requireWork(inner.works, inner.slug);
+  const innerWork = requireWork(inner.works, inner.key);
   const documents: SeedDocument[] = [];
 
   for (const locale of locales) {
@@ -227,9 +225,13 @@ const siteDocuments = (
     }
     const s = strings[locale];
     const homeText = requireText(home.texts, locale, "home");
-    const innerText = requireText(inner.texts, locale, inner.slug);
+    const innerText = requireText(inner.texts, locale, inner.key);
+    const innerSlug = inner.slugs[locale];
+    if (!innerSlug) {
+      throw new Error(`Missing ${inner.key} slug for ${locale}`);
+    }
     const homeId = pageId(site, locale, "/");
-    const innerId = pageId(site, locale, inner.slug);
+    const innerId = pageId(site, locale, innerSlug);
 
     documents.push(
       {
@@ -307,7 +309,7 @@ const siteDocuments = (
           ),
         ],
         site,
-        slug: { _type: "slug", current: inner.slug },
+        slug: { _type: "slug", current: innerSlug },
         title: innerText.title,
       },
       {
@@ -411,15 +413,18 @@ const siteDocuments = (
     })),
   });
 
-  for (const slug of ["/", inner.slug]) {
+  for (const [key, slugs] of [
+    ["home", Object.fromEntries(locales.map((locale) => [locale, "/"]))],
+    [inner.key, inner.slugs],
+  ] as const) {
     documents.push({
-      _id: `translation-metadata-${pageId(site, "en", slug).slice("page-".length).replace(`-en-`, "-")}`,
+      _id: `translation-metadata-${site}-${key}`,
       _type: "translation.metadata",
       schemaTypes: ["page"],
       translations: localized((locale) => ({
         _type: "internationalizedArrayReferenceValue",
         value: {
-          _ref: pageId(site, locale, slug),
+          _ref: pageId(site, locale, slugs[locale] ?? "/"),
           _type: "reference",
           _weak: true,
         },
