@@ -16,6 +16,8 @@ cp apps/web/.env.example apps/web/.env
 
 Fill in the project ID and dataset in both files. Set `SANITY_API_READ_TOKEN` to a Viewer token from the project's API settings; Sanity Live and previews require it.
 
+For a Vercel-linked web app, run `vercel env pull apps/web/.env.local`; `.env.local` takes precedence over `.env`. Configure Studio separately in `apps/studio/.env`.
+
 ```bash
 pnpm typegen
 pnpm dev
@@ -122,7 +124,7 @@ Environment variables: everything in `apps/web/.env.example` marked required, pl
 
 ## CI and verification
 
-[CI](.github/workflows/ci.yml) runs static checks, unit tests, TypeGen freshness, and Studio/Storybook builds using a placeholder project. Set repository variables `SANITY_PROJECT_ID`, `SANITY_DATASET` and secret `SANITY_API_READ_TOKEN` to enable the web build and Playwright tests. Fork PRs run checks that need no secrets.
+[CI](.github/workflows/ci.yml) runs static checks, unit tests, TypeGen freshness, and Studio/Storybook builds using a placeholder project. Set repository variables `SANITY_PROJECT_ID`, `SANITY_DATASET` and secret `SANITY_API_READ_TOKEN` to enable the web build and Playwright tests; that job checks CMS prerendering and scans the build output for the Viewer token. Fork PRs run checks that need no secrets.
 
 The smoke suite covers site shells, locales, 404s, robots and sitemaps with an empty dataset. Set `E2E_HAS_CONTENT=true` to require published home pages too. Check Presentation and release previews manually in an authenticated Studio session.
 
