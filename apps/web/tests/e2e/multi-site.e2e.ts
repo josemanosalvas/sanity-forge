@@ -162,8 +162,9 @@ test.describe("Published content", { tag: "@content" }, () => {
       const html = await response.text();
       expect(html).toContain(`data-site="${site}"`);
       expect(html).toMatch(/<main[^>]*>[\s\S]*<h1/u);
+      // Next applies trailingSlash to metadata URLs, so the root canonical has no slash.
       expect(html).toContain(
-        `<link rel="canonical" href="https://${site}.example/"`
+        `<link rel="canonical" href="https://${site}.example"/>`
       );
       expect(html).toMatch(/property="og:title" content="[^"]+"/u);
       expect(html).toContain('type="application/ld+json"');

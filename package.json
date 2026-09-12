@@ -25,7 +25,9 @@
     "boundaries": "turbo boundaries",
     "clean": "git clean -xdf node_modules",
     "clean:workspaces": "turbo run clean",
-    "schema:extract": "turbo run schema:extract"
+    "schema:extract": "turbo run schema:extract",
+    "seed": "pnpm --filter studio seed",
+    "seed:build": "pnpm --filter studio seed:build"
   },
   "devDependencies": {
     "@turbo/gen": "catalog:",

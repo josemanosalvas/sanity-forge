@@ -122,6 +122,26 @@ One Vercel project serves every hostname in `sites.ts`; attach all production do
 
 Environment variables: everything in `apps/web/.env.example` marked required, plus `SANITY_STUDIO_PROJECT_ID` and `SANITY_STUDIO_DATASET` for the build, `NEXT_PUBLIC_SANITY_STUDIO_URL` set to the deployed Studio origin (a loopback value is dropped from the frame-ancestors policy), and `SANITY_REVALIDATE_SECRET` (at least 32 characters; shorter values are refused by the route) if the webhook is used. After 30 failed webhook requests or 20 failed Draft Mode handshakes per minute, that address receives HTTP 429 until its window resets. Successful requests do not consume the budget, but an exhausted address is blocked before authentication. Limits apply per server instance. `SANITY_API_READ_TOKEN` must be a Viewer token: validated Draft Mode sessions receive it in the browser for Sanity Live. Reverse proxies must overwrite `x-forwarded-host` for site selection and `x-forwarded-for` for rate limiting. Requests on a site's `www.`/apex twin are redirected to the production hostname with a 308.
 
+## Demo content
+
+`pnpm seed` fills a dataset with open-licensed content for both sites: Brand A in English, German and French about Post-Impressionism with a Vincent van Gogh page, and Brand B in English and German about ukiyo-e with a Hokusai page, each with navigation, footer, settings, translation links and images. Artworks and images come from The Met's Open Access collection (CC0); prose is the unmodified introduction of the matching Wikipedia article in each language (CC BY-SA 4.0), credited on every page and in every footer. The documents are committed as [`apps/studio/seed/dataset.ndjson`](apps/studio/seed/dataset.ndjson), which is what the import reads; it uploads the images from The Met.
+
+Once, create the dataset. The CLI reads the project ID from `apps/studio/.env`; log in with `pnpm --filter studio exec sanity login`, or set `SANITY_IMPORT_TOKEN` to a token with write access.
+
+```bash
+pnpm --filter studio exec sanity dataset create demo --visibility public
+```
+
+Populate it:
+
+```bash
+pnpm seed
+```
+
+The import replaces the seeded published documents by ID. Drafts, documents you added and documents no longer in the seed are left alone, so edits made in the Studio stay visible after a reseed. Set `SANITY_STUDIO_SEED_DATASET` to target another dataset. Point the apps at it with `SANITY_STUDIO_DATASET=demo` and `NEXT_PUBLIC_SANITY_DATASET=demo`; the web build then prerenders every page, and `E2E_HAS_CONTENT=true pnpm test:e2e` runs the content tests.
+
+To change the selection, edit [`apps/studio/seed/manifest.ts`](apps/studio/seed/manifest.ts) (Met object IDs, Wikipedia titles per language with their Wikidata item, and the few interface labels) and run `pnpm seed:build`. It fetches the current Met records and Wikipedia introductions, refuses any artwork The Met does not mark public domain and any article that resolves to a different Wikidata item, and rewrites the NDJSON. Its output changes when those sources change, so commit the regenerated file; the committed file is what makes `pnpm seed` repeatable.
+
 ## CI and verification
 
 [CI](.github/workflows/ci.yml) runs static checks, unit tests, TypeGen freshness, and Studio/Storybook builds using a placeholder project. Set repository variables `SANITY_PROJECT_ID`, `SANITY_DATASET` and secret `SANITY_API_READ_TOKEN` to enable the web build and Playwright tests; that job checks CMS prerendering and scans the build output for the Viewer token. Fork PRs run checks that need no secrets.
