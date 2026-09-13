@@ -4577,7 +4577,7 @@
             }
           ]
         },
-        "optional": true
+        "optional": false
       },
       "source": {
         "type": "objectAttribute",
@@ -4610,7 +4610,7 @@
             }
           ]
         },
-        "optional": true
+        "optional": false
       }
     }
   },

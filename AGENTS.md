@@ -6,6 +6,10 @@ Before any Next.js work, find and read the relevant doc in `apps/web/node_module
 
 <!-- END:nextjs-agent-rules -->
 
+# Sanity: read docs before coding
+
+Before any Sanity work — schemas, GROQ, TypeGen, Visual Editing, the Studio — read the documentation instead of recalling it. In order of reliability: the Sanity MCP server's documentation tools when it is configured (`npx sanity@latest mcp configure`); the installed packages, which are the truth for the pinned versions (`apps/studio/node_modules/sanity`, `apps/web/node_modules/next-sanity`); then [sanity.io/docs](https://www.sanity.io/docs), readable from the terminal with `pnpm --filter studio exec sanity docs search "<query>"` and `sanity docs read <path>`. The contracts below describe this repository and win wherever they differ.
+
 # Repository contracts
 
 - Site configuration lives in `packages/internationalization/src/sites.ts`. Public URLs have no site prefix; CMS reads must include site and locale.
