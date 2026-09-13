@@ -3,31 +3,120 @@ import {
   isRedirectSource,
 } from "@repo/internationalization/redirects";
 import { TrendingUpDown } from "lucide-react";
-import type { SanityClient, SlugValue } from "sanity";
-import { defineField, defineType, getDraftId, getPublishedId } from "sanity";
+import type { SanityClient, SlugValue, ValidationContext } from "sanity";
+import { defineField, defineType, getPublishedId } from "sanity";
 
 import { API_VERSION } from "../../lib/constants";
 import { siteField } from "../fields/site";
 
 interface Redirect {
+  destination?: SlugValue;
+  permanent?: string;
   site?: string;
-  source: SlugValue;
-  destination: SlugValue;
-  permanent: boolean;
-  status: string;
+  source?: SlugValue;
+  status?: string;
 }
 
-const validateRedirectLoop = async (
+interface ConflictingRedirect {
+  destination: string | null;
+  source: string | null;
+}
+
+/** A path another redirect already starts from, or already points at. */
+const TOUCHES_PATH = "source.current == $path || destination.current == $path";
+
+/** A path another redirect already sends visitors away from. */
+const REDIRECTS_AWAY_FROM_PATH = "source.current == $path";
+
+/**
+ * The first other redirect of this site whose paths meet `match`. Every version
+ * of this document is excluded, so a redirect opened in a content release does
+ * not conflict with its own published row.
+ */
+const findConflictingRedirect = (
   client: SanityClient,
-  { slug, _id, site }: { _id: string; slug: string; site?: string }
-) => {
-  const id = getPublishedId(_id);
-  const draftId = getDraftId(_id);
-  const existingRedirect = await client.fetch(
-    `*[_type == "redirect" && site == $site && !(_id in $ids) && (source.current == $slug || destination.current == $slug)]`,
-    { ids: [id, draftId], site: site ?? null, slug }
+  {
+    _id,
+    match,
+    path,
+    site,
+  }: { _id: string; match: string; path: string; site?: string }
+) =>
+  client.fetch<ConflictingRedirect | null>(
+    `*[_type == "redirect" && site == $site && !sanity::versionOf($published) && (${match})][0]{"destination": destination.current, "source": source.current}`,
+    { path, published: getPublishedId(_id), site: site ?? null },
+    { perspective: "raw" }
   );
-  return existingRedirect.length !== 0;
+
+/**
+ * `source` rule: the path visitors request. A second redirect from the same
+ * source makes which one wins arbitrary, and one pointing *at* this source
+ * (X → source → destination) costs visitors a second round trip.
+ */
+export const redirectSourceRule = async (
+  value: SlugValue | undefined,
+  { document, getClient }: Pick<ValidationContext, "document" | "getClient">
+): Promise<string | true> => {
+  const source = value?.current;
+  if (!source) {
+    return "Can't be blank";
+  }
+  if (!isRedirectSource(source)) {
+    return "Enter a public path such as /old-page: it must start with a /, and may only contain letters, numbers, hyphens, dots and slashes.";
+  }
+  const redirectDocument = document as Redirect | undefined;
+  if (source === redirectDocument?.destination?.current) {
+    return "Source and destination cannot be the same URL";
+  }
+  const conflict = await findConflictingRedirect(
+    getClient({ apiVersion: API_VERSION }),
+    {
+      _id: document?._id ?? "",
+      match: TOUCHES_PATH,
+      path: source,
+      site: redirectDocument?.site,
+    }
+  );
+  if (!conflict) {
+    return true;
+  }
+  return conflict.source === source
+    ? `Another redirect already sends ${source} to ${conflict.destination}. Edit that one instead of adding a second.`
+    : `${conflict.source} already points at this path, so visitors would be redirected twice. Send ${conflict.source} to this redirect's destination instead.`;
+};
+
+/**
+ * `destination` rule: where visitors land. Several sources may share one
+ * destination - that is how a set of old paths is consolidated - but a
+ * destination that is itself another redirect's source adds a second hop.
+ */
+export const redirectDestinationRule = async (
+  value: SlugValue | undefined,
+  { document, getClient }: Pick<ValidationContext, "document" | "getClient">
+): Promise<string | true> => {
+  const destination = value?.current;
+  if (!destination) {
+    return "Can't be blank";
+  }
+  if (!isRedirectDestination(destination)) {
+    return "Enter a public path such as /new-page (a ?query is allowed): it must start with a /, and may only contain letters, numbers, hyphens, dots and slashes.";
+  }
+  const redirectDocument = document as Redirect | undefined;
+  if (destination === redirectDocument?.source?.current) {
+    return "Source and destination cannot be the same URL";
+  }
+  const conflict = await findConflictingRedirect(
+    getClient({ apiVersion: API_VERSION }),
+    {
+      _id: document?._id ?? "",
+      match: REDIRECTS_AWAY_FROM_PATH,
+      path: destination,
+      site: redirectDocument?.site,
+    }
+  );
+  return conflict
+    ? `This path is itself redirected, to ${conflict.destination}, so visitors would be redirected twice. Point this redirect at ${conflict.destination} instead.`
+    : true;
 };
 
 /**
@@ -51,6 +140,9 @@ export const redirect = defineType({
         ],
       },
       type: "string",
+      // The build filters on `status == "active"`, so a missing status drops
+      // the redirect silently.
+      validation: (rule) => rule.required(),
     }),
     defineField({
       description: "The path to redirect from",
@@ -61,30 +153,7 @@ export const redirect = defineType({
       type: "slug",
       validation: (rule) => [
         rule.required(),
-        rule.custom<SlugValue>(async (value, { document, getClient }) => {
-          const source = value?.current;
-          if (!(value && source)) {
-            return "Can't be blank";
-          }
-          if (!isRedirectSource(source)) {
-            return "Enter a public path such as /old-page: it must start with a /, and may only contain letters, numbers, hyphens, dots and slashes.";
-          }
-
-          const destination = (document?.destination as SlugValue)?.current;
-          if (source === destination) {
-            return "Source and destination cannot be the same URL";
-          }
-          const client = getClient({ apiVersion: API_VERSION });
-          const existingRedirect = await validateRedirectLoop(client, {
-            _id: document?._id ?? "",
-            site: (document as Redirect | undefined)?.site,
-            slug: source,
-          });
-          if (existingRedirect) {
-            return "This would create a redirect loop - a redirect already exists from the source";
-          }
-          return true;
-        }),
+        rule.custom<SlugValue>(redirectSourceRule),
       ],
     }),
     defineField({
@@ -96,29 +165,7 @@ export const redirect = defineType({
       type: "slug",
       validation: (rule) => [
         rule.required(),
-        rule.custom<SlugValue>(async (value, { getClient, document }) => {
-          const destination = value?.current;
-          if (!(value && destination)) {
-            return "Can't be blank";
-          }
-          if (!isRedirectDestination(destination)) {
-            return "Enter a public path such as /new-page (a ?query is allowed): it must start with a /, and may only contain letters, numbers, hyphens, dots and slashes.";
-          }
-          const source = (document as unknown as Redirect)?.source?.current;
-          if (destination === source) {
-            return "Source and destination cannot be the same URL";
-          }
-          const client = getClient({ apiVersion: API_VERSION });
-          const existingRedirect = await validateRedirectLoop(client, {
-            _id: document?._id ?? "",
-            site: (document as Redirect | undefined)?.site,
-            slug: destination,
-          });
-          if (existingRedirect) {
-            return "This would create a redirect loop - a redirect already exists from the destination";
-          }
-          return true;
-        }),
+        rule.custom<SlugValue>(redirectDestinationRule),
       ],
     }),
     defineField({
@@ -134,6 +181,9 @@ export const redirect = defineType({
         ],
       },
       type: "string",
+      // The build compares `permanent == "true"`, so a missing value quietly
+      // becomes a 302.
+      validation: (rule) => rule.required(),
     }),
   ],
   icon: TrendingUpDown,

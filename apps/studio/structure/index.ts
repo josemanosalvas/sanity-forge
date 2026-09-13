@@ -96,6 +96,46 @@ const languageDocuments = (
   ];
 };
 
+/**
+ * The one settings document the site reads, created from the template on first
+ * use. Settings under any other ID are never read and fail validation, so they
+ * are listed at the end where an editor can find and delete them.
+ */
+const settingsDocuments = (S: StructureBuilder, site: Site) => {
+  const id = settingsDocumentId(site.key);
+  return [
+    S.listItem()
+      .id("settings-document")
+      .title("Site settings")
+      .icon(Cog)
+      .child(
+        S.document()
+          .id("settings-document")
+          .schemaType("settings")
+          .documentId(id)
+          .title("Site settings")
+          .initialValueTemplate(templateIds.settings, { site: site.key })
+      ),
+    S.divider(),
+    S.listItem()
+      .id("settings-unused")
+      .title("Not shown on the site")
+      .icon(EyeOff)
+      .child(
+        S.documentList()
+          .apiVersion(API_VERSION)
+          .id("settings-unused")
+          .title("Settings documents the site never reads")
+          .schemaType("settings")
+          .filter(
+            '_type == "settings" && site == $site && !(_id in [$id, $draftId])'
+          )
+          .params({ draftId: `drafts.${id}`, id, site: site.key })
+          .defaultOrdering([{ direction: "desc", field: "_updatedAt" }])
+      ),
+  ];
+};
+
 const pagesForLanguage = (S: StructureBuilder, site: Site, language: Locale) =>
   S.listItem()
     .id(`pages-${language}`)
@@ -203,10 +243,10 @@ export const createStructure =
           .title("Site settings")
           .icon(Cog)
           .child(
-            S.document()
-              .schemaType("settings")
-              .documentId(settingsDocumentId(site.key))
-              .initialValueTemplate(templateIds.settings, { site: site.key })
+            S.list()
+              .id("settings")
+              .title("Site settings")
+              .items(settingsDocuments(S, site))
           ),
         S.listItem()
           .id("redirects")

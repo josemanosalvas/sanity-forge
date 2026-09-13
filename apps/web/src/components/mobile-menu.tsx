@@ -1,6 +1,7 @@
 "use client";
 
 import { SanityButtons } from "@repo/blocks/components/sanity-buttons";
+import { sanitizeHref } from "@repo/blocks/lib/safe-href";
 import {
   Accordion,
   AccordionContent,
@@ -77,13 +78,15 @@ export const MobileMenu = ({
             {columns?.map((column) => {
               // `type` is stega-branded, so narrow on the shape instead.
               if ("href" in column) {
-                if (!column.href) {
+                // CMS-authored: an href outside the allowlist drops the item.
+                const href = sanitizeHref(column.href);
+                if (!href) {
                   return null;
                 }
                 return (
                   <Link
                     className="hover-surface focus-ring-inset flex items-center rounded-md px-3 py-3 font-medium"
-                    href={column.href}
+                    href={href}
                     key={column._key}
                     onClick={close}
                     rel={
