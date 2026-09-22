@@ -1,0 +1,9 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "tailwind": {
+    "css": "../ui/src/styles/globals.css"
+  },
+  "aliases": {
+    "ui": "@repo/ui/components"
+  }
+}
