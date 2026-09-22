@@ -26,21 +26,25 @@ const translationsFragment = `
     }
 ` as const;
 
+/**
+ * `ogImage` stays an image object because hotspot and crop live there, not on
+ * the asset; the caller sizes it. The fallback keys off a resolved asset, so an
+ * override left holding only framing cannot blank the card.
+ */
 const seoFragment = `
   seoTitle,
   seoDescription,
   seoNoIndex,
   ogTitle,
   ogDescription,
-  "ogImage": coalesce(seoImage, image).asset->url + "?w=1200&h=630&fit=crop&fm=jpg&q=80"
+  "ogImage": select(
+    defined(seoImage.asset) => seoImage,
+    defined(image.asset) => image,
+    null
+  ){
+    ${imageFields}
+  }
 ` as const;
-
-/** Type-reference only, never fetched: gives TypeGen a name for the image shape. */
-export const imageTypeQuery = defineQuery(`
-  *[_type == "page" && defined(image)][0]{
-    ${imageFragment}
-  }.image
-`);
 
 export const pageQuery = defineQuery(`
   *[_type == "page" && site == $site && language == $locale && slug.current == $path][0]{
@@ -114,7 +118,6 @@ export const navigationQuery = defineQuery(`
       _type == "navigationLink" => {
         "type": "link",
         name,
-        description,
         ${urlFragment}
       }
     },
@@ -169,7 +172,9 @@ export const settingsQuery = defineQuery(`
       "svg": svg.asset->url,
       "ico": ico.asset->url
     },
-    "ogImage": ogImage.asset->url + "?w=1200&h=630&fit=crop&fm=jpg&q=80",
+    ogImage {
+      ${imageFields}
+    },
     contactEmail,
     socialLinks {
       linkedin,

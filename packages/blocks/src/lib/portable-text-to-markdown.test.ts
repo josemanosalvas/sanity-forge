@@ -13,6 +13,14 @@ const cellPara = (text: string) => [
   },
 ];
 
+const paraOf = (spans: { marks?: string[]; text: string }[]) => [
+  {
+    _type: "block",
+    children: spans.map((span) => ({ _type: "span", ...span })),
+    style: "normal",
+  },
+];
+
 describe(portableTextToMarkdown, () => {
   test("returns empty string for missing or empty input", () => {
     expect(portableTextToMarkdown()).toBe("");
@@ -62,7 +70,51 @@ describe(portableTextToMarkdown, () => {
       },
     ]);
 
-    expect(md).toBe("**Bold **`and code` and [a link](/features)");
+    expect(md).toBe("**Bold** `and code` and [a link](/features)");
+  });
+
+  test("moves emphasis padding outside the delimiters", () => {
+    expect(
+      portableTextToMarkdown(
+        paraOf([{ marks: ["strong"], text: "Bold " }, { text: "tail" }])
+      )
+    ).toBe("**Bold** tail");
+
+    expect(
+      portableTextToMarkdown(
+        paraOf([{ text: "lead" }, { marks: ["strong"], text: " Bold" }])
+      )
+    ).toBe("lead **Bold**");
+
+    expect(
+      portableTextToMarkdown(
+        paraOf([
+          { text: "lead" },
+          { marks: ["em"], text: " Em " },
+          { text: "tail" },
+        ])
+      )
+    ).toBe("lead _Em_ tail");
+  });
+
+  test("a whitespace-only emphasis span gets no delimiters", () => {
+    expect(
+      portableTextToMarkdown(
+        paraOf([
+          { text: "lead" },
+          { marks: ["strong"], text: "   " },
+          { text: "tail" },
+        ])
+      )
+    ).toBe("lead   tail");
+  });
+
+  test("nested strong and em keep the padding outside both delimiters", () => {
+    expect(
+      portableTextToMarkdown(
+        paraOf([{ marks: ["strong", "em"], text: "Both " }, { text: "tail" }])
+      )
+    ).toBe("**_Both_** tail");
   });
 
   test.each([

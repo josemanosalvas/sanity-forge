@@ -11,6 +11,9 @@ import { describe, expect, test } from "vitest";
 import { NavItems } from "./nav-items";
 import type { NavColumns } from "./nav-items";
 
+// oxlint-disable-next-line no-script-url -- unsafe scheme under test
+const UNSAFE_HREF = "javascript:alert(1)";
+
 const columns = [
   {
     _key: "about",
@@ -23,6 +26,12 @@ const columns = [
     _type: "navigationLink",
     href: "/de/kontakt",
     name: "Kontakt",
+  },
+  {
+    _key: "xss",
+    _type: "navigationLink",
+    href: UNSAFE_HREF,
+    name: "Angriff",
   },
 ] as unknown as NavColumns;
 
@@ -54,5 +63,11 @@ describe(NavItems, () => {
     expect(html).toContain('href="/de/ueber-uns"');
     expect(html).toContain('href="/de/kontakt"');
     expect(html).not.toContain("aria-current");
+  });
+
+  test("drops a column whose href fails the protocol allowlist", () => {
+    const html = render(null);
+    expect(html).not.toContain(UNSAFE_HREF);
+    expect(html).not.toContain("Angriff");
   });
 });

@@ -10,7 +10,6 @@ export const seoFields = [
     name: "seoTitle",
     title: "SEO Meta Title Override",
     type: "string",
-    validation: (rule) => rule.warning("A page title is required"),
   }),
   defineField({
     description:
@@ -20,10 +19,7 @@ export const seoFields = [
     rows: 2,
     title: "SEO Meta Description Override",
     type: "text",
-    validation: (rule) => [
-      rule.warning("A description is required"),
-      rule.max(160).warning("No more than 160 characters"),
-    ],
+    validation: (rule) => rule.max(160).warning("No more than 160 characters"),
   }),
   defineField({
     description:
@@ -54,7 +50,6 @@ export const ogFields = [
     name: "ogTitle",
     title: "Open Graph Title Override",
     type: "string",
-    validation: (rule) => rule.warning("A page title is required"),
   }),
   defineField({
     description:
@@ -64,9 +59,6 @@ export const ogFields = [
     rows: 2,
     title: "Open Graph Description Override",
     type: "text",
-    validation: (rule) => [
-      rule.warning("A description is required"),
-      rule.max(160).warning("No more than 160 characters"),
-    ],
+    validation: (rule) => rule.max(160).warning("No more than 160 characters"),
   }),
 ];
