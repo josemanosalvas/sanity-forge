@@ -44,6 +44,7 @@
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "@types/react": "catalog:",
+    "groq-js": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"

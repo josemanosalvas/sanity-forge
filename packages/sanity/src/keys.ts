@@ -2,12 +2,7 @@ import { SANITY_API_VERSION } from "@repo/blocks/lib/sanity-api-version";
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
-/**
- * Where the Studio is hosted, for edit-intent links and stega. The localhost
- * default is a development convenience: in production it would silently bake
- * localhost into every edit link and `data-sanity` attribute, so the variable
- * is required there and the build fails instead of degrading.
- */
+// Production builds and type generation require an explicit Studio URL.
 const studioUrl =
   process.env.NODE_ENV === "production"
     ? z.url()
