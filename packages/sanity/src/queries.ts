@@ -26,11 +26,7 @@ const translationsFragment = `
     }
 ` as const;
 
-/**
- * `ogImage` stays an image object because hotspot and crop live there, not on
- * the asset; the caller sizes it. The fallback keys off a resolved asset, so an
- * override left holding only framing cannot blank the card.
- */
+/** Keep crop and hotspot, and skip overrides whose assets no longer resolve. */
 const seoFragment = `
   seoTitle,
   seoDescription,
@@ -38,8 +34,8 @@ const seoFragment = `
   ogTitle,
   ogDescription,
   "ogImage": select(
-    defined(seoImage.asset) => seoImage,
-    defined(image.asset) => image,
+    defined(seoImage.asset->url) => seoImage,
+    defined(image.asset->url) => image,
     null
   ){
     ${imageFields}

@@ -78,7 +78,6 @@ export const MobileMenu = ({
             {columns?.map((column) => {
               // `type` is stega-branded, so narrow on the shape instead.
               if ("href" in column) {
-                // CMS-authored: an href outside the allowlist drops the item.
                 const href = sanitizeHref(column.href);
                 if (!href) {
                   return null;

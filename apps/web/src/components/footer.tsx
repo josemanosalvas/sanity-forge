@@ -96,7 +96,6 @@ export const Footer = async ({
                 </h3>
                 <ul className="space-y-1 text-sm leading-6">
                   {column.links?.map((link) => {
-                    // CMS-authored: an href outside the allowlist drops the item.
                     const href = sanitizeHref(link.href);
                     if (!href) {
                       return null;
@@ -134,7 +133,6 @@ export const Footer = async ({
                 max: 18,
                 min: 11,
               });
-              // CMS-authored: an href outside the allowlist renders unlinked.
               const creditUrl = sanitizeHref(credit.url);
               const content = (
                 <span className="flex items-center gap-1 whitespace-nowrap">

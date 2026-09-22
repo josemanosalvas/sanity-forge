@@ -1,5 +1,7 @@
 import { getSite } from "@repo/internationalization/sites";
+import { pageMetadataQuery, pageQuery } from "@repo/sanity/queries";
 import type { SettingsQueryResult } from "@repo/sanity/types";
+import { evaluate, parse } from "groq-js";
 import type { Metadata } from "next";
 import { describe, expect, test } from "vitest";
 
@@ -110,13 +112,23 @@ describe(pageMetadata, () => {
     expect(url).toContain("rect=157,225,1286,675");
   });
 
-  test("the format is negotiated instead of pinned to jpg", () => {
-    const url = ogUrl(
-      pageMetadata(context, page({ ogImage: ogImage() }), settings())
-    );
-    expect(url).toContain("auto=format");
-    expect(url).not.toContain("fm=jpg");
-  });
+  test.each(["jpg", "webp", "avif"])(
+    "social images use JPEG for a %s source",
+    (format) => {
+      const url = ogUrl(
+        pageMetadata(
+          context,
+          page({
+            ogImage: ogImage({
+              id: ASSET_ID.replace(/jpg$/u, format),
+            }),
+          }),
+          settings()
+        )
+      );
+      expect(url).toContain("fm=jpg");
+    }
+  );
 
   test("the site default fills in, alt text included, for a page with no image", () => {
     const metadata = pageMetadata(
@@ -144,6 +156,26 @@ describe(pageMetadata, () => {
     expect(metadata.twitter).toMatchObject({ card: "summary" });
   });
 
+  test.each([null, "image-not-a-real-ref"])(
+    "an unusable page asset (%s) falls back to the site image and its alt text",
+    (id) => {
+      const metadata = pageMetadata(
+        context,
+        page({ ogImage: ogImage({ alt: "Broken page image", id }) }),
+        settings({ ogImage: ogImage({ alt: "Site image" }) })
+      );
+      expect(metadata.openGraph?.images).toStrictEqual([
+        {
+          alt: "Site image",
+          height: 630,
+          url: expect.stringContaining("fm=jpg"),
+          width: 1200,
+        },
+      ]);
+      expect(metadata.twitter).toMatchObject({ card: "summary_large_image" });
+    }
+  );
+
   test.each([
     ["https://x.com/acme", "@acme"],
     ["https://x.com/acme/", "@acme"],
@@ -169,5 +201,78 @@ describe(siteMetadata, () => {
       settings({ ogImage: ogImage({ hotspot: { x: 0.5, y: 0.8 } }) })
     );
     expect(ogUrl(metadata)).toContain("rect=0,60,1600,840");
+    expect(ogUrl(metadata)).toContain("fm=jpg");
+  });
+});
+
+describe.each([
+  { name: "page", query: pageQuery },
+  { name: "page metadata", query: pageMetadataQuery },
+])("$name image projection", ({ query }) => {
+  const mainImage = { alt: "Main image", asset: { _ref: ASSET_ID } };
+  const asset = {
+    _id: ASSET_ID,
+    _type: "sanity.imageAsset",
+    url: "https://cdn.sanity.io/images/test/production/main.jpg",
+  };
+  const project = async (fields: Record<string, unknown>) => {
+    const result = await evaluate(parse(query), {
+      dataset: [
+        {
+          ...page(),
+          image: mainImage,
+          slug: { current: "/about" },
+          ...fields,
+        },
+        asset,
+      ],
+      params: {
+        defaultLocale: "en",
+        locale: "en",
+        path: "/about",
+        site: "brand-a",
+      },
+    });
+    return result.get();
+  };
+
+  test.each([
+    { name: "framing without an asset", seoImage: { crop: { top: 0.25 } } },
+    { name: "empty asset", seoImage: { asset: {} } },
+    {
+      name: "deleted asset",
+      seoImage: { asset: { _ref: "image-deleted-1600x900-jpg" } },
+    },
+  ])("$name falls back to the main image", async ({ seoImage }) => {
+    const result = await project({ seoImage });
+    expect(result.ogImage).toMatchObject({ alt: "Main image", id: ASSET_ID });
+  });
+
+  test("a resolved override preserves its framing and takes priority", async () => {
+    const crop = { bottom: 0, left: 0, right: 0, top: 0.25 };
+    const hotspot = { x: 0.3, y: 0.7 };
+    const result = await project({
+      seoImage: { alt: "Override", asset: { _ref: ASSET_ID }, crop, hotspot },
+    });
+    expect(result.ogImage).toMatchObject({
+      alt: "Override",
+      crop,
+      hotspot,
+      id: ASSET_ID,
+    });
+  });
+
+  test("unresolved page assets leave the site image available", async () => {
+    const result = await project({
+      image: { asset: { _ref: "image-deleted-1600x900-jpg" } },
+      seoImage: { asset: {} },
+    });
+    expect(result.ogImage).toBeNull();
+    const metadata = pageMetadata(
+      context,
+      result,
+      settings({ ogImage: ogImage() })
+    );
+    expect(ogUrl(metadata)).toContain("fm=jpg");
   });
 });

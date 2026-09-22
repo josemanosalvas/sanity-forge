@@ -4,7 +4,7 @@ A production-grade Next.js + Sanity template for multilingual content sites. One
 
 Use it for sites managed by one team. Workspace filters organize editing; they do not enforce tenant permissions. Independently operated clients need a separate access-control or dataset strategy.
 
-Datasets are public by default: every published document of every site — pages, settings, navigation, footers, FAQs — is readable from the Sanity API by anyone who knows the project ID, whatever a Studio workspace shows and whatever roles the editors have. Make the dataset private with `pnpm --filter studio exec sanity dataset visibility set <dataset> private` if that is not acceptable; the fetch layer already sends a token ([`client.ts`](packages/sanity/src/client.ts)), so nothing in the code changes.
+Public datasets expose all published documents through the Sanity API, across every site. Studio workspace filters and editor roles do not restrict that access. To make a dataset private, run `pnpm --filter studio exec sanity dataset visibility set <dataset> private`. Server reads use the configured Viewer token ([`client.ts`](packages/sanity/src/client.ts)).
 
 ## Setup
 
@@ -29,7 +29,7 @@ Web runs on port 3000, Studio on 3333 and Storybook on 6006. Use `brand-a.localh
 
 ### CORS origins
 
-Browsers talk to the Sanity API directly: `<SanityLive>` opens an event stream on every page, and a validated Draft Mode session receives the Viewer token. Every origin that serves a site or the Studio has to be registered under Manage → API → CORS origins with credentials allowed. An unregistered origin still builds and renders; it just never receives updates, with a console error in the visitor's browser as the only symptom, and a Studio on one cannot sign in at all.
+Register web and Studio origins under Manage → API → CORS origins with credentials allowed. Server rendering can succeed without CORS, while browser requests for live updates, Draft Mode and Studio authentication fail.
 
 | Origin | Source |
 | --- | --- |
@@ -45,11 +45,11 @@ Browsers talk to the Sanity API directly: `<SanityLive>` opens an event stream o
 pnpm --filter studio exec sanity cors add https://brand-a.example --credentials
 ```
 
-Presentation's `allowOrigins` ([`presentation/index.ts`](apps/studio/presentation/index.ts)) reads the same function but is a different setting: it decides which origins the Studio will frame, not which origins the Sanity API answers. Setting one does not set the other.
+Presentation's `allowOrigins` ([`presentation/index.ts`](apps/studio/presentation/index.ts)) controls preview origins separately from API CORS. Configure both.
 
 ### Agent tooling
 
-Optional. `npx sanity@latest mcp configure` connects the Sanity MCP server — project content, schemas and documentation tools — to the editors it detects, authenticating as the logged-in CLI user. `npx skills add sanity-io/agent-toolkit` installs Sanity's best-practice skills into the project, so they travel with the repository.
+Optional: use `npx sanity@latest mcp configure` to configure the Sanity MCP server, or `npx skills add sanity-io/agent-toolkit` to install Sanity's agent skills.
 
 ## Sites and content
 
