@@ -79,15 +79,17 @@ export const sanityFetchStaticParams = async <
   return { data };
 };
 
-// For usage within `generateMetadata`, `generateViewport` and metadata routes
+// For usage within `generateMetadata`, `generateViewport` and metadata routes.
 export const sanityFetchMetadata = async <const QueryString extends string>({
   query,
   params = {},
   perspective,
+  variant,
 }: {
   query: QueryString;
   params?: QueryParams;
   perspective: LivePerspective;
+  variant?: string;
 }) => {
   "use cache";
   const { data } = await sanityFetch({
@@ -95,6 +97,7 @@ export const sanityFetchMetadata = async <const QueryString extends string>({
     perspective,
     query,
     stega: false,
+    variant,
   });
   return { data };
 };

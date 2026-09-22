@@ -23,6 +23,8 @@ export interface CreateMetadataOptions {
   readonly icons?: Metadata["icons"];
 }
 
+export const titleTemplate = (siteName: string) => `%s | ${siteName}`;
+
 const resolveTitles = ({
   title,
   siteName,
@@ -32,7 +34,14 @@ const resolveTitles = ({
   const fullTitle = pageTitle.includes(siteName)
     ? pageTitle
     : `${pageTitle} | ${siteName}`;
-  return { fullTitle, socialTitle: ogTitle?.trim() || fullTitle };
+  // A title that already carries the site name opts out of the layout template.
+  const documentTitle: Metadata["title"] =
+    pageTitle === fullTitle ? { absolute: fullTitle } : pageTitle;
+  return {
+    documentTitle,
+    fullTitle,
+    socialTitle: ogTitle?.trim() || fullTitle,
+  };
 };
 
 /** Open Graph writes the region tag with an underscore: `de-DE` becomes `de_DE`. */
@@ -53,7 +62,7 @@ export const createMetadata = ({
   type = "website",
   icons,
 }: CreateMetadataOptions): Metadata => {
-  const { fullTitle, socialTitle } = resolveTitles({
+  const { documentTitle, socialTitle } = resolveTitles({
     ogTitle,
     siteName,
     title,
@@ -86,7 +95,7 @@ export const createMetadata = ({
     robots: noIndex
       ? { follow: false, index: false }
       : { follow: true, index: true },
-    title: fullTitle,
+    title: documentTitle,
     twitter: {
       card: images ? "summary_large_image" : "summary",
       creator: twitterHandle ?? undefined,

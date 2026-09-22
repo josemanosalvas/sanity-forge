@@ -4,6 +4,26 @@ import { nosecone } from "nosecone";
 import type { CspDirectives } from "nosecone";
 
 const isDevelopment = process.env.NODE_ENV === "development";
+const isProduction = process.env.NODE_ENV === "production";
+
+const isLoopbackOrigin = (origin: string): boolean => {
+  try {
+    const hostname = new URL(origin).hostname
+      .replaceAll(/^\[|\]$/gu, "")
+      .replace(/\.$/u, "")
+      .toLowerCase();
+    return (
+      hostname === "localhost" ||
+      hostname.endsWith(".localhost") ||
+      hostname.startsWith("127.") ||
+      hostname === "::1" ||
+      hostname === "::" ||
+      hostname === "0.0.0.0"
+    );
+  } catch {
+    return false;
+  }
+};
 
 type CspSource =
   | "scriptSrc"
@@ -36,6 +56,7 @@ export const sanitySources = {
     "wss://*.api.sanity.io",
   ],
   imgSrc: ["https://cdn.sanity.io"],
+  mediaSrc: ["https://cdn.sanity.io"],
 } as const;
 
 const createDirectives = ({
@@ -57,7 +78,12 @@ const createDirectives = ({
       : base.frameAncestors,
     frameSrc: csp.frameSrc?.length ? [...csp.frameSrc] : base.frameSrc,
     imgSrc: [...base.imgSrc, ...sanitySources.imgSrc, ...(csp.imgSrc ?? [])],
-    mediaSrc: [...base.mediaSrc, "blob:", ...(csp.mediaSrc ?? [])],
+    mediaSrc: [
+      ...base.mediaSrc,
+      "blob:",
+      ...sanitySources.mediaSrc,
+      ...(csp.mediaSrc ?? []),
+    ],
     // Next.js and its analytics/theme scripts inject inline bootstrap
     // code; nonces would force every page to render dynamically.
     scriptSrc: [
@@ -72,11 +98,15 @@ const createDirectives = ({
   }) as CspDirectives;
 
 export const createSecurityOptions = ({
-  frameAncestors = [],
+  frameAncestors: requestedFrameAncestors = [],
   csp = {},
   contentSecurityPolicy = true,
   vercelToolbar = false,
 }: SecurityHeadersOptions = {}): Options => {
+  // Exclude the default local Studio origin from production framing permissions.
+  const frameAncestors = isProduction
+    ? requestedFrameAncestors.filter((origin) => !isLoopbackOrigin(origin))
+    : [...requestedFrameAncestors];
   const options: Options = {
     ...defaults,
     contentSecurityPolicy: contentSecurityPolicy

@@ -64,7 +64,8 @@ const SocialCard = ({ social }: Readonly<{ social: SocialGridItem }>) => {
         className="h-[42px] w-auto max-w-full object-contain opacity-90 invert group-hover:invert-0 dark:invert-0"
         height={42}
         image={logo}
-        width={47}
+        sizes="100px"
+        width={100}
       />
     </span>
   ) : (

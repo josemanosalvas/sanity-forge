@@ -1,8 +1,10 @@
+import { sanitizeHref } from "@repo/blocks/lib/safe-href";
 import type { DynamicFetchOptions } from "@repo/sanity/live";
 import { JsonLd } from "@repo/seo/json-ld";
 import type { Organization, WebSite } from "@repo/seo/json-ld";
 import { canonicalOrigin } from "@repo/seo/route";
 import { stegaClean } from "next-sanity";
+import { cacheLife } from "next/cache";
 
 import { fetchSettings } from "@/lib/content";
 import { toQueryParams } from "@/lib/site-context";
@@ -14,6 +16,7 @@ export const SiteJsonLd = async ({
   ...options
 }: { context: SiteContext } & DynamicFetchOptions) => {
   "use cache";
+  cacheLife("sanity");
   const settings = stegaClean(
     await fetchSettings({ ...toQueryParams(context), ...options })
   );
@@ -23,9 +26,9 @@ export const SiteJsonLd = async ({
 
   const url = canonicalOrigin(context.site);
   const name = settings.siteTitle ?? context.site.name;
-  const sameAs = Object.values(settings.socialLinks ?? {}).filter(
-    (link): link is string => typeof link === "string" && link.length > 0
-  );
+  const sameAs = Object.values(settings.socialLinks ?? {})
+    .map((link) => (typeof link === "string" ? sanitizeHref(link) : undefined))
+    .filter((link): link is string => Boolean(link));
 
   const organization: Organization = {
     "@type": "Organization",

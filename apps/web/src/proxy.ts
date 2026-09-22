@@ -1,4 +1,5 @@
 import {
+  canonicalHostRedirect,
   resolveSite,
   rewriteToSiteRoute,
 } from "@repo/internationalization/proxy";
@@ -13,6 +14,10 @@ const studioOrigin = new URL(env.NEXT_PUBLIC_SANITY_STUDIO_URL).origin;
 const googleScriptSources = env.NEXT_PUBLIC_GA_MEASUREMENT_ID
   ? ["https://www.googletagmanager.com"]
   : [];
+const vercelScriptSources =
+  process.env.NODE_ENV === "development"
+    ? ["https://va.vercel-scripts.com"]
+    : [];
 const googleAnalyticsSources = env.NEXT_PUBLIC_GA_MEASUREMENT_ID
   ? [
       "https://*.google-analytics.com",
@@ -53,7 +58,10 @@ export const proxy: NextProxy = (request) => {
   const pathname = decodePathname(request.nextUrl.pathname);
 
   let response: NextResponse;
-  if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
+  const canonical = canonicalHostRedirect(request, site);
+  if (canonical) {
+    response = canonical;
+  } else if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
     const url = request.nextUrl.clone();
     url.pathname =
       pathname === "/sitemap.xml"
@@ -75,15 +83,14 @@ export const proxy: NextProxy = (request) => {
       ],
       imgSrc: ["https://image.mux.com", ...googleAnalyticsSources],
       mediaSrc: ["https://stream.mux.com"],
-      scriptSrc: googleScriptSources,
+      scriptSrc: [...googleScriptSources, ...vercelScriptSources],
     },
     frameAncestors: [studioOrigin],
   });
 };
 
 export const config = {
-  // Everything except API routes, the Sentry tunnel (`/monitoring` itself,
-  // not `/monitoring-report`) and Next internals. Static files and the
-  // internal route namespace stay in scope so the proxy decides what they do.
-  matcher: ["/((?!api/|monitoring(?:/|$)|_next/).*)"],
+  // Everything except API routes, the Sentry tunnel, Vercel beacons and Next
+  // internals; API and tunnel responses get their headers from next.config.ts.
+  matcher: ["/((?!api/|monitoring(?:/|$)|_next/|_vercel/).*)"],
 };

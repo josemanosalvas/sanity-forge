@@ -3,8 +3,9 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 
 import { sanitizeHref } from "../lib/safe-href";
+import { getImageDimensions, resolveAssetId } from "../lib/sanity-image";
 import type { SanityImageData } from "./sanity-image";
-import { resolveAssetId, SanityImage } from "./sanity-image";
+import { SanityImage } from "./sanity-image";
 
 export interface LogoLinkCellProps {
   image?: SanityImageData | null;
@@ -32,12 +33,17 @@ export const LogoLinkCell = ({
     return null;
   }
 
+  const renderedHeight =
+    typeof imageStyle?.height === "number" ? imageStyle.height : height;
+  const ratio = getImageDimensions(image)?.aspectRatio ?? width / height;
   const media = (
     <SanityImage
       className={imageClassName}
       height={height}
       image={image}
       loading="lazy"
+      placeholder={false}
+      sizes={`${Math.round(renderedHeight * ratio)}px`}
       style={imageStyle}
       width={width}
     />

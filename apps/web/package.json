@@ -39,6 +39,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@next/env": "catalog:",
     "@playwright/test": "catalog:",
     "@repo/tailwind-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",

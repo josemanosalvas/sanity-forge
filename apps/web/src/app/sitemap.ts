@@ -5,7 +5,7 @@ import {
   siteKeys,
   siteSupportsLocale,
 } from "@repo/internationalization/sites";
-import { getDynamicFetchOptions, sanityFetchMetadata } from "@repo/sanity/live";
+import { sanityFetchMetadata } from "@repo/sanity/live";
 import { sitemapQuery } from "@repo/sanity/queries";
 import { sitemapEntry } from "@repo/seo/sitemap";
 import type { MetadataRoute } from "next";
@@ -13,22 +13,20 @@ import type { MetadataRoute } from "next";
 /** One sitemap per site, served at `/sitemap/{site}.xml`; the proxy maps `/sitemap.xml` onto it. */
 export const generateSitemaps = () => siteKeys.map((id) => ({ id }));
 
+/** Crawlers never hold a draft session: always published. */
 const sitemap = async ({
   id,
 }: {
   id: Promise<string>;
 }): Promise<MetadataRoute.Sitemap> => {
-  const [siteKey, { perspective }] = await Promise.all([
-    id,
-    getDynamicFetchOptions(),
-  ]);
+  const siteKey = await id;
   if (!isSiteKey(siteKey)) {
     return [];
   }
   const site = getSite(siteKey);
   const { data: pages } = await sanityFetchMetadata({
     params: { site: siteKey },
-    perspective,
+    perspective: "published",
     query: sitemapQuery,
   });
 

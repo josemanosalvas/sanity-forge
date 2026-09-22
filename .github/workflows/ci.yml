@@ -94,6 +94,32 @@ jobs:
       - uses: actions/checkout@v5
       - uses: ./tooling/github/setup
       - run: pnpm turbo run build --filter=web
+      - name: Check CMS prerendering
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { readFileSync } from 'node:fs';
+
+          const manifest = JSON.parse(readFileSync('apps/web/.next/prerender-manifest.json', 'utf8'));
+          const routes = Object.entries(manifest.routes)
+            .filter(([, route]) => route.compute === 'static')
+            .map(([path]) => path);
+          if (process.env.E2E_HAS_CONTENT === 'true') {
+            assert(routes.includes('/brand-a/en'), 'The published homepage must be prerendered');
+          } else {
+            const paths = [...routes, ...manifest.notFoundRoutes];
+            assert(paths.some((path) => /^\/brand-a\/en(?:\/|$)/.test(path)),
+              'No prerendered CMS page or placeholder found');
+          }
+          NODE
+      - name: Check that the Viewer token is not in the build output
+        if: ${{ env.SANITY_API_READ_TOKEN != '' }}
+        shell: bash
+        run: |
+          test -d apps/web/.next/server && test -d apps/web/.next/static
+          if grep -rqF --exclude-dir=cache "$SANITY_API_READ_TOKEN" apps/web/.next; then
+            echo 'SANITY_API_READ_TOKEN found in the build output'; exit 1
+          fi
       - run: pnpm --filter web exec playwright install --with-deps chromium
       - run: pnpm test:e2e
       - uses: actions/upload-artifact@v4

@@ -3,6 +3,8 @@
 import { SanityIcon } from "@repo/blocks/components/sanity-icon";
 import Link from "next/link";
 
+import { LinkStatus } from "@/components/link-status";
+
 export const MenuLink = ({
   name,
   href,
@@ -37,7 +39,10 @@ export const MenuLink = ({
         />
       )}
       <span className="grid gap-1">
-        <span className="text-foreground leading-none font-medium">{name}</span>
+        <span className="text-foreground leading-none font-medium">
+          {name}
+          <LinkStatus />
+        </span>
         {description && (
           <span className="text-muted-foreground line-clamp-2 text-sm">
             {description}

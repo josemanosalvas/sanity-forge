@@ -16,6 +16,8 @@ cp apps/web/.env.example apps/web/.env
 
 Fill in the project ID and dataset in both files. Set `SANITY_API_READ_TOKEN` to a Viewer token from the project's API settings; Sanity Live and previews require it.
 
+For a Vercel-linked web app, run `vercel env pull apps/web/.env.local`; `.env.local` takes precedence over `.env`. Configure Studio separately in `apps/studio/.env`.
+
 ```bash
 pnpm typegen
 pnpm dev
@@ -66,7 +68,22 @@ Import concrete modules through package exports, such as `@repo/blocks/hero` or 
 | `pnpm turbo gen block` | Scaffold and register a block; add its web renderer and behavior tests |
 | `pnpm turbo gen package` | Scaffold a workspace package |
 
-Sentry and Google Analytics activate when configured in `apps/web/.env`. Vercel Analytics is enabled by default; disable it with `NEXT_PUBLIC_VERCEL_ANALYTICS=false`. See the `.env.example` files for all options.
+### Third-party scripts
+
+Keys live in `apps/web/.env` locally (see `.env.example`) and in the deployment's environment settings.
+
+| Provider | Origins | Purpose | Loading | Key |
+| --- | --- | --- | --- | --- |
+| Vercel Web Analytics | own origin (`/_vercel/insights`) | page views, custom events | `@vercel/analytics/next`, after hydration | `NEXT_PUBLIC_VERCEL_ANALYTICS` (on) |
+| Vercel Speed Insights | own origin (`/_vercel/speed-insights`) | real-user LCP, INP, CLS | `@vercel/speed-insights/next`, after hydration | `NEXT_PUBLIC_VERCEL_SPEED_INSIGHTS` (on) |
+| Google Analytics | `googletagmanager.com`, `google-analytics.com` | page views | `@next/third-parties/google`, after hydration | `NEXT_PUBLIC_GA_MEASUREMENT_ID` (off) |
+| Sentry | `*.ingest.sentry.io` through the `/monitoring` tunnel | errors, traces; Session Replay opt-in | `instrumentation-client.ts`, before hydration | `NEXT_PUBLIC_SENTRY_DSN` (off) |
+| Mux | `stream.mux.com`, `image.mux.com` | video playback and stills | dynamic import on play; Mux Data off | per block |
+| Sanity Live | `*.api.sanity.io` | content updates | `next-sanity/live`, every page | always |
+
+Performance targets: LCP under 2.5 s, INP under 200 ms, and CLS under 0.1 at the 75th percentile. Measure mobile and desktop separately in Speed Insights.
+
+Draft Mode exits through the preview bar's Server Action; `POST /api/draft-mode/disable?to=/path` is the equivalent endpoint for tooling outside the site.
 
 The newsletter block needs an `action` or `onSubmit` handler to render a subscription form. The strings blocks render themselves (form labels, the copy and play buttons, screen-reader text) come from the `blocks` namespace of `packages/internationalization/messages/` through `BlockLabelsProvider` (`@repo/blocks/components/block-labels`), which the layout mounts; without a provider, as in Storybook, the English defaults apply. Markdown serializers are available per block; there is no Markdown HTTP route.
 
@@ -81,7 +98,7 @@ For revalidation when no browser has Sanity Live open, configure a GROQ-powered 
 | URL               | `https://your-site/api/revalidate`                  |
 | Method / triggers | POST; create, update, delete; draft events disabled |
 | Projection        | `{_type, site}`                                     |
-| Secret            | Same as `SANITY_REVALIDATE_SECRET`                  |
+| Secret            | Same as `SANITY_REVALIDATE_SECRET` (32+ characters) |
 
 Filter:
 
@@ -91,9 +108,43 @@ _type in ["page", "settings", "navigation", "footer", "faq", "translation.metada
 
 Site documents invalidate that site's reads; shared documents invalidate all sites. The next request can receive stale content while the cache refreshes. Redirect edits require a rebuild.
 
+## Deployment
+
+One Vercel project serves every hostname in `sites.ts`; attach all production domains to it and `DEFAULT_SITE` answers preview URLs. Settings:
+
+| Setting | Value |
+| --- | --- |
+| Root Directory | repository root (empty): the web build runs the Studio's schema extraction through Turborepo |
+| Install Command | `pnpm install --frozen-lockfile` |
+| Build Command | `pnpm turbo run build --filter=web` |
+| Output Directory | `apps/web/.next` |
+| Node.js | 24.x (`engines.node` in `package.json`) |
+
+Environment variables: everything in `apps/web/.env.example` marked required, plus `SANITY_STUDIO_PROJECT_ID` and `SANITY_STUDIO_DATASET` for the build, `NEXT_PUBLIC_SANITY_STUDIO_URL` set to the deployed Studio origin (a loopback value is dropped from the frame-ancestors policy), and `SANITY_REVALIDATE_SECRET` (at least 32 characters; shorter values are refused by the route) if the webhook is used. After 30 failed webhook requests or 20 failed Draft Mode handshakes per minute, that address receives HTTP 429 until its window resets. Successful requests do not consume the budget, but an exhausted address is blocked before authentication. Limits apply per server instance. `SANITY_API_READ_TOKEN` must be a Viewer token: validated Draft Mode sessions receive it in the browser for Sanity Live. Reverse proxies must overwrite `x-forwarded-host` for site selection and `x-forwarded-for` for rate limiting. Requests on a site's `www.`/apex twin are redirected to the production hostname with a 308.
+
+## Demo content
+
+`pnpm seed` fills a dataset with open-licensed content for both sites: Brand A in English, German and French about Post-Impressionism with a Vincent van Gogh page, and Brand B in English and German about ukiyo-e with a Hokusai page, each with navigation, footer, settings, translation links and images. Artworks and images come from The Met's Open Access collection (CC0); prose is the unmodified introduction of the matching Wikipedia article in each language (CC BY-SA 4.0), credited on every page and in every footer. The documents are committed as [`apps/studio/seed/dataset.ndjson`](apps/studio/seed/dataset.ndjson), which is what the import reads; it uploads the images from The Met.
+
+Once, create the dataset. The CLI reads the project ID from `apps/studio/.env`; log in with `pnpm --filter studio exec sanity login`, or set `SANITY_IMPORT_TOKEN` to a token with write access.
+
+```bash
+pnpm --filter studio exec sanity dataset create demo --visibility public
+```
+
+Populate it:
+
+```bash
+pnpm seed
+```
+
+The import replaces the seeded published documents by ID. Drafts, documents you added and documents no longer in the seed are left alone, so edits made in the Studio stay visible after a reseed. Set `SANITY_STUDIO_SEED_DATASET` to target another dataset. Point the apps at it with `SANITY_STUDIO_DATASET=demo` and `NEXT_PUBLIC_SANITY_DATASET=demo`; the web build then prerenders every page, and `E2E_HAS_CONTENT=true pnpm test:e2e` runs the content tests.
+
+To change the selection, edit [`apps/studio/seed/manifest.ts`](apps/studio/seed/manifest.ts) (Met object IDs, Wikipedia titles per language with their Wikidata item, and the few interface labels) and run `pnpm seed:build`. It fetches the current Met records and Wikipedia introductions, refuses any artwork The Met does not mark public domain and any article that resolves to a different Wikidata item, and rewrites the NDJSON. Its output changes when those sources change, so commit the regenerated file; the committed file is what makes `pnpm seed` repeatable.
+
 ## CI and verification
 
-[CI](.github/workflows/ci.yml) runs static checks, unit tests, TypeGen freshness, and Studio/Storybook builds using a placeholder project. Set repository variables `SANITY_PROJECT_ID`, `SANITY_DATASET` and secret `SANITY_API_READ_TOKEN` to enable the web build and Playwright tests. Fork PRs run checks that need no secrets.
+[CI](.github/workflows/ci.yml) runs static checks, unit tests, TypeGen freshness, and Studio/Storybook builds using a placeholder project. Set repository variables `SANITY_PROJECT_ID`, `SANITY_DATASET` and secret `SANITY_API_READ_TOKEN` to enable the web build and Playwright tests; that job checks CMS prerendering and scans the build output for the Viewer token. Fork PRs run checks that need no secrets.
 
 The smoke suite covers site shells, locales, 404s, robots and sitemaps with an empty dataset. Set `E2E_HAS_CONTENT=true` to require published home pages too. Check Presentation and release previews manually in an authenticated Studio session.
 

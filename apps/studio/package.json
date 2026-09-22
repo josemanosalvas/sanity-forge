@@ -12,7 +12,9 @@
     "schema:extract": "sanity schema extract --force --enforce-required-fields --workspace brand-a",
     "clean": "git clean -xdf .cache .sanity .turbo node_modules dist",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "seed": "sanity dataset import seed/dataset.ndjson --replace --dataset \"${SANITY_STUDIO_SEED_DATASET:-demo}\"",
+    "seed:build": "node seed/build.ts"
   },
   "dependencies": {
     "@repo/blocks": "workspace:*",

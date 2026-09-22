@@ -7,14 +7,34 @@ import type { SiteContext } from "./routing";
 import {
   getDefaultLocale,
   getSiteOrDefault,
+  hostVariants,
   resolveSiteFromHost,
 } from "./sites";
 import type { Site, SiteKey } from "./sites";
 
+export const requestHost = (request: NextRequest): string | null =>
+  request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+
 export const resolveSite = (request: NextRequest, fallback?: SiteKey): Site => {
-  const host =
-    request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+  const host = requestHost(request);
   return resolveSiteFromHost(host) ?? getSiteOrDefault(fallback);
+};
+
+export const canonicalHostRedirect = (
+  request: NextRequest,
+  site: Site
+): NextResponse | null => {
+  const host = requestHost(request)?.trim().toLowerCase();
+  const canonical = site.domains.production.toLowerCase();
+  if (!host || host === canonical || !hostVariants(canonical).includes(host)) {
+    return null;
+  }
+  const url = request.nextUrl.clone();
+  url.protocol = "https:";
+  // A self-hosted origin listens on a port the public hostname does not.
+  url.host = canonical;
+  url.port = "";
+  return NextResponse.redirect(url, 308);
 };
 
 export interface SiteRewrite {

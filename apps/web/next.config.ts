@@ -12,6 +12,7 @@ import {
 import { withObservability } from "@repo/observability/next-config";
 import { keys } from "@repo/sanity/keys";
 import { redirectsQuery } from "@repo/sanity/queries";
+import { createSecurityHeaders } from "@repo/security/headers";
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 import { createClient } from "next-sanity";
@@ -69,6 +70,13 @@ const siteRedirects = async () => {
       });
     });
   } catch (error) {
+    // NEXT_PHASE is unavailable while Next loads the config.
+    if (
+      process.env.NODE_ENV === "production" &&
+      process.env.NEXT_PUBLIC_SANITY_PROJECT_ID !== "placeholder"
+    ) {
+      throw error;
+    }
     console.warn(
       "[next.config] Skipping Sanity redirects:",
       (error as Error).message
@@ -77,9 +85,25 @@ const siteRedirects = async () => {
   }
 };
 
+/** API routes and the Sentry tunnel bypass the proxy and need transport headers here. */
+const transportHeaders = () =>
+  [...createSecurityHeaders({ contentSecurityPolicy: false })].map(
+    ([key, value]) => ({ key, value })
+  );
+
 const baseConfig: NextConfig = createNextConfig({
-  // Sanity Live invalidates by tag, so cached reads live until content changes.
-  cacheLife: { default: sanityCacheLife },
+  // Sanity Live invalidates these caches by tag.
+  cacheLife: { default: sanityCacheLife, sanity: sanityCacheLife },
+  experimental: {
+    globalNotFound: true,
+  },
+  headers: () =>
+    Promise.resolve(
+      ["/api/:path*", "/monitoring", "/monitoring/:path*"].map((source) => ({
+        headers: transportHeaders(),
+        source,
+      }))
+    ),
   images: {
     remotePatterns: [
       sanityImageRemotePattern(env.NEXT_PUBLIC_SANITY_PROJECT_ID),

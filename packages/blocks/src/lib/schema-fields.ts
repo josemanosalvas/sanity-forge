@@ -36,7 +36,7 @@ interface Props {
 }
 
 export const imageWithAltField = ({
-  description = "An image, make sure to add an alt text and use the hotspot tool to ensure if image is cropped it highlights the focus point",
+  description = "An image. Add an alt text, and use the hotspot tool to choose the focal point that fixed-shape crops (screenshots, avatars) keep in view",
   group,
   name = "image",
   title = "Image",
