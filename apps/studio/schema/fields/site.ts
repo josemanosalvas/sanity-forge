@@ -1,19 +1,9 @@
 import { siteList } from "@repo/internationalization/sites";
 import { defineField } from "sanity";
 
-/**
- * The stable site key joining a document to one of the known sites. Values
- * come from the site registry, never from editors, so routing can trust it:
- * the Structure's site-aware templates set it at creation and a translation
- * copies it from its source, and it is read-only after that. Re-homing a
- * document to another brand would hide it from every query, link and preview
- * that filters on the site. Unlike `language`, which the translations menu
- * already shows, it stays visible: nothing else in the form names the owning
- * site, and it is the answer when a document is missing from a workspace.
- */
+// Templates and translations set the site; editors can see it but cannot move content between sites.
 export const siteField = defineField({
-  description:
-    "Which site this document belongs to. Set when it is created from the site's section, and fixed after that.",
+  description: "Set when the document is created; cannot be changed in Studio.",
   name: "site",
   options: {
     direction: "horizontal",

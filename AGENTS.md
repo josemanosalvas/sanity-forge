@@ -8,7 +8,7 @@ Before any Next.js work, find and read the relevant doc in `apps/web/node_module
 
 # Sanity: read docs before coding
 
-Before any Sanity work — schemas, GROQ, TypeGen, Visual Editing, the Studio — read the documentation instead of recalling it. In order of reliability: the Sanity MCP server's documentation tools when it is configured (`npx sanity@latest mcp configure`); the installed packages, which are the truth for the pinned versions (`apps/studio/node_modules/sanity`, `apps/web/node_modules/next-sanity`); then [sanity.io/docs](https://www.sanity.io/docs), readable from the terminal with `pnpm --filter studio exec sanity docs search "<query>"` and `sanity docs read <path>`. The contracts below describe this repository and win wherever they differ.
+Before changing schemas, GROQ, TypeGen or Visual Editing, read the relevant installed package documentation (`apps/studio/node_modules/sanity`, `apps/web/node_modules/next-sanity`). Use [Sanity docs](https://www.sanity.io/docs) or the Sanity MCP documentation tools for topics not covered locally. The repository contracts below take precedence.
 
 # Repository contracts
 
@@ -27,7 +27,7 @@ Before any Sanity work — schemas, GROQ, TypeGen, Visual Editing, the Studio �
 # Verification
 
 - Run focused tests while editing: `pnpm --filter studio test`, `pnpm --filter web test` or `pnpm --filter @repo/blocks test`.
-- Run `pnpm verify` before finishing. On an unconfigured checkout, prefix it with `SANITY_STUDIO_PROJECT_ID=placeholder SANITY_STUDIO_DATASET=production NEXT_PUBLIC_SANITY_PROJECT_ID=placeholder NEXT_PUBLIC_SANITY_DATASET=production`.
+- Run `pnpm verify` before finishing. On an unconfigured checkout, prefix it with `SANITY_STUDIO_PROJECT_ID=placeholder SANITY_STUDIO_DATASET=production NEXT_PUBLIC_SANITY_PROJECT_ID=placeholder NEXT_PUBLIC_SANITY_DATASET=production NEXT_PUBLIC_SANITY_STUDIO_URL=http://localhost:3333`.
 - For routing, caching or rendering changes, run `pnpm turbo run build --filter=web` and `pnpm test:e2e` with a real Sanity project and Viewer token. Report unavailable checks explicitly.
 - Verify published and Draft Mode separately for preview changes. Add regressions for behavior; avoid tests of mocks, implementation spelling or unused helpers.
 - Targets are the Core Web Vitals field thresholds (LCP < 2.5 s, INP < 200 ms, CLS < 0.1 at the 75th percentile). For image, font, script or rendering changes, check Speed Insights on a deployment with traffic when one exists; otherwise a Lighthouse comparison is enough. Keep the verification proportional to the change.

@@ -11,10 +11,8 @@ import { siteField } from "../fields/site";
 
 interface Redirect {
   destination?: SlugValue;
-  permanent?: string;
   site?: string;
   source?: SlugValue;
-  status?: string;
 }
 
 interface ConflictingRedirect {
@@ -22,17 +20,11 @@ interface ConflictingRedirect {
   source: string | null;
 }
 
-/** A path another redirect already starts from, or already points at. */
 const TOUCHES_PATH = "source.current == $path || destination.current == $path";
 
-/** A path another redirect already sends visitors away from. */
 const REDIRECTS_AWAY_FROM_PATH = "source.current == $path";
 
-/**
- * The first other redirect of this site whose paths meet `match`. Every version
- * of this document is excluded, so a redirect opened in a content release does
- * not conflict with its own published row.
- */
+/** Exclude all versions of this document, including drafts and releases. */
 const findConflictingRedirect = (
   client: SanityClient,
   {
@@ -48,11 +40,7 @@ const findConflictingRedirect = (
     { perspective: "raw" }
   );
 
-/**
- * `source` rule: the path visitors request. A second redirect from the same
- * source makes which one wins arbitrary, and one pointing *at* this source
- * (X → source → destination) costs visitors a second round trip.
- */
+/** Reject duplicate sources and incoming redirect chains. */
 export const redirectSourceRule = async (
   value: SlugValue | undefined,
   { document, getClient }: Pick<ValidationContext, "document" | "getClient">
@@ -85,11 +73,7 @@ export const redirectSourceRule = async (
     : `${conflict.source} already points at this path, so visitors would be redirected twice. Send ${conflict.source} to this redirect's destination instead.`;
 };
 
-/**
- * `destination` rule: where visitors land. Several sources may share one
- * destination - that is how a set of old paths is consolidated - but a
- * destination that is itself another redirect's source adds a second hop.
- */
+/** Allow shared destinations, but reject destinations that redirect again. */
 export const redirectDestinationRule = async (
   value: SlugValue | undefined,
   { document, getClient }: Pick<ValidationContext, "document" | "getClient">
@@ -140,8 +124,6 @@ export const redirect = defineType({
         ],
       },
       type: "string",
-      // The build filters on `status == "active"`, so a missing status drops
-      // the redirect silently.
       validation: (rule) => rule.required(),
     }),
     defineField({
@@ -170,19 +152,17 @@ export const redirect = defineType({
     }),
     defineField({
       description:
-        "Whether this is a permanent (301) or temporary (302) redirect",
+        "Whether this is a permanent (308) or temporary (307) redirect",
       initialValue: "true",
       name: "permanent",
       options: {
         layout: "radio",
         list: [
-          { title: "Permanent (301)", value: "true" },
-          { title: "Temporary (302)", value: "false" },
+          { title: "Permanent (308)", value: "true" },
+          { title: "Temporary (307)", value: "false" },
         ],
       },
       type: "string",
-      // The build compares `permanent == "true"`, so a missing value quietly
-      // becomes a 302.
       validation: (rule) => rule.required(),
     }),
   ],

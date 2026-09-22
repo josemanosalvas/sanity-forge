@@ -28,8 +28,7 @@ env:
   SANITY_STUDIO_PROJECT_ID: ${{ vars.SANITY_PROJECT_ID || 'placeholder' }}
   SANITY_STUDIO_DATASET: ${{ vars.SANITY_DATASET || 'production' }}
   SANITY_STUDIO_PREVIEW_ENVIRONMENT: production
-  # Required for a production build; a loopback origin is dropped from the
-  # frame-ancestors policy, so CI builds never framed by a Studio are fine.
+  # CI does not use Studio previews.
   NEXT_PUBLIC_SANITY_STUDIO_URL: http://localhost:3333
 
 jobs:
@@ -81,9 +80,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: ./tooling/github/setup
-      # `schema extract` only serializes the schema; validation is what reports
-      # invalid field options, dangling reference targets and duplicate type
-      # names. Same pinned workspace: every site shares one schema.
+      # All site workspaces share one schema.
       - run: pnpm --filter studio exec sanity schema validate --workspace brand-a
 
   build:

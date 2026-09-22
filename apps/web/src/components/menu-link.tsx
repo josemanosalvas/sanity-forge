@@ -21,7 +21,6 @@ export const MenuLink = ({
   openInNewTab?: boolean | null;
   onClick?: () => void;
 }) => {
-  // CMS-authored: an href outside the protocol allowlist drops the whole item.
   const safeHref = sanitizeHref(href);
   if (!safeHref) {
     return null;

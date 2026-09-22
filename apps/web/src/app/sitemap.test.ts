@@ -3,13 +3,11 @@ import { afterEach, describe, expect, test, vi } from "vitest";
 
 import sitemap from "./sitemap";
 
-// Typed after the real signature so the assertions below check real call shapes.
 const { sanityFetchMetadata } = vi.hoisted(() => ({
   sanityFetchMetadata:
     vi.fn<(options: unknown) => Promise<{ data: unknown }>>(),
 }));
 vi.mock(import("@repo/sanity/live"), () => ({
-  // `sanityFetchMetadata` is generic over the query string; a mock cannot be.
   sanityFetchMetadata: sanityFetchMetadata as unknown as typeof fetchMetadata,
 }));
 
@@ -30,8 +28,8 @@ describe("sitemap route", () => {
           lastModified: "2025-01-02T03:04:05Z",
           slug: "/pricing",
           translations: [
+            // Exclude translations from another site.
             { language: "de", site: "brand-a", slug: "/preise" },
-            // Another site's translation never leaks into this sitemap.
             { language: "de", site: "brand-b", slug: "/preise" },
           ],
         },

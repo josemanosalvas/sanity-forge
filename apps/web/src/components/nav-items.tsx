@@ -51,7 +51,6 @@ export const NavItems = ({
       );
     }
     if ("href" in column) {
-      // CMS-authored: an href outside the protocol allowlist drops the item.
       const href = sanitizeHref(column.href);
       if (!href) {
         return null;

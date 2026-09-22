@@ -63,6 +63,7 @@ catalog:
   next-intl: ^4.14.2
 
   # Testing
+  groq-js: ^2.0.0
   "@playwright/test": ^1.63.0
   "@testing-library/jest-dom": ^7.0.1
   "@testing-library/react": ^16.3.3

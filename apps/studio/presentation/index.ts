@@ -31,13 +31,6 @@ const pageHref = (doc: {
 
 const locations: PresentationPluginOptions["resolve"] = {
   locations: {
-    /**
-     * A FAQ has no URL of its own: it renders wherever a page's FAQ block
-     * references it, on any site. Naming those pages needs a reverse-reference
-     * query, which the locations API only answers through an Observable (rxjs
-     * is not a Studio dependency), so the banner says where to look instead of
-     * reporting no locations at all.
-     */
     faq: defineLocations({
       message:
         "This answer appears wherever a page's FAQ block references it, on any site",
