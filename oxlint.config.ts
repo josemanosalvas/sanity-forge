@@ -15,4 +15,10 @@ export default defineConfig({
     "**/test-results",
     "**/*.hbs",
   ],
+  jsPlugins: ["@shadcn/lint"],
+  settings: {
+    shadcn: {
+      ui: "@repo/ui/components",
+    },
+  },
 });
