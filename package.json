@@ -30,6 +30,7 @@
     "seed:build": "pnpm --filter studio seed:build"
   },
   "devDependencies": {
+    "@shadcn/lint": "catalog:",
     "@turbo/gen": "catalog:",
     "@types/node": "catalog:",
     "oxfmt": "catalog:",

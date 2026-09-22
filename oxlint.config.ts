@@ -15,4 +15,13 @@ export default defineConfig({
     "**/test-results",
     "**/*.hbs",
   ],
+  // Design-system rules are opt-in: add `shadcn/*` rules to `rules`.
+  // See https://github.com/shadcn-ui/lint#rules
+  jsPlugins: ["@shadcn/lint"],
+  settings: {
+    shadcn: {
+      // Apps and blocks import the shared components through package exports.
+      ui: "@repo/ui/components",
+    },
+  },
 });
