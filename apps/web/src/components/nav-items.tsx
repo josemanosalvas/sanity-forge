@@ -1,5 +1,6 @@
 "use client";
 
+import { sanitizeHref } from "@repo/blocks/lib/safe-href";
 import {
   NavigationMenuContent,
   NavigationMenuItem,
@@ -49,15 +50,20 @@ export const NavItems = ({
         </NavigationMenuItem>
       );
     }
-    if ("href" in column && column.href) {
+    if ("href" in column) {
+      // CMS-authored: an href outside the protocol allowlist drops the item.
+      const href = sanitizeHref(column.href);
+      if (!href) {
+        return null;
+      }
       return (
         <NavigationMenuItem key={column._key}>
           <NavigationMenuLink
-            aria-current={column.href === pathname ? "page" : undefined}
+            aria-current={href === pathname ? "page" : undefined}
             className={navigationMenuTriggerStyle()}
             render={
               <Link
-                href={column.href}
+                href={href}
                 rel={column.openInNewTab ? "noopener noreferrer" : undefined}
                 target={column.openInNewTab ? "_blank" : undefined}
               />

@@ -3,6 +3,17 @@ import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
 /**
+ * Where the Studio is hosted, for edit-intent links and stega. The localhost
+ * default is a development convenience: in production it would silently bake
+ * localhost into every edit link and `data-sanity` attribute, so the variable
+ * is required there and the build fails instead of degrading.
+ */
+const studioUrl =
+  process.env.NODE_ENV === "production"
+    ? z.url()
+    : z.url().default("http://localhost:3333");
+
+/**
  * Sanity runtime configuration for Next.js consumers. The schema keeps the
  * token optional so `next.config.ts` and TypeGen load without secrets;
  * `src/token.ts` enforces it wherever Sanity Live actually runs.
@@ -16,8 +27,7 @@ export const keys = () =>
         .default(SANITY_API_VERSION),
       NEXT_PUBLIC_SANITY_DATASET: z.string().min(1),
       NEXT_PUBLIC_SANITY_PROJECT_ID: z.string().min(1),
-      /** Where the Studio is hosted, for edit-intent links and stega. */
-      NEXT_PUBLIC_SANITY_STUDIO_URL: z.url().default("http://localhost:3333"),
+      NEXT_PUBLIC_SANITY_STUDIO_URL: studioUrl,
     },
     emptyStringAsUndefined: true,
     runtimeEnv: {

@@ -100,6 +100,19 @@ const wrapInlineCode = (text: string): string => {
   return `${fence}${body}${fence}`;
 };
 
+// Emphasis delimiters must hug their text: a closing `**` preceded by a space
+// is not right-flanking, so it cannot close and renders as literal asterisks
+// (CommonMark §6.2). Wrap the trimmed core and re-emit the padding outside.
+const wrapEmphasis = (text: string, delimiter: string): string => {
+  const core = text.trim();
+  if (!core) {
+    return text;
+  }
+  const lead = text.slice(0, text.length - text.trimStart().length);
+  const trail = text.slice(text.trimEnd().length);
+  return `${lead}${delimiter}${core}${delimiter}${trail}`;
+};
+
 interface AnyBlock {
   _type: string;
   [key: string]: unknown;
@@ -188,6 +201,8 @@ export const portableTextToMarkdown = (
         }
         return `[${children}](${formatUrl(absolutizeUrl(href, options.baseUrl))})`;
       },
+      em: ({ children }) => wrapEmphasis(children, "_"),
+      strong: ({ children }) => wrapEmphasis(children, "**"),
       // Underline has no Markdown equivalent — emit plain text, not `<u>`.
       underline: ({ children }) => children,
     },

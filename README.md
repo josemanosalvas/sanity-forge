@@ -4,6 +4,8 @@ A production-grade Next.js + Sanity template for multilingual content sites. One
 
 Use it for sites managed by one team. Workspace filters organize editing; they do not enforce tenant permissions. Independently operated clients need a separate access-control or dataset strategy.
 
+Datasets are public by default: every published document of every site — pages, settings, navigation, footers, FAQs — is readable from the Sanity API by anyone who knows the project ID, whatever a Studio workspace shows and whatever roles the editors have. Make the dataset private with `pnpm --filter studio exec sanity dataset visibility set <dataset> private` if that is not acceptable; the fetch layer already sends a token ([`client.ts`](packages/sanity/src/client.ts)), so nothing in the code changes.
+
 ## Setup
 
 Requires pnpm 11 and a Sanity project with a dataset. pnpm provisions Node 24 from `devEngines.runtime`.
@@ -14,7 +16,7 @@ cp apps/studio/.env.example apps/studio/.env
 cp apps/web/.env.example apps/web/.env
 ```
 
-Fill in the project ID and dataset in both files. Set `SANITY_API_READ_TOKEN` to a Viewer token from the project's API settings; Sanity Live and previews require it.
+Fill in the project ID and dataset in both files. Set `SANITY_API_READ_TOKEN` to a Viewer token from the project's API settings; Sanity Live and previews require it. Both examples default to the `production` dataset: give local development one of its own (`pnpm --filter studio exec sanity dataset create development`, or the `demo` dataset below) and name it in both files.
 
 For a Vercel-linked web app, run `vercel env pull apps/web/.env.local`; `.env.local` takes precedence over `.env`. Configure Studio separately in `apps/studio/.env`.
 
@@ -24,6 +26,30 @@ pnpm dev
 ```
 
 Web runs on port 3000, Studio on 3333 and Storybook on 6006. Use `brand-a.localhost:3000` or `brand-b.localhost:3000`; plain `localhost:3000` serves `DEFAULT_SITE`.
+
+### CORS origins
+
+Browsers talk to the Sanity API directly: `<SanityLive>` opens an event stream on every page, and a validated Draft Mode session receives the Viewer token. Every origin that serves a site or the Studio has to be registered under Manage → API → CORS origins with credentials allowed. An unregistered origin still builds and renders; it just never receives updates, with a console error in the visitor's browser as the only symptom, and a Studio on one cannot sign in at all.
+
+| Origin | Source |
+| --- | --- |
+| `http://localhost:3333` | Studio in development |
+| `http://localhost:3000`, `http://brand-a.localhost:3000`, `http://brand-b.localhost:3000` | `DEFAULT_SITE` and each site's development domain |
+| `https://brand-a.example`, `https://brand-b.example` | each site's production domain |
+| the deployed Studio origin | `NEXT_PUBLIC_SANITY_STUDIO_URL` |
+| preview deployments | one per deployment; a wildcard entry covers them |
+
+`getAllSiteOrigins()` in [`sites.ts`](packages/internationalization/src/sites.ts) returns each site's production and development origin, so a site added there needs both registered here too. From the CLI:
+
+```bash
+pnpm --filter studio exec sanity cors add https://brand-a.example --credentials
+```
+
+Presentation's `allowOrigins` ([`presentation/index.ts`](apps/studio/presentation/index.ts)) reads the same function but is a different setting: it decides which origins the Studio will frame, not which origins the Sanity API answers. Setting one does not set the other.
+
+### Agent tooling
+
+Optional. `npx sanity@latest mcp configure` connects the Sanity MCP server — project content, schemas and documentation tools — to the editors it detects, authenticating as the logged-in CLI user. `npx skills add sanity-io/agent-toolkit` installs Sanity's best-practice skills into the project, so they travel with the repository.
 
 ## Sites and content
 
@@ -121,6 +147,8 @@ One Vercel project serves every hostname in `sites.ts`; attach all production do
 | Node.js | 24.x (`engines.node` in `package.json`) |
 
 Environment variables: everything in `apps/web/.env.example` marked required, plus `SANITY_STUDIO_PROJECT_ID` and `SANITY_STUDIO_DATASET` for the build, `NEXT_PUBLIC_SANITY_STUDIO_URL` set to the deployed Studio origin (a loopback value is dropped from the frame-ancestors policy), and `SANITY_REVALIDATE_SECRET` (at least 32 characters; shorter values are refused by the route) if the webhook is used. After 30 failed webhook requests or 20 failed Draft Mode handshakes per minute, that address receives HTTP 429 until its window resets. Successful requests do not consume the budget, but an exhausted address is blocked before authentication. Limits apply per server instance. `SANITY_API_READ_TOKEN` must be a Viewer token: validated Draft Mode sessions receive it in the browser for Sanity Live. Reverse proxies must overwrite `x-forwarded-host` for site selection and `x-forwarded-for` for rate limiting. Requests on a site's `www.`/apex twin are redirected to the production hostname with a 308.
+
+Every deployed hostname also has to be a CORS origin with credentials: the production domains, the preview URLs and the Studio. See [CORS origins](#cors-origins).
 
 ## Demo content
 
