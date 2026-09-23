@@ -3,7 +3,7 @@ import { draftMode } from "next/headers";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-/** Do not use with Link: prefetching would disable Draft Mode. */
+/** For tooling outside the site; the preview bar exits through a Server Action. */
 export const POST = async (request: NextRequest) => {
   const draft = await draftMode();
   draft.disable();

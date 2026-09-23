@@ -17,7 +17,6 @@ const navigationLink = defineArrayMember({
       type: "string",
     }),
     defineField({
-      description: "The URL that this link will navigate to when clicked",
       name: "url",
       title: "Link URL",
       type: "customUrl",
@@ -60,13 +59,12 @@ const navigationColumnLink = defineArrayMember({
       type: "string",
     }),
     defineField({
-      description: "The description for this navigation link",
+      description: "Short text shown under the link in the menu",
       name: "description",
       title: "Description",
       type: "string",
     }),
     defineField({
-      description: "The URL that this link will navigate to when clicked",
       name: "url",
       title: "Link URL",
       type: "customUrl",

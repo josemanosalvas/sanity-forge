@@ -143,6 +143,7 @@ const richTextMembers = [
   }),
   defineArrayMember({
     fields: [
+      // The table plugin strips undeclared fields; headerRows must be in the schema.
       defineField({
         description: "How many rows at the top of the table are headers.",
         name: "headerRows",
@@ -187,7 +188,6 @@ const richTextMembers = [
         type: "array",
       }),
     ],
-    // The table plugin strips undeclared fields; headerRows must be in the schema.
     icon: ThLargeIcon,
     name: PORTABLE_TEXT_MEMBER_NAMES.table,
     preview: {

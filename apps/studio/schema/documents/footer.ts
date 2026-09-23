@@ -43,13 +43,11 @@ const footerColumnLink = defineArrayMember({
   description: "A single link inside a footer column",
   fields: [
     defineField({
-      description: "Name for the link",
       name: "name",
-      title: "Name",
+      title: "Link Text",
       type: "string",
     }),
     defineField({
-      description: "The URL that this link will navigate to when clicked",
       name: "url",
       title: "Link URL",
       type: "customUrl",
@@ -85,13 +83,11 @@ const footerColumn = defineArrayMember({
   description: "A group of footer links shown under a shared heading",
   fields: [
     defineField({
-      description: "Title for the column",
       name: "title",
       title: "Title",
       type: "string",
     }),
     defineField({
-      description: "Links for the column",
       name: "links",
       of: [footerColumnLink],
       title: "Links",
@@ -130,7 +126,6 @@ export const footer = defineType({
       type: "text",
     }),
     defineField({
-      description: "Columns for the footer",
       name: "columns",
       of: [footerColumn],
       title: "Columns",
@@ -138,7 +133,7 @@ export const footer = defineType({
     }),
     defineField({
       description:
-        "Copyright line shown in the bottom bar. Leave empty for the default '© year Site name'.",
+        "Copyright line shown in the bottom bar. Leave empty for the default '© Site name. All rights reserved.'",
       name: "copyright",
       title: "Copyright Text",
       type: "string",

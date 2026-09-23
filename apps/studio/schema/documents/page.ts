@@ -62,31 +62,21 @@ export const page = defineType({
   icon: File,
   name: "page",
   preview: {
-    prepare: ({
-      title,
-      slug,
-      media,
-      isPrivate,
-      hasPageBuilder,
-      language,
-      site,
-    }) => {
-      const statusEmoji = isPrivate ? "🔒" : "🌎";
-      const builderEmoji = hasPageBuilder?.length
-        ? `🧱 ${hasPageBuilder.length}`
-        : "🏗️";
+    prepare: ({ title, slug, media, noIndex, blocks, language, site }) => {
+      const noIndexLabel = noIndex ? " · noindex" : "";
+      const builderEmoji = blocks?.length ? `🧱 ${blocks.length}` : "🏗️";
 
       return {
         media,
-        subtitle: `${site ?? "no site"} · ${(language ?? "??").toUpperCase()} · ${statusEmoji} ${builderEmoji} · ${slug || "no-slug"}`,
+        subtitle: `${site ?? "no site"} · ${(language ?? "??").toUpperCase()}${noIndexLabel} · ${builderEmoji} · ${slug || "no-slug"}`,
         title: `${title || "Untitled Page"}`,
       };
     },
     select: {
-      hasPageBuilder: "pageBuilder",
-      isPrivate: "seoNoIndex",
+      blocks: "pageBuilder",
       language: "language",
       media: "image",
+      noIndex: "seoNoIndex",
       site: "site",
       slug: "slug.current",
       title: "title",

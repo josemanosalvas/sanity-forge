@@ -20,8 +20,7 @@ export const faq = defineType({
       validation: (rule) => rule.required(),
     }),
     customRichText(["block"], {
-      description:
-        "Write a friendly, clear answer that directly addresses the question. Keep it simple enough that anyone can understand it.",
+      description: "The answer shown when a visitor opens the question.",
       title: "Answer",
     }),
   ],

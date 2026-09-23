@@ -23,7 +23,7 @@ export const seoFields = [
   }),
   defineField({
     description:
-      "This will override the main image. If left blank it will inherit the image from the main image.",
+      "This will override the image shown when the page is shared. If left blank it will inherit the main image.",
     group: GROUP.SEO,
     name: "seoImage",
     options: {
@@ -53,7 +53,7 @@ export const ogFields = [
   }),
   defineField({
     description:
-      "This will override the meta description. If left blank it will inherit the description from the page description.",
+      "This will override the open graph description. If left blank it will inherit the meta description.",
     group: GROUP.OG,
     name: "ogDescription",
     rows: 2,

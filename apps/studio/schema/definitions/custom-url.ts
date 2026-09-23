@@ -26,8 +26,7 @@ export const customUrl = defineType({
       ],
     }),
     defineField({
-      description:
-        "When enabled, clicking this link will open the destination in a new browser tab instead of navigating away from the current page",
+      description: "Open the link in a new browser tab.",
       initialValue: false,
       name: "openInNewTab",
       title: "Open In New Tab",
@@ -57,7 +56,7 @@ export const customUrl = defineType({
     }),
     defineField({
       description:
-        "Technical field used internally to store the complete URL - you don't need to modify this",
+        "Fallback href for a link without a type. Nothing writes it; it stays '#'.",
       hidden: true,
       initialValue: "#",
       name: "href",
@@ -83,7 +82,7 @@ export const customUrl = defineType({
             return true;
           }
           if (!value?._ref) {
-            return "internal can't be empty";
+            return "Choose a page to link to";
           }
           return linkedPageRule(value, context);
         }),
