@@ -22,7 +22,3 @@ export const blockSchemas = [
   subscribeNewsletterSchema,
   videoFeatureSchema,
 ];
-
-export type BlockTypeName = (typeof blockSchemas)[number]["name"];
-
-export const blockTypeNames = blockSchemas.map(({ name }) => name);

@@ -119,11 +119,10 @@ describe(linkPreviewSubtitle, () => {
     ).toBe("Internal • /about"));
 });
 
-// oxlint-disable unicorn/no-useless-undefined -- maxWords is a required parameter
 describe(parseRichTextToString, () => {
   test("joins the text of every block", () =>
     expect(
-      parseRichTextToString([textBlock("Hello"), textBlock("world")], undefined)
+      parseRichTextToString([textBlock("Hello"), textBlock("world")])
     ).toBe("Hello world"));
 
   test("truncates to the requested word count", () =>
@@ -131,15 +130,17 @@ describe(parseRichTextToString, () => {
       "one two..."
     ));
 
+  test("adds no ellipsis to text within the word count", () =>
+    expect(parseRichTextToString([textBlock("one two")], 2)).toBe("one two"));
+
   test("contributes nothing for a block that holds no text", () =>
     // A non-text block joins as an empty string, hence the leading separator.
     expect(
-      parseRichTextToString([{ _type: "image" }, textBlock("Hello")], undefined)
+      parseRichTextToString([{ _type: "image" }, textBlock("Hello")])
     ).toBe(" Hello"));
 
   test.each([undefined, null, "already a string", {}])(
     "reports missing content for %o",
-    (value) =>
-      expect(parseRichTextToString(value, undefined)).toBe("No Content")
+    (value) => expect(parseRichTextToString(value)).toBe("No Content")
   );
 });

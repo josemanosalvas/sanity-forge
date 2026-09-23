@@ -17,10 +17,8 @@ export const isValidUrl = (url: string) => {
 export const capitalize = (str: string) =>
   str.charAt(0).toUpperCase() + str.slice(1);
 
-export const getTitleCase = (name: string) => {
-  const titleTemp = name.replaceAll(/(?<upper>[A-Z])/gu, " $<upper>");
-  return titleTemp.charAt(0).toUpperCase() + titleTemp.slice(1);
-};
+export const getTitleCase = (name: string) =>
+  capitalize(name.replaceAll(/(?<upper>[A-Z])/gu, " $<upper>"));
 
 export const createRadioListLayout = (
   items: (string | { title: string; value: string })[],
@@ -72,25 +70,25 @@ export const linkPreviewTarget = ({
 export const linkPreviewSubtitle = (link: LinkPreviewSelection): string =>
   `${link.urlType === "external" ? "External" : "Internal"} • ${linkPreviewTarget(link)}`;
 
-export const parseRichTextToString = (
-  value: unknown,
-  maxWords: number | undefined
-) => {
+export const parseRichTextToString = (value: unknown, maxWords?: number) => {
   if (!Array.isArray(value)) {
     return "No Content";
   }
 
-  const text = value.map((val) => {
-    if (!isPortableTextTextBlock(val)) {
-      return "";
-    }
-    return val.children
-      .map((child) => child.text)
-      .filter(Boolean)
-      .join(" ");
-  });
-  if (maxWords) {
-    return `${text.join(" ").split(" ").slice(0, maxWords).join(" ")}...`;
+  const text = value
+    .map((val) => {
+      if (!isPortableTextTextBlock(val)) {
+        return "";
+      }
+      return val.children
+        .map((child) => child.text)
+        .filter(Boolean)
+        .join(" ");
+    })
+    .join(" ");
+  const words = text.split(" ");
+  if (maxWords && words.length > maxWords) {
+    return `${words.slice(0, maxWords).join(" ")}...`;
   }
-  return text.join(" ");
+  return text;
 };

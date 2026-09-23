@@ -115,10 +115,8 @@ const baseConfig: NextConfig = createNextConfig({
 const plugins: ((config: NextConfig) => NextConfig)[] = [
   withNextIntl,
   withObservability,
+  withAnalyzer,
 ];
-if (process.env.ANALYZE === "true") {
-  plugins.push(withAnalyzer);
-}
 
 const applyPlugins = (config: NextConfig): NextConfig => {
   let result = config;

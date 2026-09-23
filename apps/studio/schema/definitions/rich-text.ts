@@ -9,8 +9,3 @@ export const richText = defineType({
   of: definePortableTextField(portableTextMemberTypes).of,
   type: "array",
 });
-
-export {
-  definePortableTextField as customRichText,
-  portableTextMemberTypes as memberTypes,
-} from "@repo/blocks/lib/sanity-rich-text";

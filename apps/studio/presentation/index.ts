@@ -107,7 +107,7 @@ export const createPresentationConfig = (
             params: {
               locale,
               site: resolved.key,
-              slug: slug === "" ? "/" : slug,
+              slug,
             },
           };
         },

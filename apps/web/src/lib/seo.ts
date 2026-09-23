@@ -20,9 +20,7 @@ const toAlternates = (
       : []
   );
 
-export const faviconIcons = (
-  settings: SettingsQueryResult
-): Metadata["icons"] => {
+const faviconIcons = (settings: SettingsQueryResult): Metadata["icons"] => {
   const icon = [
     ...(settings?.favicon?.svg
       ? [{ type: "image/svg+xml", url: settings.favicon.svg }]

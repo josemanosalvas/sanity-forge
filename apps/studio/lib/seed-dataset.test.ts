@@ -17,7 +17,7 @@ import {
   plainText,
   references,
 } from "./seed-checks.ts";
-import type { SeedDocumentLike } from "./seed-checks.ts";
+import type { SeedDocument } from "./seed-documents.ts";
 import { expectedSingletonId } from "./singletons.ts";
 
 /** The file `pnpm seed` imports, checked as committed. */
@@ -35,7 +35,7 @@ const page = (site: string, language: string, slug: string) =>
       (document.slug as { current?: string } | undefined)?.current === slug
   );
 
-const showcaseObjectIds = (document: SeedDocumentLike | undefined) =>
+const showcaseObjectIds = (document: SeedDocument | undefined) =>
   (
     (document?.pageBuilder ?? []) as {
       _type: string;

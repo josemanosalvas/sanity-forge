@@ -19,7 +19,6 @@ export interface CreateMetadataOptions {
   readonly ogDescription?: string | null;
   readonly twitterHandle?: string | null;
   readonly noIndex?: boolean | null;
-  readonly type?: "website" | "article";
   readonly icons?: Metadata["icons"];
 }
 
@@ -59,7 +58,6 @@ export const createMetadata = ({
   ogDescription,
   twitterHandle,
   noIndex = false,
-  type = "website",
   icons,
 }: CreateMetadataOptions): Metadata => {
   const { documentTitle, socialTitle } = resolveTitles({
@@ -89,7 +87,7 @@ export const createMetadata = ({
       locale: openGraphLocale(route.locale),
       siteName,
       title: socialTitle,
-      type,
+      type: "website",
       url,
     },
     robots: noIndex

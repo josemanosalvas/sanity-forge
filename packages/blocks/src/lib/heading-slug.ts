@@ -8,7 +8,7 @@ const textOf = (child: unknown): string => {
   return typeof text === "string" ? text : "";
 };
 
-export const headingTextToSlug = (text: string): string =>
+const headingTextToSlug = (text: string): string =>
   slugify(text.trim(), { lower: true, remove: /[^a-zA-Z0-9 ]/gu });
 
 /**
