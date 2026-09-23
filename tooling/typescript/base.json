@@ -17,7 +17,6 @@
 
     /** Keep tsc performant in monorepos */
     "incremental": true,
-    "disableSourceOfProjectReferenceRedirect": true,
     "tsBuildInfoFile": "${configDir}/.cache/tsbuildinfo.json",
 
     /** Strictness */
@@ -31,13 +30,5 @@
     "module": "Preserve",
     "moduleResolution": "Bundler",
     "noEmit": true
-  },
-  "exclude": [
-    "node_modules",
-    "build",
-    "dist",
-    ".next",
-    ".sanity",
-    "storybook-static"
-  ]
+  }
 }
