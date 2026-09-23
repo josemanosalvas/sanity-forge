@@ -8,7 +8,7 @@ import {
   muxThumbnailUrl,
 } from "./mux";
 
-describe("internal/mux", () => {
+describe("lib/mux", () => {
   const ready = {
     aspectRatio: "16:9",
     playbackId: "abc123",

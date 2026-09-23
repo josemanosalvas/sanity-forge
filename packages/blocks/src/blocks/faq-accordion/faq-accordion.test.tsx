@@ -90,10 +90,8 @@ describe(FaqAccordion, () => {
   });
 
   test("FaqAccordion shows only the first category's questions", () => {
-    // Exclude the inert measurement layer when asserting visible content.
-    const [visible] = twoCategories.split('inert=""');
-    expect(visible).toMatch(/First question/u);
-    expect(visible).not.toMatch(/Second question/u);
+    expect(twoCategories).toMatch(/First question/u);
+    expect(twoCategories).not.toMatch(/Second question/u);
   });
 
   test("FaqAccordion renders with no categories", () => {

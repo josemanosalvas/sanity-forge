@@ -14,6 +14,13 @@ const item = (
   ...overrides,
 });
 
+/** Keys of the items rendered as grid cards, in order; banners are not cards. */
+const cardKeys = (html: string) =>
+  html
+    .split("<article")
+    .slice(1)
+    .map((card) => /Site (?<key>\w)/u.exec(card)?.groups?.key);
+
 describe(ShowcaseGrid, () => {
   test("ShowcaseGrid promotes the first item when nothing is flagged featured", () => {
     const html = renderToStaticMarkup(
@@ -23,9 +30,7 @@ describe(ShowcaseGrid, () => {
       />
     );
 
-    expect(html).toContain("Site a");
-    expect(html).toContain("Site b");
-    expect(html).toContain("Site c");
+    expect(cardKeys(html)).toStrictEqual(["b", "c"]);
   });
 
   test("ShowcaseGrid honours an explicit featured flag", () => {
@@ -36,9 +41,22 @@ describe(ShowcaseGrid, () => {
       />
     );
 
-    expect(html).toContain("Site a");
-    expect(html).toContain("Site b");
-    expect(html).toContain("Site c");
+    expect(cardKeys(html)).toStrictEqual(["a", "c"]);
+  });
+
+  test("ShowcaseGrid gives every featured item a banner", () => {
+    const html = renderToStaticMarkup(
+      <ShowcaseGrid
+        items={[
+          item("a"),
+          item("b", { featured: true }),
+          item("c", { featured: true }),
+        ]}
+        title="Showcase"
+      />
+    );
+
+    expect(cardKeys(html)).toStrictEqual(["a"]);
   });
 
   test("ShowcaseGrid links a card out when it has a url", () => {

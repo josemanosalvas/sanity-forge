@@ -17,7 +17,7 @@ import type { MarkdownImage, MarkdownOptions } from "./markdown";
 const resolveImageUrl: MarkdownOptions["resolveImageUrl"] = (img) =>
   `https://cdn.example.com/${img.id}.webp`;
 
-describe("internal/markdown", () => {
+describe("lib/markdown", () => {
   test("joinSections returns empty string for an empty array", () => {
     expect(joinSections([])).toBe("");
   });
