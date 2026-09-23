@@ -32,6 +32,21 @@ describe(FaqAccordion, () => {
     expect(html).toMatch(/All questions/u);
   });
 
+  // oxlint-disable-next-line no-script-url -- the unsafe scheme is the input under test
+  test("FaqAccordion drops a contact link with a javascript: url", () => {
+    const html = renderToStaticMarkup(
+      <FaqAccordion
+        // oxlint-disable-next-line no-script-url -- the unsafe scheme is the input under test
+        link={{ href: "javascript:alert(1)", title: "All questions" }}
+        title="FAQs"
+      />
+    );
+
+    // oxlint-disable-next-line no-script-url -- asserting the unsafe scheme was removed
+    expect(html).not.toContain("javascript:");
+    expect(html).not.toMatch(/All questions/u);
+  });
+
   test("FaqAccordion renders subtitle and faq trigger titles", () => {
     const html = renderToStaticMarkup(
       <FaqAccordion

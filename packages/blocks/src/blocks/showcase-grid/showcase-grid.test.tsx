@@ -59,6 +59,30 @@ describe(ShowcaseGrid, () => {
     expect(cardKeys(html)).toStrictEqual(["a"]);
   });
 
+  test("ShowcaseGrid keeps the editor's alt text on screenshots and logos", () => {
+    const html = renderToStaticMarkup(
+      <ShowcaseGrid
+        items={[
+          item("a", {
+            attributionLogo: {
+              alt: "Acme wordmark",
+              id: "image-acef123-200x100-png",
+            },
+            screenshot: {
+              alt: "Homepage of Acme",
+              id: "image-aabc123-1200x800-png",
+            },
+          }),
+        ]}
+        title="Showcase"
+      />
+    );
+
+    expect(html).toContain('alt="Homepage of Acme"');
+    expect(html).toContain('alt="Acme wordmark"');
+    expect(html).not.toMatch(/website screenshot|Site a logo/u);
+  });
+
   test("ShowcaseGrid links a card out when it has a url", () => {
     const html = renderToStaticMarkup(
       <ShowcaseGrid

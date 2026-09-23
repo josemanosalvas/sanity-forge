@@ -70,7 +70,6 @@ const AttributionLogo = ({
   }
   return (
     <SanityImage
-      alt={`${item.name} logo`}
       className={cn("w-auto shrink-0 object-contain", className)}
       height={24}
       image={item.logo}
@@ -91,7 +90,6 @@ const AttributionMark = ({ item }: Readonly<{ item: CardView }>) => (
   <span className="flex size-6 shrink-0 items-center justify-center overflow-hidden bg-zinc-900 text-white">
     {item.logo ? (
       <SanityImage
-        alt={`${item.name} logo`}
         className="size-full object-contain"
         height={24}
         image={item.logo}
@@ -108,14 +106,12 @@ const AttributionMark = ({ item }: Readonly<{ item: CardView }>) => (
 
 const ScreenshotImage = ({
   screenshot,
-  name,
   sizes,
   className,
   loading,
   fetchPriority,
 }: Readonly<{
   screenshot: ImageSource;
-  name: string;
   sizes: string;
   className?: string;
   loading?: "eager" | "lazy";
@@ -124,7 +120,6 @@ const ScreenshotImage = ({
   if (screenshot.kind === "sanity") {
     return (
       <SanityImage
-        alt={`${name} website screenshot`}
         className={cn("absolute inset-0 size-full object-cover", className)}
         fetchPriority={fetchPriority}
         height={810}
@@ -239,7 +234,6 @@ const FeaturedBanner = ({
       <ScreenshotImage
         fetchPriority={eager ? "high" : undefined}
         loading={eager ? "eager" : "lazy"}
-        name={featured.name}
         screenshot={featured.screenshot}
         sizes="(min-width: 1440px) 1024px, (min-width: 1024px) calc(100vw - 416px), calc(100vw - 40px)"
       />
@@ -341,7 +335,6 @@ const ShowcaseCard = ({ item }: Readonly<{ item: CardView }>) => {
       >
         <ScreenshotImage
           loading="lazy"
-          name={item.name}
           screenshot={item.screenshot}
           sizes="(min-width: 1440px) 652px, (min-width: 640px) calc((100vw - 72px) / 2 - 32px), calc(100vw - 72px)"
         />

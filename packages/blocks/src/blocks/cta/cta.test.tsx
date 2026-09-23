@@ -16,4 +16,10 @@ describe(CTABlock, () => {
     expect(html).toMatch(/Launch with confidence/u);
     expect(html).toMatch(/Contact us/u);
   });
+
+  test("CTABlock renders no empty heading without a title", () => {
+    const html = renderToStaticMarkup(<CTABlock eyebrow="Contact" />);
+
+    expect(html).not.toMatch(/<h2/u);
+  });
 });

@@ -5,6 +5,8 @@ import {
   createRadioListLayout,
   getTitleCase,
   isValidUrl,
+  linkPreviewSubtitle,
+  linkPreviewTarget,
   parseRichTextToString,
 } from "./helpers";
 
@@ -82,6 +84,39 @@ describe(createRadioListLayout, () => {
       layout: "dropdown",
       list: [{ title: "Internal", value: "internal" }],
     }));
+});
+
+describe(linkPreviewTarget, () => {
+  test("shows where an external or internal link points", () => {
+    expect(
+      linkPreviewTarget({
+        externalUrl: "https://example.com",
+        urlType: "external",
+      })
+    ).toBe("https://example.com");
+    expect(
+      linkPreviewTarget({ internalUrl: "/about", urlType: "internal" })
+    ).toBe("/about");
+  });
+
+  test("marks a new tab and shortens long addresses", () =>
+    expect(
+      linkPreviewTarget({
+        externalUrl: "https://example.com/a/very/long/path",
+        openInNewTab: true,
+        urlType: "external",
+      })
+    ).toBe("https://example.com/a/very/lon... ↗"));
+
+  test("names a missing target instead of printing undefined", () =>
+    expect(linkPreviewTarget({ urlType: "internal" })).toBe("No link"));
+});
+
+describe(linkPreviewSubtitle, () => {
+  test("prefixes the link type", () =>
+    expect(
+      linkPreviewSubtitle({ internalUrl: "/about", urlType: "internal" })
+    ).toBe("Internal • /about"));
 });
 
 // oxlint-disable unicorn/no-useless-undefined -- maxWords is a required parameter

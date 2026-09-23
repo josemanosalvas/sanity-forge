@@ -2,6 +2,7 @@ import { imageWithAltField } from "@repo/blocks/lib/schema-fields";
 import { BadgeCheck, LayoutPanelLeft, Link, PanelBottom } from "lucide-react";
 import { defineArrayMember, defineField, defineType } from "sanity";
 
+import { linkPreviewSubtitle } from "../../lib/helpers";
 import { singletonIdRule } from "../../lib/singletons";
 import { languageField } from "../fields/language";
 import { siteField } from "../fields/site";
@@ -56,17 +57,11 @@ const footerColumnLink = defineArrayMember({
   icon: Link,
   name: "footerColumnLink",
   preview: {
-    prepare({ title, externalUrl, urlType, internalUrl, openInNewTab }) {
-      const url = urlType === "external" ? externalUrl : internalUrl;
-      const newTabIndicator = openInNewTab ? " ↗" : "";
-      const truncatedUrl = url?.length > 30 ? `${url.slice(0, 30)}...` : url;
-
-      return {
-        media: Link,
-        subtitle: `${urlType === "external" ? "External" : "Internal"} • ${truncatedUrl}${newTabIndicator}`,
-        title: title || "Untitled Link",
-      };
-    },
+    prepare: ({ title, ...link }) => ({
+      media: Link,
+      subtitle: linkPreviewSubtitle(link),
+      title: title || "Untitled Link",
+    }),
     select: {
       externalUrl: "url.external",
       internalUrl: "url.internal.slug.current",

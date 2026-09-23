@@ -42,6 +42,36 @@ export const createRadioListLayout = (
   };
 };
 
+interface LinkPreviewSelection {
+  externalUrl?: string | null;
+  internalUrl?: string | null;
+  openInNewTab?: boolean | null;
+  urlType?: string | null;
+}
+
+const PREVIEW_URL_LENGTH = 30;
+
+/** Where a `customUrl` points, for list previews; `↗` marks a new tab. */
+export const linkPreviewTarget = ({
+  externalUrl,
+  internalUrl,
+  openInNewTab,
+  urlType,
+}: LinkPreviewSelection): string => {
+  const url = urlType === "external" ? externalUrl : internalUrl;
+  if (!url) {
+    return "No link";
+  }
+  const shown =
+    url.length > PREVIEW_URL_LENGTH
+      ? `${url.slice(0, PREVIEW_URL_LENGTH)}...`
+      : url;
+  return openInNewTab ? `${shown} ↗` : shown;
+};
+
+export const linkPreviewSubtitle = (link: LinkPreviewSelection): string =>
+  `${link.urlType === "external" ? "External" : "Internal"} • ${linkPreviewTarget(link)}`;
+
 export const parseRichTextToString = (
   value: unknown,
   maxWords: number | undefined

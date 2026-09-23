@@ -1,6 +1,10 @@
 import { defineField, defineType } from "sanity";
 
-import { createRadioListLayout, isValidUrl } from "../../lib/helpers";
+import {
+  createRadioListLayout,
+  isValidUrl,
+  linkPreviewTarget,
+} from "../../lib/helpers";
 import {
   internalPageFilter,
   linkedPageRule,
@@ -91,14 +95,10 @@ export const customUrl = defineType({
   ],
   name: "customUrl",
   preview: {
-    prepare({ externalUrl, urlType, internalUrl, openInNewTab }) {
-      const url = urlType === "external" ? externalUrl : `${internalUrl}`;
-      const newTabIndicator = openInNewTab ? " ↗" : "";
-      return {
-        subtitle: `${url}${newTabIndicator}`,
-        title: `${urlType === "external" ? "External" : "Internal"} Link`,
-      };
-    },
+    prepare: (link) => ({
+      subtitle: linkPreviewTarget(link),
+      title: `${link.urlType === "external" ? "External" : "Internal"} Link`,
+    }),
     select: {
       externalUrl: "external",
       internalUrl: "internal.slug.current",
