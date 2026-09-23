@@ -1,7 +1,7 @@
 import type { Locale } from "@repo/internationalization/locales";
 import type { Site } from "@repo/internationalization/sites";
 import type { PageMetadataQueryResult } from "@repo/sanity/types";
-import type { FilterByType, Get } from "@sanity/codegen";
+import type { Get } from "@sanity/codegen";
 
 import type {
   fetchFooter,
@@ -36,13 +36,6 @@ export type PageData = NonNullable<Awaited<ReturnType<typeof fetchPage>>>;
 export type SettingsData = Awaited<ReturnType<typeof fetchSettings>>;
 
 export type PageBuilderBlock = Get<PageData, "pageBuilder", number>;
-
-type PageBuilderBlockTypes = NonNullable<PageBuilderBlock>["_type"];
-
-export type PagebuilderType<T extends PageBuilderBlockTypes> = FilterByType<
-  NonNullable<PageBuilderBlock>,
-  T
->;
 
 export type NavigationData = Awaited<ReturnType<typeof fetchNavigation>>;
 

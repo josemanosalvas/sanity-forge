@@ -109,7 +109,8 @@ export const redirectDestinationRule = async (
  * Applied at build time through next.config redirects, matched by host.
  */
 export const redirect = defineType({
-  description: "Redirect for next.config.js",
+  description:
+    "Sends visitors from one path to another on this site. Takes effect after the next deploy.",
   fields: [
     siteField,
     defineField({

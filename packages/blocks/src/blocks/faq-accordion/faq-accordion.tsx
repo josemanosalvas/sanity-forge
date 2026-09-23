@@ -10,6 +10,7 @@ import { BlockEyebrow } from "../../components/block-eyebrow";
 import type { RichTextValue } from "../../components/rich-text";
 import { RichText } from "../../components/rich-text";
 import { useDisclosureAnimation } from "../../hooks/use-disclosure-animation";
+import { sanitizeHref } from "../../lib/safe-href";
 
 export interface FaqItem {
   _key?: string | null;
@@ -215,7 +216,8 @@ const FaqHeader = ({
 );
 
 const FaqContactLink = ({ link }: Readonly<{ link: FaqLink }>) => {
-  if (!(link.href && (link.description || link.title))) {
+  const href = sanitizeHref(link.href);
+  if (!(href && (link.description || link.title))) {
     return null;
   }
 
@@ -227,7 +229,7 @@ const FaqContactLink = ({ link }: Readonly<{ link: FaqLink }>) => {
       <Link
         aria-label={link.description || link.title || undefined}
         className="focus-ring group inline-flex items-center gap-2 rounded-full py-1.5 pr-1.5 pl-1 focus-visible:outline-offset-0!"
-        href={link.href}
+        href={href}
         rel={link.openInNewTab ? "noopener noreferrer" : undefined}
         target={link.openInNewTab ? "_blank" : "_self"}
       >

@@ -2,9 +2,12 @@ import { describe, expect, test } from "vitest";
 
 import {
   capitalize,
+  columnPreview,
   createRadioListLayout,
   getTitleCase,
   isValidUrl,
+  linkPreviewSubtitle,
+  linkPreviewTarget,
   parseRichTextToString,
 } from "./helpers";
 
@@ -84,11 +87,57 @@ describe(createRadioListLayout, () => {
     }));
 });
 
-// oxlint-disable unicorn/no-useless-undefined -- maxWords is a required parameter
+describe(linkPreviewTarget, () => {
+  test("shows where an external or internal link points", () => {
+    expect(
+      linkPreviewTarget({
+        externalUrl: "https://example.com",
+        urlType: "external",
+      })
+    ).toBe("https://example.com");
+    expect(
+      linkPreviewTarget({ internalUrl: "/about", urlType: "internal" })
+    ).toBe("/about");
+  });
+
+  test("marks a new tab and shortens long addresses", () =>
+    expect(
+      linkPreviewTarget({
+        externalUrl: "https://example.com/a/very/long/path",
+        openInNewTab: true,
+        urlType: "external",
+      })
+    ).toBe("https://example.com/a/very/lon... ↗"));
+
+  test("names a missing target instead of printing undefined", () =>
+    expect(linkPreviewTarget({ urlType: "internal" })).toBe("No link"));
+});
+
+describe(linkPreviewSubtitle, () => {
+  test("prefixes the link type", () =>
+    expect(
+      linkPreviewSubtitle({ internalUrl: "/about", urlType: "internal" })
+    ).toBe("Internal • /about"));
+});
+
+describe(columnPreview, () => {
+  test("counts the column's links", () =>
+    expect(columnPreview({ links: [{}], title: "About" })).toStrictEqual({
+      subtitle: "1 link",
+      title: "About",
+    }));
+
+  test("names an empty, untitled column", () =>
+    expect(columnPreview({})).toStrictEqual({
+      subtitle: "0 links",
+      title: "Untitled Column",
+    }));
+});
+
 describe(parseRichTextToString, () => {
   test("joins the text of every block", () =>
     expect(
-      parseRichTextToString([textBlock("Hello"), textBlock("world")], undefined)
+      parseRichTextToString([textBlock("Hello"), textBlock("world")])
     ).toBe("Hello world"));
 
   test("truncates to the requested word count", () =>
@@ -96,15 +145,17 @@ describe(parseRichTextToString, () => {
       "one two..."
     ));
 
+  test("adds no ellipsis to text within the word count", () =>
+    expect(parseRichTextToString([textBlock("one two")], 2)).toBe("one two"));
+
   test("contributes nothing for a block that holds no text", () =>
     // A non-text block joins as an empty string, hence the leading separator.
     expect(
-      parseRichTextToString([{ _type: "image" }, textBlock("Hello")], undefined)
+      parseRichTextToString([{ _type: "image" }, textBlock("Hello")])
     ).toBe(" Hello"));
 
   test.each([undefined, null, "already a string", {}])(
     "reports missing content for %o",
-    (value) =>
-      expect(parseRichTextToString(value, undefined)).toBe("No Content")
+    (value) => expect(parseRichTextToString(value)).toBe("No Content")
   );
 });

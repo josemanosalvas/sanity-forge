@@ -29,6 +29,17 @@ const pageHref = (doc: {
   return absoluteUrl(previewOrigin(site), site, locale, doc.slug || "/");
 };
 
+/** A document every page of its site shows, previewed on the site's home page. */
+const siteWideLocations = (message: string) =>
+  defineLocations({
+    resolve: (doc) => ({
+      locations: [{ href: pageHref({ ...doc, slug: "/" }), title: "Home" }],
+      message,
+      tone: "positive",
+    }),
+    select: { language: "language", site: "site" },
+  });
+
 const locations: PresentationPluginOptions["resolve"] = {
   locations: {
     faq: defineLocations({
@@ -36,22 +47,10 @@ const locations: PresentationPluginOptions["resolve"] = {
         "This answer appears wherever a page's FAQ block references it, on any site",
       tone: "caution",
     }),
-    footer: defineLocations({
-      resolve: (doc) => ({
-        locations: [{ href: pageHref({ ...doc, slug: "/" }), title: "Home" }],
-        message: "The footer is shown on every page of this site",
-        tone: "positive",
-      }),
-      select: { language: "language", site: "site" },
-    }),
-    navigation: defineLocations({
-      resolve: (doc) => ({
-        locations: [{ href: pageHref({ ...doc, slug: "/" }), title: "Home" }],
-        message: "The navigation is shown on every page of this site",
-        tone: "positive",
-      }),
-      select: { language: "language", site: "site" },
-    }),
+    footer: siteWideLocations("The footer is shown on every page of this site"),
+    navigation: siteWideLocations(
+      "The navigation is shown on every page of this site"
+    ),
     page: defineLocations({
       resolve: (doc) => ({
         locations: [
@@ -68,14 +67,9 @@ const locations: PresentationPluginOptions["resolve"] = {
         title: "title",
       },
     }),
-    settings: defineLocations({
-      resolve: (doc) => ({
-        locations: [{ href: pageHref({ ...doc, slug: "/" }), title: "Home" }],
-        message: "Site settings apply to every page of this site",
-        tone: "positive",
-      }),
-      select: { site: "site" },
-    }),
+    settings: siteWideLocations(
+      "Site settings apply to every page of this site"
+    ),
   },
 };
 
@@ -107,7 +101,7 @@ export const createPresentationConfig = (
             params: {
               locale,
               site: resolved.key,
-              slug: slug === "" ? "/" : slug,
+              slug,
             },
           };
         },

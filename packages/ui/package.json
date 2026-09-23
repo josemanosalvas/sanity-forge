@@ -8,7 +8,6 @@
     "./provider": "./src/provider.tsx",
     "./styles/globals.css": "./src/styles/globals.css",
     "./components/*": "./src/components/*.tsx",
-    "./providers/*": "./src/providers/*.tsx",
     "./hooks/*": "./src/hooks/*.ts",
     "./lib/*": "./src/lib/*.ts"
   },

@@ -1,3 +1,4 @@
+/* oxlint-disable vitest/prefer-to-be-truthy -- Validation succeeds only for true; warning strings are truthy. */
 import type { ValidationContext } from "sanity";
 import { describe, expect, test, vi } from "vitest";
 
@@ -58,7 +59,7 @@ const muxRef = { mux: { asset: { _ref: "mux-asset" } } };
 describe(validateHeroVariant, () => {
   test("a public, ready Mux asset passes", async () => {
     const { context } = contextFor({ policy: "public", status: "ready" });
-    await expect(validateHeroVariant(muxRef, context)).resolves.toBeTruthy();
+    await expect(validateHeroVariant(muxRef, context)).resolves.toBe(true);
   });
 
   test("a failed encode warns that the site falls back", async () => {
@@ -86,7 +87,7 @@ describe(validateHeroVariant, () => {
     const { context, fetch } = contextFor({ status: "errored" });
     await expect(
       validateHeroVariant({ webm: { asset: { _ref: "file" } } }, context)
-    ).resolves.toBeTruthy();
+    ).resolves.toBe(true);
     await expect(
       validateHeroVariant(
         { mediaType: "mux", webm: { asset: { _ref: "file" } } },

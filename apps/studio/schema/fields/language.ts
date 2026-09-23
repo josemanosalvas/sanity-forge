@@ -22,7 +22,7 @@ export const languageField = defineField({
       if (!isLocale(value)) {
         return "A language is required";
       }
-      const site = (context.document as { site?: unknown } | undefined)?.site;
+      const site = context.document?.site;
       if (isSiteKey(site) && !siteSupportsLocale(site, value)) {
         return `${localeLabels[value]} is not enabled for this site`;
       }

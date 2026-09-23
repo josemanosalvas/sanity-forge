@@ -24,9 +24,7 @@ export default defineConfig({
       NEXT_PUBLIC_SANITY_PROJECT_ID: "test-project-id",
     },
     environment: "node",
-    globals: true,
     include: ["src/**/*.test.{ts,tsx}"],
     name: "blocks",
-    setupFiles: ["./vitest.setup.ts"],
   },
 });

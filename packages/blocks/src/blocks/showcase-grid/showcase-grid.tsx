@@ -24,53 +24,39 @@ export interface ShowcaseGridProps {
   isFirst?: boolean;
 }
 
-type ImageSource =
-  | { kind: "sanity"; image: SanityImageData }
-  | { kind: "none" };
-
 interface CardView {
   id: string;
   name: string;
   url: string | null;
   category: string | null;
-  screenshot: ImageSource;
+  screenshot: SanityImageData | null;
   logo: SanityImageData | null;
 }
 
-// Gate on the same canonical validity as SanityImage/resolveAssetId; the local
-// type guard only exists to narrow away null/undefined for the call sites.
+/** The validity check `SanityImage` applies, as a type guard. */
 const hasValidAssetId = (
   image: SanityImageData | null | undefined
 ): image is SanityImageData => resolveAssetId(image) !== null;
 
-const cmsToView = (item: ShowcaseGridItem): CardView => {
-  const name = item.siteName ?? "Untitled";
-
-  const screenshot: ImageSource = hasValidAssetId(item.screenshot)
-    ? { image: item.screenshot, kind: "sanity" }
-    : { kind: "none" };
-
-  return {
-    category: item.category?.trim() || null,
-    id: item._key,
-    logo: hasValidAssetId(item.attributionLogo) ? item.attributionLogo : null,
-    name,
-    screenshot,
-    url: sanitizeHref(item.url) ?? null,
-  };
-};
+const cmsToView = (item: ShowcaseGridItem): CardView => ({
+  category: item.category?.trim() || null,
+  id: item._key,
+  logo: hasValidAssetId(item.attributionLogo) ? item.attributionLogo : null,
+  name: item.siteName ?? "Untitled",
+  screenshot: hasValidAssetId(item.screenshot) ? item.screenshot : null,
+  url: sanitizeHref(item.url) ?? null,
+});
 
 const AttributionLogo = ({
   item,
-  base = 20,
+  base,
   className,
-}: Readonly<{ item: CardView; base?: number; className?: string }>) => {
+}: Readonly<{ item: CardView; base: number; className?: string }>) => {
   if (!item.logo) {
     return null;
   }
   return (
     <SanityImage
-      alt={`${item.name} logo`}
       className={cn("w-auto shrink-0 object-contain", className)}
       height={24}
       image={item.logo}
@@ -91,7 +77,6 @@ const AttributionMark = ({ item }: Readonly<{ item: CardView }>) => (
   <span className="flex size-6 shrink-0 items-center justify-center overflow-hidden bg-zinc-900 text-white">
     {item.logo ? (
       <SanityImage
-        alt={`${item.name} logo`}
         className="size-full object-contain"
         height={24}
         image={item.logo}
@@ -108,36 +93,29 @@ const AttributionMark = ({ item }: Readonly<{ item: CardView }>) => (
 
 const ScreenshotImage = ({
   screenshot,
-  name,
   sizes,
   className,
   loading,
   fetchPriority,
 }: Readonly<{
-  screenshot: ImageSource;
-  name: string;
+  screenshot: SanityImageData | null;
   sizes: string;
   className?: string;
   loading?: "eager" | "lazy";
   fetchPriority?: "high" | "low" | "auto";
-}>) => {
-  if (screenshot.kind === "sanity") {
-    return (
-      <SanityImage
-        alt={`${name} website screenshot`}
-        className={cn("absolute inset-0 size-full object-cover", className)}
-        fetchPriority={fetchPriority}
-        height={810}
-        image={screenshot.image}
-        loading={loading}
-        mode="cover"
-        sizes={sizes}
-        width={1440}
-      />
-    );
-  }
-  return null;
-};
+}>) =>
+  screenshot ? (
+    <SanityImage
+      className={cn("absolute inset-0 size-full object-cover", className)}
+      fetchPriority={fetchPriority}
+      height={810}
+      image={screenshot}
+      loading={loading}
+      mode="cover"
+      sizes={sizes}
+      width={1440}
+    />
+  ) : null;
 
 const FocusBrackets = () => {
   const corner =
@@ -239,7 +217,6 @@ const FeaturedBanner = ({
       <ScreenshotImage
         fetchPriority={eager ? "high" : undefined}
         loading={eager ? "eager" : "lazy"}
-        name={featured.name}
         screenshot={featured.screenshot}
         sizes="(min-width: 1440px) 1024px, (min-width: 1024px) calc(100vw - 416px), calc(100vw - 40px)"
       />
@@ -269,7 +246,7 @@ const FeaturedBanner = ({
 
   return (
     <div className="container">
-      {clickable && featured.url ? (
+      {featured.url ? (
         <a
           className="group focus-ring block outline-none"
           href={featured.url}
@@ -341,7 +318,6 @@ const ShowcaseCard = ({ item }: Readonly<{ item: CardView }>) => {
       >
         <ScreenshotImage
           loading="lazy"
-          name={item.name}
           screenshot={item.screenshot}
           sizes="(min-width: 1440px) 652px, (min-width: 640px) calc((100vw - 72px) / 2 - 32px), calc(100vw - 72px)"
         />
@@ -350,7 +326,7 @@ const ShowcaseCard = ({ item }: Readonly<{ item: CardView }>) => {
     </div>
   );
 
-  if (clickable && item.url) {
+  if (item.url) {
     return (
       <a
         className="group bg-grid-dots text-foreground focus-ring flex flex-col p-4 outline-none"

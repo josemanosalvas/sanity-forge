@@ -42,10 +42,6 @@ const deduplicateDocuments = (documents: DocumentData[]): DocumentData[] => {
   const documentMap = new Map<string, DocumentData>();
 
   for (const doc of documents) {
-    if (!(doc._id && doc.slug)) {
-      continue;
-    }
-
     const normalizedId = getPublishedId(doc._id);
     if (!(documentMap.has(normalizedId) && doc._id.startsWith("drafts."))) {
       documentMap.set(normalizedId, {
@@ -63,10 +59,6 @@ const processDocumentIntoStructure = (
   doc: DocumentData,
   folderStructure: Record<string, FolderNode>
 ): void => {
-  if (!doc.slug) {
-    return;
-  }
-
   const segments = doc.slug.split("/").filter(Boolean);
   const [firstSegment] = segments;
   if (!firstSegment) {
@@ -136,12 +128,8 @@ const compareAlpha = (a: string, b: string): number =>
 const byDocumentTitle = (a: DocumentData, b: DocumentData): number =>
   compareAlpha(a.title || a.slug, b.title || b.slug);
 
-const createUniqueId = (
-  type: "folder" | "doc" | "main" | "single",
-  parentPath: string,
-  key: string,
-  depth: number
-): string => `${type}-${parentPath}${key}-${depth}`;
+const folderId = (parentPath: string, key: string, depth: number): string =>
+  `folder-${parentPath}${key}-${depth}`;
 
 const createDocumentListItems = (
   S: StructureBuilder,
@@ -250,7 +238,7 @@ const processFolderItem = (config: FolderProcessConfig): ListItemBuilder => {
     context,
     createListItemsFromStructure,
   } = config;
-  const uniqueId = createUniqueId("folder", parentPath, key, depth);
+  const uniqueId = folderId(parentPath, key, depth);
 
   const childFolderItems =
     Object.keys(folder.children).length > 0
@@ -390,7 +378,8 @@ export const createPagesByPathList = (
         return S.list()
           .title("Pages by path")
           .items(createListItemsFromStructure(folderStructure));
-      } catch {
+      } catch (error) {
+        console.error("[structure] Could not list pages by path:", error);
         return S.list().title("Pages by path").items([]);
       }
     });

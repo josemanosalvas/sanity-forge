@@ -1,28 +1,37 @@
-import { isLocale } from "@repo/internationalization/locales";
+import { siteSupportsLocale } from "@repo/internationalization/sites";
+import type { SiteKey } from "@repo/internationalization/sites";
 import { ogImageUrl } from "@repo/sanity/image";
 import type { SettingsQueryResult } from "@repo/sanity/types";
 import { createMetadata, titleTemplate } from "@repo/seo/metadata";
 import type { RouteAlternate } from "@repo/seo/route";
 import type { Metadata } from "next";
+import { stegaClean } from "next-sanity";
 
 import type { PageDocument, SiteContext } from "@/types";
 
-/** Exclude cross-site translation references, including legacy content. */
-const toAlternates = (
-  translations: PageDocument["translations"] | undefined,
-  site: SiteContext["site"]
+interface TranslationReference {
+  readonly language: string;
+  readonly site: string | null;
+  readonly slug: string | null;
+}
+
+/**
+ * A page's translations on this site, in the locales it serves. A reference
+ * can still point at another site's page (one moved after it was linked).
+ */
+export const siteTranslations = (
+  translations: readonly TranslationReference[] | null,
+  site: SiteKey
 ): RouteAlternate[] =>
   (translations ?? []).flatMap((translation) =>
-    isLocale(translation.language) &&
     translation.slug &&
-    translation.site === site.key
+    stegaClean(translation.site) === site &&
+    siteSupportsLocale(site, translation.language)
       ? [{ locale: translation.language, path: translation.slug }]
       : []
   );
 
-export const faviconIcons = (
-  settings: SettingsQueryResult
-): Metadata["icons"] => {
+const faviconIcons = (settings: SettingsQueryResult): Metadata["icons"] => {
   const icon = [
     ...(settings?.favicon?.svg
       ? [{ type: "image/svg+xml", url: settings.favicon.svg }]
@@ -69,7 +78,7 @@ export const pageMetadata = (
     ogDescription: page.ogDescription,
     ogTitle: page.ogTitle,
     route: {
-      alternates: toAlternates(page.translations, context.site),
+      alternates: siteTranslations(page.translations, context.site.key),
       locale: context.locale,
       path: page.slug ?? "/",
       site: context.site,

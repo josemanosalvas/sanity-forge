@@ -13,9 +13,6 @@ import { muxMp4Url, muxPlaybackId } from "../../lib/mux";
 import type { MuxVideoData } from "../../lib/mux";
 import { isMuxPath, mediaTypeOf } from "./media-type";
 
-export type { HeroMediaType } from "./media-type";
-export { isMuxPath, mediaTypeOf } from "./media-type";
-
 // Keep the HLS player out of file-backed and MP4 backgrounds.
 const MuxVideo = dynamic(() => import("@mux/mux-video-react"), { ssr: false });
 

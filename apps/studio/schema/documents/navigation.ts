@@ -3,6 +3,7 @@ import { LayoutPanelLeft, Link, PanelTop } from "lucide-react";
 import { defineArrayMember, defineField, defineType } from "sanity";
 
 import { lucideIconPreview } from "../../components/icon-preview";
+import { columnPreview, linkPreviewSubtitle } from "../../lib/helpers";
 import { singletonIdRule } from "../../lib/singletons";
 import { languageField } from "../fields/language";
 import { siteField } from "../fields/site";
@@ -17,7 +18,6 @@ const navigationLink = defineArrayMember({
       type: "string",
     }),
     defineField({
-      description: "The URL that this link will navigate to when clicked",
       name: "url",
       title: "Link URL",
       type: "customUrl",
@@ -26,17 +26,11 @@ const navigationLink = defineArrayMember({
   icon: Link,
   name: "navigationLink",
   preview: {
-    prepare({ title, externalUrl, urlType, internalUrl, openInNewTab }) {
-      const url = urlType === "external" ? externalUrl : internalUrl;
-      const newTabIndicator = openInNewTab ? " ↗" : "";
-      const truncatedUrl = url?.length > 30 ? `${url.slice(0, 30)}...` : url;
-
-      return {
-        media: Link,
-        subtitle: `${urlType === "external" ? "External" : "Internal"} • ${truncatedUrl}${newTabIndicator}`,
-        title: title || "Untitled Link",
-      };
-    },
+    prepare: ({ title, ...link }) => ({
+      media: Link,
+      subtitle: linkPreviewSubtitle(link),
+      title: title || "Untitled Link",
+    }),
     select: {
       externalUrl: "url.external",
       internalUrl: "url.internal.slug.current",
@@ -60,13 +54,12 @@ const navigationColumnLink = defineArrayMember({
       type: "string",
     }),
     defineField({
-      description: "The description for this navigation link",
+      description: "Short text shown under the link in the menu",
       name: "description",
       title: "Description",
       type: "string",
     }),
     defineField({
-      description: "The URL that this link will navigate to when clicked",
       name: "url",
       title: "Link URL",
       type: "customUrl",
@@ -75,17 +68,11 @@ const navigationColumnLink = defineArrayMember({
   icon: LayoutPanelLeft,
   name: "navigationColumnLink",
   preview: {
-    prepare({ title, icon, externalUrl, urlType, internalUrl, openInNewTab }) {
-      const url = urlType === "external" ? externalUrl : internalUrl;
-      const newTabIndicator = openInNewTab ? " ↗" : "";
-      const truncatedUrl = url?.length > 30 ? `${url.slice(0, 30)}...` : url;
-
-      return {
-        media: lucideIconPreview(icon),
-        subtitle: `${urlType === "external" ? "External" : "Internal"} • ${truncatedUrl}${newTabIndicator}`,
-        title: title || "Untitled Link",
-      };
-    },
+    prepare: ({ title, icon, ...link }) => ({
+      media: lucideIconPreview(icon),
+      subtitle: linkPreviewSubtitle(link),
+      title: title || "Untitled Link",
+    }),
     select: {
       externalUrl: "url.external",
       icon: "icon",
@@ -121,12 +108,7 @@ const navigationColumn = defineArrayMember({
   icon: LayoutPanelLeft,
   name: "navigationColumn",
   preview: {
-    prepare({ title, links = [] }) {
-      return {
-        subtitle: `${links.length} link${links.length === 1 ? "" : "s"}`,
-        title: title || "Untitled Column",
-      };
-    },
+    prepare: columnPreview,
     select: {
       links: "links",
       title: "title",

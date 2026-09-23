@@ -14,6 +14,7 @@ import {
   XLogoIcon,
   YoutubeIcon,
 } from "../../components/icons";
+import type { IconProps } from "../../components/icons";
 import { SanityImage } from "../../components/sanity-image";
 import type { SanityImageData } from "../../components/sanity-image";
 import { sanitizeHref } from "../../lib/safe-href";
@@ -33,8 +34,6 @@ export interface SocialGridProps {
   subtitle?: string | null;
   socials?: SocialGridItem[] | null;
 }
-
-type IconProps = Readonly<{ className?: string }>;
 
 const PLATFORM_ICONS: Record<string, ComponentType<IconProps>> = {
   facebook: FacebookIcon,

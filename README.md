@@ -1,6 +1,6 @@
 # Sanity Forge
 
-A production-grade Next.js + Sanity template for multilingual content sites. One deployment and Sanity dataset serve multiple domains, with a Studio workspace per site, localized pages, shared page-builder blocks, live previews and per-site SEO.
+A Next.js + Sanity template for multilingual content sites. One deployment and Sanity dataset serve multiple domains, with a Studio workspace per site, localized pages, shared page-builder blocks, live previews and per-site SEO.
 
 Use it for sites managed by one team. Workspace filters organize editing; they do not enforce tenant permissions. Independently operated clients need a separate access-control or dataset strategy.
 
@@ -89,10 +89,14 @@ Import concrete modules through package exports, such as `@repo/blocks/hero` or 
 | `pnpm verify` | Formatting, lint, workspace and dependency boundaries, tests, typecheck |
 | `pnpm fix` | Apply lint and format fixes |
 | `pnpm typegen` | Extract schemas and regenerate GROQ result types |
-| `pnpm --filter <package> test` | Focused Vitest tests (`web`, `studio`, `@repo/blocks`) |
+| `pnpm --filter <package> test` | Focused Vitest tests for one package, e.g. `web` or `@repo/blocks` |
 | `pnpm test:e2e` | Playwright against the production web server |
 | `pnpm turbo gen block` | Scaffold and register a block; add its web renderer and behavior tests |
 | `pnpm turbo gen package` | Scaffold a workspace package |
+
+### Blocks
+
+The newsletter block needs an `action` or `onSubmit` handler to render a subscription form. The strings blocks render themselves (form labels, the copy and play buttons, screen-reader text) come from the `blocks` namespace of `packages/internationalization/messages/` through `BlockLabelsProvider` (`@repo/blocks/components/block-labels`), which the layout mounts; without a provider, as in Storybook, the English defaults apply. Markdown serializers are available per block; there is no Markdown HTTP route.
 
 ### Third-party scripts
 
@@ -109,13 +113,11 @@ Keys live in `apps/web/.env` locally (see `.env.example`) and in the deployment'
 
 Performance targets: LCP under 2.5 s, INP under 200 ms, and CLS under 0.1 at the 75th percentile. Measure mobile and desktop separately in Speed Insights.
 
-Draft Mode exits through the preview bar's Server Action; `POST /api/draft-mode/disable?to=/path` is the equivalent endpoint for tooling outside the site.
-
-The newsletter block needs an `action` or `onSubmit` handler to render a subscription form. The strings blocks render themselves (form labels, the copy and play buttons, screen-reader text) come from the `blocks` namespace of `packages/internationalization/messages/` through `BlockLabelsProvider` (`@repo/blocks/components/block-labels`), which the layout mounts; without a provider, as in Storybook, the English defaults apply. Markdown serializers are available per block; there is no Markdown HTTP route.
-
 ## Caching and previews
 
 Sanity reads run inside `use cache`. Resolve preview cookies outside the cache and pass `perspective`, `stega` and `variant` through to the cached layer. Shared fetch helpers live in [`content.ts`](apps/web/src/lib/content.ts); preview resolution and Live integration live in [`live.ts`](packages/sanity/src/live.ts). The layering and names follow Sanity's official Next.js template.
+
+Draft Mode exits through the preview bar's Server Action; `POST /api/draft-mode/disable?to=/path` is the equivalent endpoint for tooling outside the site.
 
 For revalidation when no browser has Sanity Live open, configure a GROQ-powered webhook:
 
@@ -144,7 +146,7 @@ One Vercel project serves every hostname in `sites.ts`; attach all production do
 | Install Command | `pnpm install --frozen-lockfile` |
 | Build Command | `pnpm turbo run build --filter=web` |
 | Output Directory | `apps/web/.next` |
-| Node.js | 24.x (`engines.node` in `package.json`) |
+| Node.js | `engines.node` in `package.json` (`>=24`) |
 
 Environment variables: everything in `apps/web/.env.example` marked required, plus `SANITY_STUDIO_PROJECT_ID` and `SANITY_STUDIO_DATASET` for the build, `NEXT_PUBLIC_SANITY_STUDIO_URL` set to the deployed Studio origin (a loopback value is dropped from the frame-ancestors policy), and `SANITY_REVALIDATE_SECRET` (at least 32 characters; shorter values are refused by the route) if the webhook is used. After 30 failed webhook requests or 20 failed Draft Mode handshakes per minute, that address receives HTTP 429 until its window resets. Successful requests do not consume the budget, but an exhausted address is blocked before authentication. Limits apply per server instance. `SANITY_API_READ_TOKEN` must be a Viewer token: validated Draft Mode sessions receive it in the browser for Sanity Live. Reverse proxies must overwrite `x-forwarded-host` for site selection and `x-forwarded-for` for rate limiting. Requests on a site's `www.`/apex twin are redirected to the production hostname with a 308.
 
@@ -172,7 +174,7 @@ To change the selection, edit [`apps/studio/seed/manifest.ts`](apps/studio/seed/
 
 ## CI and verification
 
-[CI](.github/workflows/ci.yml) runs static checks, unit tests, TypeGen freshness, and Studio/Storybook builds using a placeholder project. Set repository variables `SANITY_PROJECT_ID`, `SANITY_DATASET` and secret `SANITY_API_READ_TOKEN` to enable the web build and Playwright tests; that job checks CMS prerendering and scans the build output for the Viewer token. Fork PRs run checks that need no secrets.
+[CI](.github/workflows/ci.yml) runs static checks, unit tests, TypeGen freshness, schema validation, and Studio/Storybook builds using a placeholder project. Set repository variables `SANITY_PROJECT_ID`, `SANITY_DATASET` and secret `SANITY_API_READ_TOKEN` to enable the web build and Playwright tests; that job checks CMS prerendering and scans the build output for the Viewer token. Fork PRs run checks that need no secrets.
 
 The smoke suite covers site shells, locales, 404s, robots and sitemaps with an empty dataset. Set `E2E_HAS_CONTENT=true` to require published home pages too. Check Presentation and release previews manually in an authenticated Studio session.
 

@@ -14,8 +14,7 @@ export const pageBuilder = defineType({
 });
 
 export const pageBuilderField = defineField({
-  description:
-    "Build your page by adding different sections like text, images, and other content blocks",
+  description: "The sections of the page, from top to bottom.",
   group: GROUP.MAIN_CONTENT,
   name: "pageBuilder",
   type: "pageBuilder",
