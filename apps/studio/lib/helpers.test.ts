@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 
 import {
   capitalize,
+  columnPreview,
   createRadioListLayout,
   getTitleCase,
   isValidUrl,
@@ -117,6 +118,20 @@ describe(linkPreviewSubtitle, () => {
     expect(
       linkPreviewSubtitle({ internalUrl: "/about", urlType: "internal" })
     ).toBe("Internal • /about"));
+});
+
+describe(columnPreview, () => {
+  test("counts the column's links", () =>
+    expect(columnPreview({ links: [{}], title: "About" })).toStrictEqual({
+      subtitle: "1 link",
+      title: "About",
+    }));
+
+  test("names an empty, untitled column", () =>
+    expect(columnPreview({})).toStrictEqual({
+      subtitle: "0 links",
+      title: "Untitled Column",
+    }));
 });
 
 describe(parseRichTextToString, () => {

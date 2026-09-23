@@ -70,6 +70,21 @@ export const linkPreviewTarget = ({
 export const linkPreviewSubtitle = (link: LinkPreviewSelection): string =>
   `${link.urlType === "external" ? "External" : "Internal"} • ${linkPreviewTarget(link)}`;
 
+/** Preview for a column of links: its title and how many links it holds. */
+export const columnPreview = ({
+  links,
+  title,
+}: {
+  links?: readonly unknown[] | null;
+  title?: string | null;
+}) => {
+  const count = links?.length ?? 0;
+  return {
+    subtitle: `${count} link${count === 1 ? "" : "s"}`,
+    title: title || "Untitled Column",
+  };
+};
+
 export const parseRichTextToString = (value: unknown, maxWords?: number) => {
   if (!Array.isArray(value)) {
     return "No Content";

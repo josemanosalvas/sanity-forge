@@ -1,4 +1,3 @@
-import { getSite, siteSupportsLocale } from "@repo/internationalization/sites";
 import {
   getDynamicFetchOptions,
   sanityFetchMetadata,
@@ -20,7 +19,7 @@ import { PageBuilder } from "@/components/page-builder";
 import { PageBuilderJsonLd } from "@/components/page-builder-json-ld";
 import { RegisterTranslations } from "@/components/translations";
 import { fetchPage, fetchSettings } from "@/lib/content";
-import { pageMetadata } from "@/lib/seo";
+import { pageMetadata, siteTranslations } from "@/lib/seo";
 import { getSiteContext, toQueryParams } from "@/lib/site-context";
 import type { SiteQueryParams } from "@/types";
 
@@ -127,14 +126,7 @@ const CachedPage = async ({
     notFound();
   }
 
-  const siteDefinition = getSite(site);
-  const translations = (page.translations ?? []).flatMap((translation) =>
-    translation.slug &&
-    stegaClean(translation.site) === site &&
-    siteSupportsLocale(siteDefinition, translation.language)
-      ? [{ locale: translation.language, path: translation.slug }]
-      : []
-  );
+  const translations = siteTranslations(page.translations, site);
 
   const blocks = renderPageBlocks({
     blocks: page.pageBuilder ?? [],

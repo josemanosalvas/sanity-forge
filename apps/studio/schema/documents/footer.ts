@@ -2,7 +2,7 @@ import { imageWithAltField } from "@repo/blocks/lib/schema-fields";
 import { BadgeCheck, LayoutPanelLeft, Link, PanelBottom } from "lucide-react";
 import { defineArrayMember, defineField, defineType } from "sanity";
 
-import { linkPreviewSubtitle } from "../../lib/helpers";
+import { columnPreview, linkPreviewSubtitle } from "../../lib/helpers";
 import { singletonIdRule } from "../../lib/singletons";
 import { languageField } from "../fields/language";
 import { siteField } from "../fields/site";
@@ -92,12 +92,7 @@ const footerColumn = defineArrayMember({
   icon: LayoutPanelLeft,
   name: "footerColumn",
   preview: {
-    prepare({ title, links = [] }) {
-      return {
-        subtitle: `${links.length} link${links.length === 1 ? "" : "s"}`,
-        title: title || "Untitled Column",
-      };
-    },
+    prepare: columnPreview,
     select: {
       links: "links",
       title: "title",

@@ -3,6 +3,7 @@ import { absoluteUrl } from "@repo/internationalization/routing";
 import {
   getDefaultLocale,
   getSiteOrigin,
+  siteSupportsLocale,
 } from "@repo/internationalization/sites";
 import type { Site } from "@repo/internationalization/sites";
 
@@ -41,7 +42,7 @@ export const languageAlternates = (route: SeoRoute): Record<string, string> => {
     : [...known, { locale: route.locale, path: route.path }];
 
   for (const alternate of all) {
-    if (!(site.locales as readonly string[]).includes(alternate.locale)) {
+    if (!siteSupportsLocale(site, alternate.locale)) {
       continue;
     }
     entries.set(

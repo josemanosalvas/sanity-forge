@@ -85,21 +85,6 @@ export const richTextFragment = `
   }
 ` as const;
 
-export const buttonsFragment = `
-  buttons[]{
-    text,
-    variant,
-    _key,
-    _type,
-    "openInNewTab": url.openInNewTab,
-    "href": select(
-      url.type == "internal" => ${localizedInternalHref("url.internal")},
-      url.type == "external" => url.external,
-      url.href
-    ),
-  }
-` as const;
-
 export const urlFragment = `
   "openInNewTab": url.openInNewTab,
   "href": select(
@@ -107,6 +92,16 @@ export const urlFragment = `
     url.type == "external" => url.external,
     url.href
   )
+` as const;
+
+export const buttonsFragment = `
+  buttons[]{
+    text,
+    variant,
+    _key,
+    _type,
+    ${urlFragment}
+  }
 ` as const;
 
 /** `mux.video` holds only a reference; everything playable is on the asset. */

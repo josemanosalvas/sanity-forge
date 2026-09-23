@@ -3,7 +3,7 @@ import { LayoutPanelLeft, Link, PanelTop } from "lucide-react";
 import { defineArrayMember, defineField, defineType } from "sanity";
 
 import { lucideIconPreview } from "../../components/icon-preview";
-import { linkPreviewSubtitle } from "../../lib/helpers";
+import { columnPreview, linkPreviewSubtitle } from "../../lib/helpers";
 import { singletonIdRule } from "../../lib/singletons";
 import { languageField } from "../fields/language";
 import { siteField } from "../fields/site";
@@ -108,12 +108,7 @@ const navigationColumn = defineArrayMember({
   icon: LayoutPanelLeft,
   name: "navigationColumn",
   preview: {
-    prepare({ title, links = [] }) {
-      return {
-        subtitle: `${links.length} link${links.length === 1 ? "" : "s"}`,
-        title: title || "Untitled Column",
-      };
-    },
+    prepare: columnPreview,
     select: {
       links: "links",
       title: "title",

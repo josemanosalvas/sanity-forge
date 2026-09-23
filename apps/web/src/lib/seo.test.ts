@@ -7,7 +7,7 @@ import { describe, expect, test } from "vitest";
 
 import type { PageDocument, SiteContext } from "@/types";
 
-import { pageMetadata, siteMetadata } from "./seo";
+import { pageMetadata, siteMetadata, siteTranslations } from "./seo";
 
 const context: SiteContext = {
   defaultLocale: "en",
@@ -275,4 +275,19 @@ describe.each([
     );
     expect(ogUrl(metadata)).toContain("fm=jpg");
   });
+});
+
+describe(siteTranslations, () => {
+  test("keeps only this site's translations in the locales it serves", () =>
+    expect(
+      siteTranslations(
+        [
+          { language: "de", site: "brand-b", slug: "/preise" },
+          { language: "de", site: "brand-a", slug: "/preise" },
+          { language: "fr", site: "brand-b", slug: "/tarifs" },
+          { language: "en", site: "brand-b", slug: null },
+        ],
+        "brand-b"
+      )
+    ).toStrictEqual([{ locale: "de", path: "/preise" }]));
 });
