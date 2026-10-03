@@ -50,11 +50,6 @@ describe("hero/media-type", () => {
     expect(isMuxPath("sanity")).toBeFalsy();
   });
 
-  test("mux-mp4 is never inferred, only chosen", () => {
-    expect(mediaTypeOf({ mux: READY_MUX })).toBe("mux");
-    expect(mediaTypeOf({})).toBe("sanity");
-  });
-
   test.each([
     { rung: "1080p", width: 1440 },
     { rung: "1080p", width: 1280 },

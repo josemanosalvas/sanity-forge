@@ -6,7 +6,10 @@ import { consoleLoggingIntegration, init } from "@sentry/nextjs";
 import { keys } from "./keys";
 
 export const initializeObservability = (): void => {
-  const dsn = keys().NEXT_PUBLIC_SENTRY_DSN;
+  const {
+    NEXT_PUBLIC_SENTRY_DSN: dsn,
+    NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE: tracesSampleRate,
+  } = keys();
   if (!dsn) {
     return;
   }
@@ -17,6 +20,6 @@ export const initializeObservability = (): void => {
     // Local variables can hold the Sanity token; never send them from production.
     includeLocalVariables: process.env.NODE_ENV !== "production",
     integrations: [consoleLoggingIntegration({ levels: ["error", "warn"] })],
-    tracesSampleRate: keys().NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE ?? 1,
+    tracesSampleRate: tracesSampleRate ?? 1,
   });
 };

@@ -1,8 +1,8 @@
+import { definePortableTextField } from "@repo/blocks/lib/sanity-rich-text";
 import { MessageCircle } from "lucide-react";
 import { defineField, defineType } from "sanity";
 
 import { parseRichTextToString } from "../../lib/helpers";
-import { customRichText } from "../definitions/rich-text";
 import { languageField } from "../fields/language";
 
 /** Shared across sites; localized per document so each language is published independently. */
@@ -19,9 +19,8 @@ export const faq = defineType({
       type: "string",
       validation: (rule) => rule.required(),
     }),
-    customRichText(["block"], {
-      description:
-        "Write a friendly, clear answer that directly addresses the question. Keep it simple enough that anyone can understand it.",
+    definePortableTextField(["block"], {
+      description: "The answer shown when a visitor opens the question.",
       title: "Answer",
     }),
   ],

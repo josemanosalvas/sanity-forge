@@ -1,4 +1,4 @@
-import { defaults, withVercelToolbar } from "@nosecone/next";
+import { defaults } from "@nosecone/next";
 import type { Options } from "@nosecone/next";
 import { nosecone } from "nosecone";
 import type { CspDirectives } from "nosecone";
@@ -42,14 +42,12 @@ export interface SecurityHeadersOptions {
   readonly csp?: Partial<Record<CspSource, readonly string[]>>;
   /** Disable CSP entirely (the other headers are still sent). */
   readonly contentSecurityPolicy?: boolean;
-  /** Allow the Vercel Toolbar's scripts and sockets. */
-  readonly vercelToolbar?: boolean;
 }
 
 const base = defaults.contentSecurityPolicy.directives;
 
 /** Sources the Sanity client, Live Content API and Visual Editing need. */
-export const sanitySources = {
+const sanitySources = {
   connectSrc: [
     "https://*.api.sanity.io",
     "https://*.apicdn.sanity.io",
@@ -97,17 +95,16 @@ const createDirectives = ({
     workerSrc: [...base.workerSrc, "blob:", ...(csp.workerSrc ?? [])],
   }) as CspDirectives;
 
-export const createSecurityOptions = ({
+const createSecurityOptions = ({
   frameAncestors: requestedFrameAncestors = [],
   csp = {},
   contentSecurityPolicy = true,
-  vercelToolbar = false,
 }: SecurityHeadersOptions = {}): Options => {
   // Exclude the default local Studio origin from production framing permissions.
   const frameAncestors = isProduction
     ? requestedFrameAncestors.filter((origin) => !isLoopbackOrigin(origin))
     : [...requestedFrameAncestors];
-  const options: Options = {
+  return {
     ...defaults,
     contentSecurityPolicy: contentSecurityPolicy
       ? { directives: createDirectives({ csp, frameAncestors }) }
@@ -123,8 +120,6 @@ export const createSecurityOptions = ({
     // frame-ancestors supersedes X-Frame-Options; SAMEORIGIN would block a cross-origin Studio.
     xFrameOptions: frameAncestors.length ? false : { action: "sameorigin" },
   };
-
-  return vercelToolbar ? withVercelToolbar(options) : options;
 };
 
 export const createSecurityHeaders = (

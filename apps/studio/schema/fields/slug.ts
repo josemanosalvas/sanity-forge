@@ -18,7 +18,7 @@ export const documentSlugField = (
 ) => {
   const {
     group,
-    description = `The public path where people find this ${documentType}, without a language prefix (automatically created from the title)`,
+    description = `The public path where people find this ${documentType}, without a language prefix. Generate creates one from the title.`,
     title = "URL",
   } = options;
 

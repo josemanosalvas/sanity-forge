@@ -30,8 +30,6 @@ export const sanityImageRemotePattern = (projectId: string) =>
 export const createNextConfig = (overrides: NextConfig = {}): NextConfig => ({
   ...baseConfig,
   ...overrides,
-  cacheLife: { ...overrides.cacheLife },
-  experimental: { ...overrides.experimental },
   images: { ...baseConfig.images, ...overrides.images },
 });
 

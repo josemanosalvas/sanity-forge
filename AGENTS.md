@@ -45,7 +45,7 @@ Use Vitest for colocated `*.test.ts` and `*.test.tsx` tests. Run all with `pnpm 
 
 ## Commit & Pull Request Guidelines
 
-History is limited to short descriptive subjects. Use concise, action-oriented subjects. PRs should explain behavior changes, link relevant issues, report validation, and include screenshots for visual changes. Run `pnpm verify` and commit regenerated schema/types when applicable.
+Use concise, action-oriented commit subjects. PRs should explain behavior changes, link relevant issues, report validation, and include screenshots for visual changes. Run `pnpm verify` and commit regenerated schema/types when applicable.
 
 ## Security & Configuration
 

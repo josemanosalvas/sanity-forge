@@ -1,6 +1,5 @@
 import { describe, expect, test } from "vitest";
 
-import { locales } from "./locales";
 import { localizePath, parsePathname } from "./routing";
 import { getSite } from "./sites";
 
@@ -21,17 +20,17 @@ describe("src/routing", () => {
   });
 
   test("pathnames are parsed against the site's own locales", () => {
-    expect(parsePathname(brandA, "/de/ueber-uns", locales)).toStrictEqual({
+    expect(parsePathname(brandA, "/de/ueber-uns")).toStrictEqual({
       hadPrefix: true,
       locale: "de",
       pathname: "/ueber-uns",
     });
-    expect(parsePathname(brandA, "/about", locales)).toStrictEqual({
+    expect(parsePathname(brandA, "/about")).toStrictEqual({
       hadPrefix: false,
       locale: "en",
       pathname: "/about",
     });
-    expect(parsePathname(brandA, "/", locales)).toStrictEqual({
+    expect(parsePathname(brandA, "/")).toStrictEqual({
       hadPrefix: false,
       locale: "en",
       pathname: "/",
@@ -39,11 +38,10 @@ describe("src/routing", () => {
   });
 
   test("a locale another site serves is rejected rather than adopted", () => {
-    expect(parsePathname(brandB, "/fr/a-propos", locales)).toStrictEqual({
+    expect(parsePathname(brandB, "/fr/a-propos")).toStrictEqual({
       hadPrefix: false,
       locale: "en",
       pathname: "/fr/a-propos",
-      unsupportedLocale: "fr",
     });
   });
 });

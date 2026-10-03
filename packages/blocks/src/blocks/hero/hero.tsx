@@ -18,8 +18,6 @@ import type { HeroVideoData, HeroVideoVariant } from "./hero-video";
 import { HeroVideo } from "./hero-video";
 import { isMuxPath, mediaTypeOf } from "./media-type";
 
-export type { HeroVideoData, HeroVideoVariant } from "./hero-video";
-
 export interface HeroBlockProps {
   badge?: string | null;
   buttons?: ButtonProps[] | null;
@@ -123,7 +121,6 @@ const HeroPosters = ({
   video,
 }: Readonly<{ eager?: boolean; video?: HeroVideoData | null }>) => {
   const light = stillOf(video?.light) ?? stillOf(video?.dark);
-  const dark = stillOf(video?.dark) ?? light;
   if (!light) {
     return null;
   }
@@ -131,7 +128,8 @@ const HeroPosters = ({
     preconnect("https://image.mux.com");
   }
 
-  const split = dark !== null && dark.key !== light.key;
+  const dark = stillOf(video?.dark) ?? light;
+  const split = dark.key !== light.key;
 
   return (
     <>

@@ -4,8 +4,7 @@
     "allowArbitraryExtensions": true,
     "paths": {
       "@/*": ["./src/*"]
-    },
-    "types": ["node", "vitest/globals"]
+    }
   },
   "include": [
     "next-env.d.ts",

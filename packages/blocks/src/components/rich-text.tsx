@@ -2,12 +2,13 @@ import { cn } from "cn";
 import { PortableText } from "next-sanity";
 import type {
   PortableTextBlock,
+  PortableTextBlockComponent,
   PortableTextReactComponents,
 } from "next-sanity";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { headingChildrenToSlug as parseChildrenToSlug } from "../lib/heading-slug";
+import { headingChildrenToSlug } from "../lib/heading-slug";
 import { sanitizeHref } from "../lib/safe-href";
 import { CodeBlock } from "./code-block";
 import { BlockLabel } from "./labels";
@@ -51,33 +52,22 @@ const CustomLinkMark = ({
   );
 };
 
+const SectionHeading: PortableTextBlockComponent = ({ children, value }) => (
+  <h2
+    className="mt-12 mb-8 scroll-m-20 text-4xl leading-[48px] font-medium tracking-[-0.24px] first:mt-0"
+    id={headingChildrenToSlug(value.children)}
+  >
+    {children}
+  </h2>
+);
+
 const components: Partial<PortableTextReactComponents> = {
   block: {
-    // Demote imported or legacy H1 blocks to preserve the page heading hierarchy.
-    h1: ({ children, value }) => {
-      const slug = parseChildrenToSlug(value.children);
-      return (
-        <h2
-          className="mt-12 mb-8 scroll-m-20 text-4xl leading-[48px] font-medium tracking-[-0.24px] first:mt-0"
-          id={slug}
-        >
-          {children}
-        </h2>
-      );
-    },
-    h2: ({ children, value }) => {
-      const slug = parseChildrenToSlug(value.children);
-      return (
-        <h2
-          className="mt-12 mb-8 scroll-m-20 text-4xl leading-[48px] font-medium tracking-[-0.24px] first:mt-0"
-          id={slug}
-        >
-          {children}
-        </h2>
-      );
-    },
+    // The page title is the h1, so an H1 in the content renders as an h2.
+    h1: SectionHeading,
+    h2: SectionHeading,
     h3: ({ children, value }) => {
-      const slug = parseChildrenToSlug(value.children);
+      const slug = headingChildrenToSlug(value.children);
       return (
         <h3
           className="scroll-m-20 text-3xl leading-10 font-medium tracking-[-0.24px]"
@@ -88,7 +78,7 @@ const components: Partial<PortableTextReactComponents> = {
       );
     },
     h4: ({ children, value }) => {
-      const slug = parseChildrenToSlug(value.children);
+      const slug = headingChildrenToSlug(value.children);
       return (
         <h4
           className="scroll-m-20 text-2xl leading-8 font-medium tracking-[-0.24px]"
@@ -99,7 +89,7 @@ const components: Partial<PortableTextReactComponents> = {
       );
     },
     h5: ({ children, value }) => {
-      const slug = parseChildrenToSlug(value.children);
+      const slug = headingChildrenToSlug(value.children);
       return (
         <h5 className="scroll-m-20 text-xl leading-7 font-medium" id={slug}>
           {children}
@@ -107,7 +97,7 @@ const components: Partial<PortableTextReactComponents> = {
       );
     },
     h6: ({ children, value }) => {
-      const slug = parseChildrenToSlug(value.children);
+      const slug = headingChildrenToSlug(value.children);
       return (
         <h6 className="scroll-m-20 text-lg leading-7 font-medium" id={slug}>
           {children}

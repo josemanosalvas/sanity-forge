@@ -70,10 +70,10 @@ const MET_COLLECTION_URL = "https://www.metmuseum.org/art/collection";
 const CC_BY_SA_URL = "https://creativecommons.org/licenses/by-sa/4.0/";
 const META_DESCRIPTION_LENGTH = 160;
 
-const externalUrl = (external: string, openInNewTab = true) => ({
+const externalUrl = (external: string) => ({
   _type: "customUrl",
   external,
-  openInNewTab,
+  openInNewTab: true,
   type: "external",
 });
 

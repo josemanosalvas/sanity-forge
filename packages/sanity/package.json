@@ -11,7 +11,6 @@
     "./live": "./src/live.ts",
     "./queries": "./src/queries.ts",
     "./tags": "./src/tags.ts",
-    "./token": "./src/token.ts",
     "./types": "./src/sanity.types.ts"
   },
   "scripts": {

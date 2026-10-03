@@ -7,7 +7,7 @@ import {
 import { pageBuilderProjection } from "@repo/blocks/queries";
 import { defineQuery } from "next-sanity";
 
-/** TypeGen resolves `${}` fragment interpolation; do not use string concatenation. */
+// TypeGen resolves `${}` fragment interpolation; do not use string concatenation.
 
 /** A field-level localized value with fallback to the site's default locale. */
 const localized = <const Field extends string>(field: Field) =>

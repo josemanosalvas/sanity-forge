@@ -8,7 +8,6 @@ import {
   plainText,
   references,
 } from "./seed-checks.ts";
-import type { SeedDocumentLike } from "./seed-checks.ts";
 import {
   buildSeedDocuments,
   metaDescription,
@@ -16,6 +15,7 @@ import {
 } from "./seed-documents.ts";
 import type {
   MetWork,
+  SeedDocument,
   SeedSiteInput,
   WikipediaText,
 } from "./seed-documents.ts";
@@ -68,14 +68,14 @@ const site: SeedSiteInput = {
   site: "brand-a",
 };
 
-const build = (input: SeedSiteInput = site): SeedDocumentLike[] =>
+const build = (input: SeedSiteInput = site): SeedDocument[] =>
   buildSeedDocuments({
     openAccessUrl: "https://www.metmuseum.org/open-access",
     sites: [input],
     strings,
   });
 
-const scoped = (document: SeedDocumentLike) => ({
+const scoped = (document: SeedDocument) => ({
   language: document.language as string | undefined,
   site: document.site as string | undefined,
 });

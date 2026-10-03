@@ -53,6 +53,11 @@ const generator = (plop: PlopTypes.NodePlopAPI): void => {
         templateFile: "templates/package/tsconfig.json.hbs",
         type: "add",
       },
+      {
+        path: "packages/{{ name }}/turbo.json",
+        templateFile: "templates/package/turbo.json.hbs",
+        type: "add",
+      },
       // A concrete first module rather than an `index.ts` that would grow into
       // a barrel; consumers import `@repo/{{ name }}/{{ name }}`.
       {
@@ -80,6 +85,23 @@ const generator = (plop: PlopTypes.NodePlopAPI): void => {
         default: "react",
         message: "What does the package contain?",
         name: "kind",
+        type: "list",
+      },
+      {
+        choices: [
+          {
+            name: "platform: infrastructure; may not depend on content or ui",
+            value: "platform",
+          },
+          { name: "content: Sanity access and blocks", value: "content" },
+          {
+            name: "ui: design system; may not depend on content or platform",
+            value: "ui",
+          },
+        ],
+        default: "platform",
+        message: "Boundary tag, checked by `pnpm boundaries`",
+        name: "tag",
         type: "list",
       },
     ],

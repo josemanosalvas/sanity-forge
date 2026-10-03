@@ -13,6 +13,22 @@ const socialLink = (name: string, title: string) =>
     validation: (rule) => rule.uri({ scheme: ["http", "https"] }),
   });
 
+interface AssetValue {
+  asset?: { _ref?: string };
+}
+
+/** Asset IDs end in the file's extension, so the format is checked without a fetch. */
+const extensionRule =
+  (extension: string, label: string) => (value: unknown) => {
+    const ref = (value as AssetValue | undefined)?.asset?._ref;
+    if (!ref) {
+      return true;
+    }
+    return ref.split("-").pop() === extension
+      ? true
+      : `Must be an ${label} file`;
+  };
+
 const socialLinks = defineField({
   description: "Add links to your social media profiles",
   fields: [
@@ -92,16 +108,7 @@ export const settings = defineType({
           options: { accept: "image/svg+xml" },
           title: "SVG",
           type: "image",
-          validation: (rule) =>
-            rule.custom((value) => {
-              const ref = (value as { asset?: { _ref?: string } })?.asset?._ref;
-              if (!ref) {
-                return true;
-              }
-              return ref.split("-").pop() === "svg"
-                ? true
-                : "Must be an SVG file";
-            }),
+          validation: (rule) => rule.custom(extensionRule("svg", "SVG")),
         }),
         defineField({
           description:
@@ -110,16 +117,7 @@ export const settings = defineType({
           options: { accept: "image/vnd.microsoft.icon,.ico" },
           title: "ICO",
           type: "file",
-          validation: (rule) =>
-            rule.custom((value) => {
-              const ref = (value as { asset?: { _ref?: string } })?.asset?._ref;
-              if (!ref) {
-                return true;
-              }
-              return ref.split("-").pop() === "ico"
-                ? true
-                : "Must be an ICO file";
-            }),
+          validation: (rule) => rule.custom(extensionRule("ico", "ICO")),
         }),
       ],
       name: "favicon",

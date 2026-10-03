@@ -63,7 +63,6 @@
         "NEXT_PUBLIC_*",
         "SANITY_*",
         "SENTRY_*",
-        "BETTERSTACK_*",
         "ANALYZE",
         "DEFAULT_SITE"
       ],

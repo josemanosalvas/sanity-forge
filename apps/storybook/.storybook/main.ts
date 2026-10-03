@@ -7,9 +7,8 @@ import { mergeConfig } from "vite";
 const require = createRequire(import.meta.url);
 
 /**
- * Resolves a package's absolute path. Required in pnpm/Yarn PnP monorepos so
- * Storybook loads addons and frameworks from the workspace, not from a
- * hoisted guess.
+ * Resolves a package's directory, so Storybook loads addons and the framework
+ * from this app's own dependencies under pnpm's isolated node_modules.
  */
 const getAbsolutePath = (value: string) =>
   path.dirname(require.resolve(path.join(value, "package.json")));
@@ -20,10 +19,7 @@ const config: StorybookConfig = {
     getAbsolutePath("@storybook/addon-a11y"),
     getAbsolutePath("@storybook/addon-themes"),
   ],
-  framework: {
-    name: getAbsolutePath("@storybook/nextjs-vite"),
-    options: {},
-  },
+  framework: getAbsolutePath("@storybook/nextjs-vite"),
   staticDirs: ["../public"],
   stories: [
     "../../../packages/ui/**/*.stories.@(ts|tsx)",

@@ -24,7 +24,7 @@ const renderBlock = (
   isFirst: boolean,
   dataSanity?: string
 ): ReactNode => {
-  switch (block?._type) {
+  switch (block._type) {
     case "cta": {
       return <CTABlock {...block} />;
     }
@@ -89,7 +89,7 @@ export const renderPageBlocks = ({
 }): RenderedBlock[] =>
   blocks.map((block, index) => {
     const isFirst = index === 0;
-    const leadingHero = isFirst && block?._type === "hero";
+    const leadingHero = isFirst && block._type === "hero";
     const dataSanity =
       editable && leadingHero
         ? sanityDataAttribute({
@@ -99,9 +99,7 @@ export const renderPageBlocks = ({
           })
         : undefined;
     const content = renderBlock(block, isFirst, dataSanity);
-    const fallback = editable ? (
-      <UnknownBlock blockType={block?._type ?? "unknown"} />
-    ) : null;
+    const fallback = editable ? <UnknownBlock blockType={block._type} /> : null;
     return {
       key: block._key,
       node: <BlockErrorBoundary>{content ?? fallback}</BlockErrorBoundary>,

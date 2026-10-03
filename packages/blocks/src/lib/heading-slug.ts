@@ -8,17 +8,13 @@ const textOf = (child: unknown): string => {
   return typeof text === "string" ? text : "";
 };
 
-export const headingTextToSlug = (text: string): string =>
+const headingTextToSlug = (text: string): string =>
   slugify(text.trim(), { lower: true, remove: /[^a-zA-Z0-9 ]/gu });
 
 /**
- * The single source of truth for heading anchors.
- *
- * The rich-text renderer stamps this on every heading as its DOM `id`, and the
- * table of contents builds its `#hash` links from it. Both must agree — a
- * heading holding a bolded or linked word arrives as several Portable Text
- * spans, so joining them any other way (with spaces, say) yields a link that
- * points at nothing.
+ * The anchor `id` the rich-text renderer stamps on a heading. Marks split a
+ * heading into several Portable Text spans, sometimes mid-word, so the span
+ * texts are joined as they are before slugifying.
  */
 export const headingChildrenToSlug = (
   children: readonly unknown[] | null | undefined

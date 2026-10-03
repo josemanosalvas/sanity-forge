@@ -1,7 +1,11 @@
 import { Command } from "lucide-react";
 import { defineField, defineType } from "sanity";
 
-import { capitalize, createRadioListLayout } from "../../lib/helpers";
+import {
+  capitalize,
+  createRadioListLayout,
+  linkPreviewTarget,
+} from "../../lib/helpers";
 
 const buttonVariants = ["default", "secondary", "outline", "link"];
 
@@ -35,22 +39,10 @@ export const button = defineType({
   icon: Command,
   name: "button",
   preview: {
-    prepare: ({
-      title,
-      variant,
-      externalUrl,
-      urlType,
-      internalUrl,
-      openInNewTab,
-    }) => {
-      const url = urlType === "external" ? externalUrl : internalUrl;
-      const newTabIndicator = openInNewTab ? " ↗" : "";
-
-      return {
-        subtitle: `${capitalize(variant ?? "default")} • ${url}${newTabIndicator}`,
-        title: title || "Untitled Button",
-      };
-    },
+    prepare: ({ title, variant, ...link }) => ({
+      subtitle: `${capitalize(variant ?? "default")} • ${linkPreviewTarget(link)}`,
+      title: title || "Untitled Button",
+    }),
     select: {
       externalUrl: "url.external",
       internalUrl: "url.internal.slug.current",

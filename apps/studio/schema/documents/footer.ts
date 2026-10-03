@@ -2,6 +2,7 @@ import { imageWithAltField } from "@repo/blocks/lib/schema-fields";
 import { BadgeCheck, LayoutPanelLeft, Link, PanelBottom } from "lucide-react";
 import { defineArrayMember, defineField, defineType } from "sanity";
 
+import { columnPreview, linkPreviewSubtitle } from "../../lib/helpers";
 import { singletonIdRule } from "../../lib/singletons";
 import { languageField } from "../fields/language";
 import { siteField } from "../fields/site";
@@ -43,13 +44,11 @@ const footerColumnLink = defineArrayMember({
   description: "A single link inside a footer column",
   fields: [
     defineField({
-      description: "Name for the link",
       name: "name",
-      title: "Name",
+      title: "Link Text",
       type: "string",
     }),
     defineField({
-      description: "The URL that this link will navigate to when clicked",
       name: "url",
       title: "Link URL",
       type: "customUrl",
@@ -58,17 +57,11 @@ const footerColumnLink = defineArrayMember({
   icon: Link,
   name: "footerColumnLink",
   preview: {
-    prepare({ title, externalUrl, urlType, internalUrl, openInNewTab }) {
-      const url = urlType === "external" ? externalUrl : internalUrl;
-      const newTabIndicator = openInNewTab ? " ↗" : "";
-      const truncatedUrl = url?.length > 30 ? `${url.slice(0, 30)}...` : url;
-
-      return {
-        media: Link,
-        subtitle: `${urlType === "external" ? "External" : "Internal"} • ${truncatedUrl}${newTabIndicator}`,
-        title: title || "Untitled Link",
-      };
-    },
+    prepare: ({ title, ...link }) => ({
+      media: Link,
+      subtitle: linkPreviewSubtitle(link),
+      title: title || "Untitled Link",
+    }),
     select: {
       externalUrl: "url.external",
       internalUrl: "url.internal.slug.current",
@@ -85,13 +78,11 @@ const footerColumn = defineArrayMember({
   description: "A group of footer links shown under a shared heading",
   fields: [
     defineField({
-      description: "Title for the column",
       name: "title",
       title: "Title",
       type: "string",
     }),
     defineField({
-      description: "Links for the column",
       name: "links",
       of: [footerColumnLink],
       title: "Links",
@@ -101,12 +92,7 @@ const footerColumn = defineArrayMember({
   icon: LayoutPanelLeft,
   name: "footerColumn",
   preview: {
-    prepare({ title, links = [] }) {
-      return {
-        subtitle: `${links.length} link${links.length === 1 ? "" : "s"}`,
-        title: title || "Untitled Column",
-      };
-    },
+    prepare: columnPreview,
     select: {
       links: "links",
       title: "title",
@@ -130,7 +116,6 @@ export const footer = defineType({
       type: "text",
     }),
     defineField({
-      description: "Columns for the footer",
       name: "columns",
       of: [footerColumn],
       title: "Columns",
@@ -138,7 +123,7 @@ export const footer = defineType({
     }),
     defineField({
       description:
-        "Copyright line shown in the bottom bar. Leave empty for the default '© year Site name'.",
+        "Copyright line shown in the bottom bar. Leave empty for the default '© Site name. All rights reserved.'",
       name: "copyright",
       title: "Copyright Text",
       type: "string",

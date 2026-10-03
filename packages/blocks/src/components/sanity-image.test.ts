@@ -3,7 +3,7 @@ import { describe, expect, test } from "vitest";
 import { resolveAssetId } from "../lib/sanity-image";
 import { svgUrlFromAssetId } from "./sanity-image";
 
-describe("internal/sanity-image", () => {
+describe("components/sanity-image", () => {
   test("resolveAssetId returns the id for a valid canonical asset id", () => {
     const id = "image-abc123def456-1200x630-png";
     expect(resolveAssetId({ id })).toBe(id);

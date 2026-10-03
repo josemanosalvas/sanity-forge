@@ -143,6 +143,7 @@ const richTextMembers = [
   }),
   defineArrayMember({
     fields: [
+      // The table plugin strips undeclared fields; headerRows must be in the schema.
       defineField({
         description: "How many rows at the top of the table are headers.",
         name: "headerRows",
@@ -187,7 +188,6 @@ const richTextMembers = [
         type: "array",
       }),
     ],
-    // The table plugin strips undeclared fields; headerRows must be in the schema.
     icon: ThLargeIcon,
     name: PORTABLE_TEXT_MEMBER_NAMES.table,
     preview: {
@@ -234,16 +234,7 @@ export const definePortableTextField = (
     );
   }
 
-  const invalidMemberTypes = memberTypes.filter(
-    (type) => !portableTextMemberTypes.includes(type)
-  );
-  if (invalidMemberTypes.length > 0) {
-    throw new Error(
-      `definePortableTextField received unsupported member types: ${invalidMemberTypes.join(", ")}`
-    );
-  }
-
-  const { description = "", hidden, name = "richText" } = options ?? {};
+  const { description = "", name = "richText" } = options ?? {};
   const selectedMembers = richTextMembers.filter(
     (member) => member.name && memberTypes.includes(member.name)
   );
@@ -251,7 +242,6 @@ export const definePortableTextField = (
   return defineField({
     ...options,
     description,
-    hidden,
     name,
     of: selectedMembers,
     type: "array",

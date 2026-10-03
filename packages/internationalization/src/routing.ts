@@ -36,33 +36,17 @@ export interface ParsedPathname {
   readonly pathname: string;
   /** Whether the incoming pathname carried a locale prefix. */
   readonly hadPrefix: boolean;
-  /** Set when the prefix is a valid locale that this site does not serve. */
-  readonly unsupportedLocale?: string;
 }
 
 /**
  * Splits a public pathname into the locale it targets and the remaining path,
  * using only the locales the given site supports.
  */
-export const parsePathname = (
-  site: Site,
-  pathname: string,
-  knownLocales: readonly string[]
-): ParsedPathname => {
+export const parsePathname = (site: Site, pathname: string): ParsedPathname => {
   const [, first = "", ...rest] = pathname.split("/");
-  const remainder = `/${rest.join("/")}`;
 
   if (siteSupportsLocale(site, first)) {
-    return { hadPrefix: true, locale: first, pathname: remainder };
-  }
-
-  if (knownLocales.includes(first)) {
-    return {
-      hadPrefix: false,
-      locale: getDefaultLocale(site),
-      pathname,
-      unsupportedLocale: first,
-    };
+    return { hadPrefix: true, locale: first, pathname: `/${rest.join("/")}` };
   }
 
   return { hadPrefix: false, locale: getDefaultLocale(site), pathname };

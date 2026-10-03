@@ -1,8 +1,4 @@
-export interface SeedDocumentLike {
-  _id: string;
-  _type: string;
-  [key: string]: unknown;
-}
+import type { SeedDocument } from "./seed-documents.ts";
 
 type Node = Record<string, unknown>;
 
@@ -30,18 +26,18 @@ export const walk = (
   }
 };
 
-export const parseNdjson = (text: string): SeedDocumentLike[] =>
+export const parseNdjson = (text: string): SeedDocument[] =>
   text
     .split("\n")
     .filter((line) => line.trim() !== "")
-    .map((line) => JSON.parse(line) as SeedDocumentLike);
+    .map((line) => JSON.parse(line) as SeedDocument);
 
 export interface Located {
   path: string;
   ref: string;
 }
 
-export const references = (document: SeedDocumentLike): Located[] => {
+export const references = (document: SeedDocument): Located[] => {
   const found: Located[] = [];
   walk(document, (node, path) => {
     if (node._type === "reference" && typeof node._ref === "string") {
@@ -51,7 +47,7 @@ export const references = (document: SeedDocumentLike): Located[] => {
   return found;
 };
 
-export const internalLinks = (document: SeedDocumentLike): Located[] => {
+export const internalLinks = (document: SeedDocument): Located[] => {
   const found: Located[] = [];
   walk(document, (node, path) => {
     const { internal } = node;
@@ -67,7 +63,7 @@ export const internalLinks = (document: SeedDocumentLike): Located[] => {
   return found;
 };
 
-export const duplicateKeyPaths = (document: SeedDocumentLike): string[] => {
+export const duplicateKeyPaths = (document: SeedDocument): string[] => {
   const found: string[] = [];
   walk(document, (node, path) => {
     for (const [key, value] of Object.entries(node)) {
@@ -100,7 +96,7 @@ const lastSegment = (path: string) =>
     .split(".")
     .at(-1);
 
-export const images = (document: SeedDocumentLike): SeedImage[] => {
+export const images = (document: SeedDocument): SeedImage[] => {
   const found: SeedImage[] = [];
   walk(document, (node, path) => {
     if (node._type !== "image" || typeof node._sanityAsset !== "string") {

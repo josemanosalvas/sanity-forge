@@ -19,8 +19,6 @@ export const SWAP_LAYER =
   "col-start-1 row-start-1 transition-[opacity,filter,scale] duration-300 ease-in-out motion-reduce:transition-none";
 export const SWAP_SHOWN = "scale-100 opacity-100 blur-0";
 export const SWAP_HIDDEN = "scale-[0.25] opacity-0 blur-xs";
-export const SWAP_TEXT_SHOWN = "opacity-100 blur-0";
-export const SWAP_TEXT_HIDDEN = "opacity-0 blur-xs";
 
 export const useCopyToClipboard = (
   getText: () => string | Promise<string>,
@@ -44,7 +42,7 @@ export const useCopyToClipboard = (
     }
     setStatus("loading");
 
-    let next: CopyStatus = "error";
+    let next: CopyStatus;
     try {
       await navigator.clipboard.writeText(await getText());
       next = "copied";

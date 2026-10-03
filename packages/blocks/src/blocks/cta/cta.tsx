@@ -55,9 +55,11 @@ export const CTABlock = ({
           <div className="flex max-w-[690px] flex-col items-start gap-6 lg:min-w-0">
             <BlockEyebrow eyebrow={eyebrow} />
             <div className="flex flex-col items-start gap-4">
-              <h2 className="text-foreground text-3xl leading-tight font-normal tracking-[-0.24px] md:text-4xl lg:text-5xl">
-                {title}
-              </h2>
+              {title && (
+                <h2 className="text-foreground text-3xl leading-tight font-normal tracking-[-0.24px] md:text-4xl lg:text-5xl">
+                  {title}
+                </h2>
+              )}
               <RichText
                 className="body-text prose-p:text-base prose-p:leading-6 text-muted-foreground sm:prose-p:text-lg sm:prose-p:leading-7"
                 richText={richText}

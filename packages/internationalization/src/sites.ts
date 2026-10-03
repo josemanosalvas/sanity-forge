@@ -106,12 +106,12 @@ export const getSiteOrigin = (
   return `${protocol}://${domain}`;
 };
 
-/** Every origin Presentation and CORS should trust, across sites and environments. */
 const siteEnvironments: readonly SiteEnvironment[] = [
   "production",
   "development",
 ];
 
+/** Every origin Presentation and CORS should trust, across sites and environments. */
 export const getAllSiteOrigins = (): string[] =>
   siteList.flatMap((site) =>
     siteEnvironments.map((environment) => getSiteOrigin(site, environment))

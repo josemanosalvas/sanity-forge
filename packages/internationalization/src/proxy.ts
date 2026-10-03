@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-import { locales } from "./locales";
 import { localizePath, parsePathname } from "./routing";
 import type { SiteContext } from "./routing";
 import {
@@ -49,12 +48,9 @@ export interface SiteRewrite {
  */
 export const rewriteToSiteRoute = (
   request: NextRequest,
-  site: Site,
-  internalPrefix: (context: SiteContext) => string = ({ site: key, locale }) =>
-    `/${key}/${locale}`
+  site: Site
 ): SiteRewrite => {
-  const { pathname, search } = request.nextUrl;
-  const parsed = parsePathname(site, pathname, locales);
+  const parsed = parsePathname(site, request.nextUrl.pathname);
   const defaultLocale = getDefaultLocale(site);
 
   if (parsed.hadPrefix && parsed.locale === defaultLocale) {
@@ -69,8 +65,7 @@ export const rewriteToSiteRoute = (
   const context: SiteContext = { locale: parsed.locale, site: site.key };
   const url = request.nextUrl.clone();
   const internalPath = parsed.pathname === "/" ? "" : parsed.pathname;
-  url.pathname = `${internalPrefix(context)}${internalPath}`;
-  url.search = search;
+  url.pathname = `/${site.key}/${parsed.locale}${internalPath}`;
 
   return { context, response: NextResponse.rewrite(url) };
 };
