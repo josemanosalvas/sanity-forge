@@ -26,7 +26,7 @@
     "@sanity/icons": "catalog:",
     "@sanity/language-filter": "catalog:",
     "@sanity/ui": "catalog:",
-    "@sanity/vision": "^6.12.0",
+    "@sanity/vision": "^6.17.0",
     "@t3-oss/env-core": "catalog:",
     "friendlier-words": "^1.2.0",
     "lucide-react": "catalog:",
