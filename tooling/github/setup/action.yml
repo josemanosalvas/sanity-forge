@@ -4,7 +4,7 @@ description: "Common setup steps: pnpm, Node.js and a frozen-lockfile install"
 runs:
   using: composite
   steps:
-    - uses: pnpm/action-setup@v6
+    - uses: pnpm/action-setup@v6.1.0
 
     - uses: actions/setup-node@v6
       with:
