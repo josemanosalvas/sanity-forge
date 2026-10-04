@@ -78,7 +78,6 @@ catalog:
 # Native builds that pnpm 11 blocks unless allowed explicitly.
 allowBuilds:
   "@parcel/watcher": true
-  "@sentry/cli": true
   "@swc/core": true
   "@tailwindcss/oxide": true
   esbuild: true
