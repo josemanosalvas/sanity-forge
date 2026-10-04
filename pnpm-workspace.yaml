@@ -75,7 +75,7 @@ catalog:
   "@storybook/react": ^10.6.1
   storybook: ^10.6.1
 
-# Native builds that pnpm 11 blocks unless allowed explicitly.
+# Native builds that pnpm blocks unless allowed explicitly.
 allowBuilds:
   "@parcel/watcher": true
   "@swc/core": true
