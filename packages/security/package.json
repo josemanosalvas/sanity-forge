@@ -13,8 +13,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@nosecone/next": "^1.11.0",
-    "nosecone": "^1.11.0"
+    "@nosecone/next": "^1.14.0",
+    "nosecone": "^1.14.0"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

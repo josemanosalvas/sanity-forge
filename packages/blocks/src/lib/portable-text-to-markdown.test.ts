@@ -295,8 +295,8 @@ describe(portableTextToMarkdown, () => {
   });
 
   it("passes span text through without escaping Markdown metacharacters", () => {
-    // The official library does not escape raw body text — callers that need
-    // escaped plain-string output should use `escapeMarkdown` directly.
+    // The official library escapes only text that would otherwise parse as
+    // Markdown; intraword underscores and bare brackets stay as written.
     const md = portableTextToMarkdown([
       {
         _type: "block",

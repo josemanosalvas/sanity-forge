@@ -34,7 +34,7 @@
     "next-themes": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "schema-dts": "^2.0.0",
+    "schema-dts": "^2.1.0",
     "server-only": "catalog:",
     "zod": "catalog:"
   },

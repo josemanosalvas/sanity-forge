@@ -193,7 +193,8 @@ export const portableTextToMarkdown = (
           .replaceAll(/^(?<rule>[-*_]{3,})$/gmu, String.raw`\$<rule>`),
     },
     marks: {
-      code: ({ children }) => wrapInlineCode(children),
+      // `children` arrives backslash-escaped; code spans need the raw text.
+      code: ({ text }) => wrapInlineCode(text),
       customLink: ({ value, children }) => {
         const href = value?.href as string | null | undefined;
         if (!href || href === "#") {
