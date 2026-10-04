@@ -19,6 +19,7 @@ Sanity Forge is a pnpm/Turborepo monorepo for multilingual, multi-site content w
 - `apps/web`: Next.js App Router frontend; routes and components live in `src/`, Playwright tests in `tests/e2e/`.
 - `apps/studio`: Sanity schemas, editing structure, and preview configuration.
 - `apps/storybook`: UI and page-builder story development.
+- `apps/blueprint`: Sanity Blueprint and the `invalidate-tags` Function that forwards publish sync tags to `/api/revalidate`; deployed with the Sanity CLI, not with the web app.
 - `packages/blocks/src/blocks/<name>/`: block renderers, schemas, queries, Markdown serializers, tests, and stories.
 - `packages/ui`: shared primitives and styles. Other packages provide Sanity access, internationalization, SEO, security, analytics, and observability.
 - `packages/internationalization/messages/`: translation assets; `tooling/`: shared configuration; `turbo/generators/`: scaffolding templates.

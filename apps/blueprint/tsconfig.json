@@ -1,0 +1,10 @@
+{
+  "extends": "@repo/typescript-config/node.json",
+  "include": [
+    "functions",
+    "sanity.blueprint.ts",
+    "*.test.ts",
+    "vitest.config.ts"
+  ],
+  "exclude": ["node_modules", "functions/*/.build"]
+}

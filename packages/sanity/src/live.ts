@@ -8,7 +8,8 @@ import type { LivePerspective } from "next-sanity/live";
 import { cookies, draftMode } from "next/headers";
 
 import { client } from "./client";
-import { contentTags } from "./tags";
+import { keys } from "./keys";
+import { contentTags, SYNC_TAG_PREFIX } from "./tags";
 import { token } from "./token";
 
 const live = defineLive({
@@ -26,14 +27,27 @@ export const { SanityLive } = live;
 
 type SanityFetch = typeof live.sanityFetch;
 
-/** Add webhook tags while preserving next-sanity overloads and stega result types. */
+const logReads = keys().SANITY_LOG_READS;
+
+/** Add purge tags while preserving next-sanity overloads and stega result types. */
 export const sanityFetch = (async (options: Parameters<SanityFetch>[0]) => {
   const params = await options.params;
-  return live.sanityFetch({
+  const result = await live.sanityFetch({
     ...options,
     params,
     tags: [...(options.tags ?? []), ...contentTags(params)],
   });
+  // Reads run inside `use cache`, so each line is one cache miss.
+  if (logReads) {
+    const syncTags = result.tags
+      .filter((tag) => tag.startsWith(SYNC_TAG_PREFIX))
+      .map((tag) => tag.slice(SYNC_TAG_PREFIX.length));
+    const query = options.query.replaceAll(/\s+/gu, " ").slice(0, 60);
+    console.info(
+      `[sanity] read perspective=${options.perspective} params=${JSON.stringify(params ?? {})} syncTags=${syncTags.join(",")} query=${query}`
+    );
+  }
+  return result;
 }) as SanityFetch;
 
 export interface DynamicFetchOptions {
