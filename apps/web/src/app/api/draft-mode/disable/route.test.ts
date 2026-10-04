@@ -1,6 +1,6 @@
 import type { draftMode as nextDraftMode } from "next/headers";
 import { NextRequest } from "next/server";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { POST } from "./route";
 
@@ -31,7 +31,7 @@ describe("POST /api/draft-mode/disable", () => {
     disable.mockClear();
   });
 
-  test("disables Draft Mode and returns to the requested same-origin path", async () => {
+  it("disables Draft Mode and returns to the requested same-origin path", async () => {
     const response = await exitTo("/de/ueber-uns?tab=preise#faq");
     expect(disable).toHaveBeenCalledOnce();
     expect(response.status).toBe(303);
@@ -40,12 +40,12 @@ describe("POST /api/draft-mode/disable", () => {
     );
   });
 
-  test("defaults to the home page", async () => {
+  it("defaults to the home page", async () => {
     const response = await exitTo();
     expect(response.headers.get("location")).toBe("http://localhost:3000/");
   });
 
-  test.each([
+  it.each([
     "/\\evil.com",
     "/\\\\evil.com",
     "/\t/evil.com",
@@ -62,7 +62,7 @@ describe("POST /api/draft-mode/disable", () => {
     expect(location).not.toContain("//evil.com");
   });
 
-  test("a foreign absolute URL falls back to the home page", async () => {
+  it("a foreign absolute URL falls back to the home page", async () => {
     const response = await exitTo("https://evil.com/");
     expect(response.headers.get("location")).toBe("http://localhost:3000/");
   });

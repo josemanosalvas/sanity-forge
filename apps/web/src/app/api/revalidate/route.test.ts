@@ -1,7 +1,7 @@
 import type { parseBody as parseWebhookBody } from "next-sanity/webhook";
 import type { revalidateTag as revalidateNextTag } from "next/cache";
 import { NextRequest } from "next/server";
-import { afterEach, describe, expect, test, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { POST } from "./route";
 
@@ -30,7 +30,7 @@ describe("revalidation webhook", () => {
     vi.resetAllMocks();
   });
 
-  test("fails closed without a secret or valid signature", async () => {
+  it("fails closed without a secret or valid signature", async () => {
     vi.stubEnv("SANITY_REVALIDATE_SECRET", "");
     await expect(POST(request())).resolves.toMatchObject({ status: 501 });
     expect(parseBody).not.toHaveBeenCalled();
@@ -44,7 +44,7 @@ describe("revalidation webhook", () => {
     expect(revalidateTag).not.toHaveBeenCalled();
   });
 
-  test("rejects malformed and unsupported payloads without invalidating caches", async () => {
+  it("rejects malformed and unsupported payloads without invalidating caches", async () => {
     vi.stubEnv("SANITY_REVALIDATE_SECRET", SECRET);
     parseBody.mockRejectedValueOnce(new SyntaxError("Invalid JSON"));
     await expect(POST(request())).resolves.toMatchObject({ status: 400 });
@@ -56,7 +56,7 @@ describe("revalidation webhook", () => {
     expect(revalidateTag).not.toHaveBeenCalled();
   });
 
-  test("a site-scoped document invalidates that site's reads only", async () => {
+  it("a site-scoped document invalidates that site's reads only", async () => {
     vi.stubEnv("SANITY_REVALIDATE_SECRET", SECRET);
     parseBody.mockResolvedValue({
       body: { _type: "page", site: "brand-b" },
@@ -68,7 +68,7 @@ describe("revalidation webhook", () => {
     ]);
   });
 
-  test("shared content and unknown sites invalidate every read", async () => {
+  it("shared content and unknown sites invalidate every read", async () => {
     vi.stubEnv("SANITY_REVALIDATE_SECRET", SECRET);
     parseBody.mockResolvedValue({
       body: { _type: "faq" },
@@ -86,7 +86,7 @@ describe("revalidation webhook", () => {
     ]);
   });
 
-  test("successful deliveries do not consume the failure budget", async () => {
+  it("successful deliveries do not consume the failure budget", async () => {
     vi.stubEnv("SANITY_REVALIDATE_SECRET", SECRET);
     parseBody.mockResolvedValue({
       body: { _type: "page" },
@@ -111,7 +111,7 @@ describe("revalidation webhook", () => {
     expect(refused.headers.get("retry-after")).toMatch(/^\d+$/u);
   });
 
-  test("a short secret disables the webhook without touching the cache", async () => {
+  it("a short secret disables the webhook without touching the cache", async () => {
     vi.stubEnv("SANITY_REVALIDATE_SECRET", "short-secret");
     await expect(POST(request())).resolves.toMatchObject({ status: 501 });
     expect(parseBody).not.toHaveBeenCalled();

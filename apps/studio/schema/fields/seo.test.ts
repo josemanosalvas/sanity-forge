@@ -1,6 +1,6 @@
 import { ConcreteRuleClass } from "sanity";
 import type { Rule, ValidationContext } from "sanity";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { ogFields, seoFields } from "./seo";
 
@@ -36,7 +36,7 @@ const markersFor = async (name: string, value?: string) => {
 const DESCRIPTIONS = ["seoDescription", "ogDescription"];
 
 describe("SEO and Open Graph override fields", () => {
-  test("a blank override is never flagged, because it inherits from the page", async () => {
+  it("a blank override is never flagged, because it inherits from the page", async () => {
     const markers = await Promise.all(
       ["seoTitle", "seoDescription", "ogTitle", "ogDescription"].flatMap(
         (name) => [markersFor(name), markersFor(name, "")]
@@ -45,7 +45,7 @@ describe("SEO and Open Graph override fields", () => {
     expect(markers.flat()).toStrictEqual([]);
   });
 
-  test("a description override warns only once it passes 160 characters", async () => {
+  it("a description override warns only once it passes 160 characters", async () => {
     const atLimit = await Promise.all(
       DESCRIPTIONS.map((name) => markersFor(name, "x".repeat(160)))
     );

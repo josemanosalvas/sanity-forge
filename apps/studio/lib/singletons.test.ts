@@ -1,5 +1,5 @@
 import type { DocumentRule } from "sanity";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { expectedSingletonId, singletonIdRule } from "./singletons";
 
@@ -21,7 +21,7 @@ const validator = (type: Parameters<typeof singletonIdRule>[0]): Validator => {
 };
 
 describe(expectedSingletonId, () => {
-  test("derives the ID from the site, and the language for localized types", () => {
+  it("derives the ID from the site, and the language for localized types", () => {
     expect(expectedSingletonId("settings", { site: "brand-a" })).toBe(
       "settings-brand-a"
     );
@@ -33,7 +33,7 @@ describe(expectedSingletonId, () => {
     ).toBe("footer-brand-b-fr");
   });
 
-  test("has no answer while the scope is unknown or incomplete", () => {
+  it("has no answer while the scope is unknown or incomplete", () => {
     expect(
       expectedSingletonId("settings", { site: "brand-z" })
     ).toBeUndefined();
@@ -46,7 +46,7 @@ describe(expectedSingletonId, () => {
 describe(singletonIdRule, () => {
   const validate = validator("navigation");
 
-  test.each([
+  it.each([
     "navigation-brand-a-de",
     "drafts.navigation-brand-a-de",
     "versions.r1.navigation-brand-a-de",
@@ -54,7 +54,7 @@ describe(singletonIdRule, () => {
     expect(validate({ _id, language: "de", site: "brand-a" })).toBeTruthy();
   });
 
-  test("rejects a document the site never reads and says where the real one is", () => {
+  it("rejects a document the site never reads and says where the real one is", () => {
     const result = validate({
       _id: "8f2c1c1e-0d9e-4c8f-9c1a-3c1e0f6c2b7a",
       language: "de",
@@ -65,12 +65,12 @@ describe(singletonIdRule, () => {
     expect(result).toContain("Navigation → Deutsch");
   });
 
-  test("leaves an incomplete scope to the site and language rules", () => {
+  it("leaves an incomplete scope to the site and language rules", () => {
     expect(validate({ _id: "anything", site: "brand-a" })).toBeTruthy();
     expect(validate()).toBeTruthy();
   });
 
-  test("settings are scoped by site alone", () => {
+  it("settings are scoped by site alone", () => {
     const validateSettings = validator("settings");
     expect(
       validateSettings({ _id: "settings-brand-b", site: "brand-b" })

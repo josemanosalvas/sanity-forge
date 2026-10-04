@@ -6,7 +6,7 @@ import {
 } from "@repo/ui/components/navigation-menu";
 import { NextIntlClientProvider } from "next-intl";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { NavItems } from "./nav-items";
 import type { NavColumns } from "./nav-items";
@@ -52,20 +52,20 @@ const linkTag = (html: string, href: string) =>
   html.match(new RegExp(`<a[^>]*href="${href}"[^>]*>`, "u"))?.[0] ?? "";
 
 describe(NavItems, () => {
-  test("marks only the link that matches the pathname as the current page", () => {
+  it("marks only the link that matches the pathname as the current page", () => {
     const html = render("/de/ueber-uns");
     expect(linkTag(html, "/de/ueber-uns")).toContain('aria-current="page"');
     expect(linkTag(html, "/de/kontakt")).not.toContain("aria-current");
   });
 
-  test("marks nothing without a pathname, which is what the prerendered fallback shows", () => {
+  it("marks nothing without a pathname, which is what the prerendered fallback shows", () => {
     const html = render(null);
     expect(html).toContain('href="/de/ueber-uns"');
     expect(html).toContain('href="/de/kontakt"');
     expect(html).not.toContain("aria-current");
   });
 
-  test("drops a column whose href fails the protocol allowlist", () => {
+  it("drops a column whose href fails the protocol allowlist", () => {
     const html = render(null);
     expect(html).not.toContain(UNSAFE_HREF);
     expect(html).not.toContain("Angriff");

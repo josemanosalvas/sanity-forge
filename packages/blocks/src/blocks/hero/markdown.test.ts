@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { heroToMarkdown } from "./markdown";
 
@@ -11,11 +11,11 @@ const para = (text: string) => [
 ];
 
 describe(heroToMarkdown, () => {
-  test("heroToMarkdown returns empty string for a fully empty block", () => {
+  it("heroToMarkdown returns empty string for a fully empty block", () => {
     expect(heroToMarkdown({}, {})).toBe("");
   });
 
-  test("heroToMarkdown renders badge, title, and richText", () => {
+  it("heroToMarkdown renders badge, title, and richText", () => {
     const result = heroToMarkdown(
       { badge: "v2", richText: para("Hello!"), title: "Welcome" },
       {}
@@ -23,17 +23,17 @@ describe(heroToMarkdown, () => {
     expect(result).toBe("**v2**\n\n## Welcome\n\nHello!");
   });
 
-  test("heroToMarkdown escapes markdown chars in badge", () => {
+  it("heroToMarkdown escapes markdown chars in badge", () => {
     const result = heroToMarkdown({ badge: "#1 _top_" }, {});
     expect(result).toBe("**\\#1 \\_top\\_**");
   });
 
-  test("heroToMarkdown escapes markdown chars in title", () => {
+  it("heroToMarkdown escapes markdown chars in title", () => {
     const result = heroToMarkdown({ title: "[New] Release" }, {});
     expect(result).toBe("## \\[New\\] Release");
   });
 
-  test("heroToMarkdown renders the video poster markup when resolver is provided", () => {
+  it("heroToMarkdown renders the video poster markup when resolver is provided", () => {
     const result = heroToMarkdown(
       {
         title: "H",
@@ -46,7 +46,7 @@ describe(heroToMarkdown, () => {
     );
   });
 
-  test("heroToMarkdown falls back to the dark poster when light is absent", () => {
+  it("heroToMarkdown falls back to the dark poster when light is absent", () => {
     const result = heroToMarkdown(
       {
         title: "H",
@@ -59,7 +59,7 @@ describe(heroToMarkdown, () => {
     );
   });
 
-  test("heroToMarkdown falls back to alt text when no resolver is provided", () => {
+  it("heroToMarkdown falls back to alt text when no resolver is provided", () => {
     const result = heroToMarkdown(
       {
         title: "H",
@@ -71,13 +71,13 @@ describe(heroToMarkdown, () => {
     expect(result).not.toContain("![");
   });
 
-  test("heroToMarkdown omits the image section entirely when there is no poster", () => {
+  it("heroToMarkdown omits the image section entirely when there is no poster", () => {
     const result = heroToMarkdown({ title: "No image" }, {});
     expect(result).toBe("## No image");
     expect(result).not.toContain("![");
   });
 
-  test("heroToMarkdown renders a hash-href button as plain text", () => {
+  it("heroToMarkdown renders a hash-href button as plain text", () => {
     const result = heroToMarkdown(
       {
         buttons: [
@@ -92,7 +92,7 @@ describe(heroToMarkdown, () => {
     expect(result).not.toContain("(#)");
   });
 
-  test("heroToMarkdown does not emit HTML or JSX tags", () => {
+  it("heroToMarkdown does not emit HTML or JSX tags", () => {
     const result = heroToMarkdown(
       { badge: "B", richText: para("Body."), title: "T" },
       {}
@@ -100,7 +100,7 @@ describe(heroToMarkdown, () => {
     expect(result).not.toMatch(/<[A-Za-z]/u);
   });
 
-  test("heroToMarkdown falls back to the dark mux still when light errored", () => {
+  it("heroToMarkdown falls back to the dark mux still when light errored", () => {
     const result = heroToMarkdown(
       {
         title: "H",

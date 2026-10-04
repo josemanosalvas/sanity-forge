@@ -6,7 +6,7 @@ import {
   isSiteKey,
   siteSupportsLocale,
 } from "@repo/internationalization/sites";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { MET_OPEN_ACCESS_URL, sources } from "../seed/manifest.ts";
 import {
@@ -48,7 +48,7 @@ const showcaseObjectIds = (document: SeedDocument | undefined) =>
     );
 
 describe("the committed seed dataset", () => {
-  test("has one document per ID and every reference resolves inside the file", () => {
+  it("has one document per ID and every reference resolves inside the file", () => {
     expect(new Set(documents.map((document) => document._id)).size).toBe(
       documents.length
     );
@@ -61,7 +61,7 @@ describe("the committed seed dataset", () => {
     expect(documents.flatMap(duplicateKeyPaths)).toStrictEqual([]);
   });
 
-  test("seeds settings, navigation, footer and both pages for every site and language in the manifest", () => {
+  it("seeds settings, navigation, footer and both pages for every site and language in the manifest", () => {
     const missing = sources.flatMap((source) => [
       ...(byId.has(`settings-${source.site}`)
         ? []
@@ -106,7 +106,7 @@ describe("the committed seed dataset", () => {
     expect(scopeMismatches).toStrictEqual([]);
   });
 
-  test("pages belong to a language their site serves, with a slug their site can route", () => {
+  it("pages belong to a language their site serves, with a slug their site can route", () => {
     const pages = documents.filter((document) => document._type === "page");
     const violations = pages.flatMap((document) => {
       const slug =
@@ -135,7 +135,7 @@ describe("the committed seed dataset", () => {
     expect(violations).toStrictEqual([]);
   });
 
-  test("translation metadata joins each page to its translations of the same site and content", () => {
+  it("translation metadata joins each page to its translations of the same site and content", () => {
     const problems = sources.flatMap((source) =>
       (
         [
@@ -178,7 +178,7 @@ describe("the committed seed dataset", () => {
     expect(referencedPages).toStrictEqual(pageIds);
   });
 
-  test("internal links stay on the linking document's site and language", () => {
+  it("internal links stay on the linking document's site and language", () => {
     const links = documents.flatMap((document) =>
       internalLinks(document).map((link) => {
         const target = byId.get(link.ref);
@@ -193,7 +193,7 @@ describe("the committed seed dataset", () => {
     expect(links.filter((link) => link !== null)).toStrictEqual([]);
   });
 
-  test("every image is a Met Open Access file, alt text is present where the schema requires it, and the showcases follow the manifest", () => {
+  it("every image is a Met Open Access file, alt text is present where the schema requires it, and the showcases follow the manifest", () => {
     const found = documents.flatMap(images);
     expect(
       found.filter(
@@ -230,7 +230,7 @@ describe("the committed seed dataset", () => {
     ).toStrictEqual([]);
   });
 
-  test("credits Wikipedia on every page and links both licences from every footer", () => {
+  it("credits Wikipedia on every page and links both licences from every footer", () => {
     const uncredited = documents
       .filter((document) => document._type === "page")
       .filter((document) => !plainText(document).includes("CC BY-SA 4.0"))

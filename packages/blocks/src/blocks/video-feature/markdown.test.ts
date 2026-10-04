@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { heroToMarkdown } from "../hero/markdown";
 import { videoFeatureToMarkdown } from "./markdown";
@@ -14,11 +14,11 @@ const para = (text: string) => [
 describe("video-feature/markdown", () => {
   const READY = { playbackId: "abc123", policy: "public", status: "ready" };
 
-  test("videoFeatureToMarkdown returns empty string for a fully empty block", () => {
+  it("videoFeatureToMarkdown returns empty string for a fully empty block", () => {
     expect(videoFeatureToMarkdown({}, {})).toBe("");
   });
 
-  test("videoFeatureToMarkdown renders eyebrow, title, richText, and the still", () => {
+  it("videoFeatureToMarkdown renders eyebrow, title, richText, and the still", () => {
     const result = videoFeatureToMarkdown(
       {
         eyebrow: "Watch",
@@ -33,7 +33,7 @@ describe("video-feature/markdown", () => {
     );
   });
 
-  test("videoFeatureToMarkdown prefers the caption as the still's alt text", () => {
+  it("videoFeatureToMarkdown prefers the caption as the still's alt text", () => {
     const result = videoFeatureToMarkdown(
       { caption: "Recorded live", title: "The tour", video: { asset: READY } },
       {}
@@ -41,7 +41,7 @@ describe("video-feature/markdown", () => {
     expect(result).toContain("![Recorded live](");
   });
 
-  test("videoFeatureToMarkdown omits the still when the encode failed", () => {
+  it("videoFeatureToMarkdown omits the still when the encode failed", () => {
     const result = videoFeatureToMarkdown(
       {
         title: "The tour",
@@ -54,7 +54,7 @@ describe("video-feature/markdown", () => {
     expect(result).toBe("## The tour");
   });
 
-  test("videoFeatureToMarkdown gives the caption its own line when no still renders", () => {
+  it("videoFeatureToMarkdown gives the caption its own line when no still renders", () => {
     const result = videoFeatureToMarkdown(
       { caption: "Recorded live", title: "The tour" },
       {}
@@ -62,7 +62,7 @@ describe("video-feature/markdown", () => {
     expect(result).toBe("## The tour\n\n_Recorded live_");
   });
 
-  test("videoFeatureToMarkdown does not repeat the caption under the still", () => {
+  it("videoFeatureToMarkdown does not repeat the caption under the still", () => {
     const result = videoFeatureToMarkdown(
       { caption: "Recorded live", title: "The tour", video: { asset: READY } },
       {}
@@ -71,7 +71,7 @@ describe("video-feature/markdown", () => {
   });
 
   // Sanity stores "" for a field an editor typed into and then cleared.
-  test("videoFeatureToMarkdown falls back to the title when the caption is empty", () => {
+  it("videoFeatureToMarkdown falls back to the title when the caption is empty", () => {
     const result = videoFeatureToMarkdown(
       { caption: "", title: "The tour", video: { asset: READY } },
       {}
@@ -79,7 +79,7 @@ describe("video-feature/markdown", () => {
     expect(result).toContain("![The tour](");
   });
 
-  test("videoFeatureToMarkdown still renders a preparing asset", () => {
+  it("videoFeatureToMarkdown still renders a preparing asset", () => {
     const result = videoFeatureToMarkdown(
       {
         title: "The tour",
@@ -98,7 +98,7 @@ describe("video-feature/markdown", () => {
     );
   });
 
-  test("videoFeatureToMarkdown leaks no JSX", () => {
+  it("videoFeatureToMarkdown leaks no JSX", () => {
     const result = videoFeatureToMarkdown(
       {
         caption: "Live",
@@ -111,7 +111,7 @@ describe("video-feature/markdown", () => {
     expect(result).not.toMatch(/<[A-Za-z]/u);
   });
 
-  test("heroToMarkdown falls back to the Mux still when no poster is set", () => {
+  it("heroToMarkdown falls back to the Mux still when no poster is set", () => {
     const result = heroToMarkdown(
       { title: "Hero", video: { light: { mux: READY } } },
       {}
@@ -121,7 +121,7 @@ describe("video-feature/markdown", () => {
     );
   });
 
-  test("videoFeatureToMarkdown posters from the editor's chosen frame", () => {
+  it("videoFeatureToMarkdown posters from the editor's chosen frame", () => {
     const result = videoFeatureToMarkdown(
       { title: "The tour", video: { asset: { ...READY, thumbTime: 12.5 } } },
       {}

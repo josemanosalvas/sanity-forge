@@ -2,12 +2,12 @@ import { SubscribeNewsletter } from "@repo/blocks/subscribe-newsletter";
 import de from "@repo/internationalization/messages/de";
 import { NextIntlClientProvider } from "next-intl";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { BlockLabels } from "./block-labels";
 
 describe(BlockLabels, () => {
-  test("hands the blocks their controls in the request's language", () => {
+  it("hands the blocks their controls in the request's language", () => {
     const html = renderToStaticMarkup(
       <NextIntlClientProvider
         locale="de"

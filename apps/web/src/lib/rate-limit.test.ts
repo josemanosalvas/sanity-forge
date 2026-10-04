@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import {
   checkRateLimit,
@@ -8,7 +8,7 @@ import {
 } from "./rate-limit";
 
 describe("rate limit", () => {
-  test("failures spend the budget inside a window, which then resets", () => {
+  it("failures spend the budget inside a window, which then resets", () => {
     let time = 1000;
     const options = { limit: 2, now: () => time, windowMs: 60_000 };
 
@@ -25,7 +25,7 @@ describe("rate limit", () => {
     expect(checkRateLimit("a", options)).toMatchObject({ ok: true });
   });
 
-  test("checking never spends budget and keys are independent", () => {
+  it("checking never spends budget and keys are independent", () => {
     const options = { limit: 1, now: () => 0, windowMs: 1000 };
     const checks = Array.from({ length: 5 }, () =>
       checkRateLimit("b", options)
@@ -36,7 +36,7 @@ describe("rate limit", () => {
     expect(checkRateLimit("c", options).ok).toBeTruthy();
   });
 
-  test("the store evicts its oldest window instead of growing without bound", () => {
+  it("the store evicts its oldest window instead of growing without bound", () => {
     const options = { limit: 1, now: () => 0, windowMs: 60_000 };
     recordFailure("first", options);
     for (let i = 0; i < 10_000; i += 1) {
@@ -47,7 +47,7 @@ describe("rate limit", () => {
 });
 
 describe(clientAddress, () => {
-  test("prefers the first forwarded address, then x-real-ip, else null", () => {
+  it("prefers the first forwarded address, then x-real-ip, else null", () => {
     expect(
       clientAddress(new Headers({ "x-forwarded-for": "203.0.113.9, 10.0.0.1" }))
     ).toBe("203.0.113.9");
@@ -59,7 +59,7 @@ describe(clientAddress, () => {
 });
 
 describe(tooManyRequests, () => {
-  test("answers 429 with a retry-after of at least one second", () => {
+  it("answers 429 with a retry-after of at least one second", () => {
     const response = tooManyRequests({
       ok: false,
       remaining: 0,

@@ -1,5 +1,5 @@
 import { evaluate, parse } from "groq-js";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { richTextFragment, urlFragment } from "./groq-fragments";
 
@@ -79,7 +79,7 @@ const hrefs = async (site: string) => {
 };
 
 describe("localizedInternalHref", () => {
-  test("keeps internal links on the site that renders them", async () => {
+  it("keeps internal links on the site that renders them", async () => {
     await expect(hrefs("brand-a")).resolves.toStrictEqual({
       address: "/about",
       gone: null,
@@ -89,14 +89,14 @@ describe("localizedInternalHref", () => {
     });
   });
 
-  test("resolves the same reference on its own site", async () => {
+  it("resolves the same reference on its own site", async () => {
     await expect(hrefs("brand-b")).resolves.toMatchObject({
       "other-site": "/pricing",
       "same-site": null,
     });
   });
 
-  test("applies to rich text links too", async () => {
+  it("applies to rich text links too", async () => {
     const doc = (await run(
       `*[_id == "faq"][0]{ ${richTextFragment} }`,
       "brand-a"

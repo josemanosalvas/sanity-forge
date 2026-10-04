@@ -1,5 +1,5 @@
 import type { sanityFetchMetadata as fetchMetadata } from "@repo/sanity/live";
-import { afterEach, describe, expect, test, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import sitemap from "./sitemap";
 
@@ -20,7 +20,7 @@ describe("sitemap route", () => {
     vi.resetAllMocks();
   });
 
-  test("lists the site's published pages", async () => {
+  it("lists the site's published pages", async () => {
     sanityFetchMetadata.mockResolvedValue({
       data: [
         {
@@ -52,7 +52,7 @@ describe("sitemap route", () => {
     ]);
   });
 
-  test("a failed read answers with an empty sitemap instead of a 500", async () => {
+  it("a failed read answers with an empty sitemap instead of a 500", async () => {
     const warn = vi.spyOn(console, "warn").mockReturnValue();
     sanityFetchMetadata.mockRejectedValue(new Error("Content Lake is down"));
 
@@ -60,14 +60,14 @@ describe("sitemap route", () => {
     expect(warn).toHaveBeenCalledOnce();
   });
 
-  test("a failed read still fails the production build", async () => {
+  it("a failed read still fails the production build", async () => {
     vi.stubEnv("NEXT_PHASE", "phase-production-build");
     sanityFetchMetadata.mockRejectedValue(new Error("Content Lake is down"));
 
     await expect(build("brand-a")).rejects.toThrow("Content Lake is down");
   });
 
-  test("an unknown site is served an empty sitemap without a read", async () => {
+  it("an unknown site is served an empty sitemap without a read", async () => {
     await expect(build("not-a-site")).resolves.toStrictEqual([]);
     expect(sanityFetchMetadata).not.toHaveBeenCalled();
   });

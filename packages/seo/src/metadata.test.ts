@@ -1,10 +1,10 @@
 import { getSite } from "@repo/internationalization/sites";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { createMetadata, titleTemplate } from "./metadata";
 
 describe(createMetadata, () => {
-  test("writes og:locale as the locale's region tag with an underscore", () => {
+  it("writes og:locale as the locale's region tag with an underscore", () => {
     const metadata = createMetadata({
       route: { locale: "de", path: "/ueber-uns", site: getSite("brand-a") },
       siteName: "Brand A",
@@ -15,7 +15,7 @@ describe(createMetadata, () => {
     });
   });
 
-  test("page titles are bare so the layout template appends the site name", () => {
+  it("page titles are bare so the layout template appends the site name", () => {
     const route = {
       locale: "en" as const,
       path: "/about",
@@ -30,7 +30,7 @@ describe(createMetadata, () => {
     ).toMatchObject({ title: "About | Brand A" });
   });
 
-  test("titles that already carry the site name opt out of the template", () => {
+  it("titles that already carry the site name opt out of the template", () => {
     const route = {
       locale: "en" as const,
       path: "/",
@@ -45,7 +45,7 @@ describe(createMetadata, () => {
     });
   });
 
-  test("canonical, hreflang, Open Graph image and Twitter card are absolute and sized", () => {
+  it("canonical, hreflang, Open Graph image and Twitter card are absolute and sized", () => {
     const metadata = createMetadata({
       image: "https://cdn.sanity.io/images/p/d/og.jpg?w=1200&h=630",
       route: {
@@ -77,7 +77,7 @@ describe(createMetadata, () => {
     expect(metadata.metadataBase?.toString()).toBe("https://brand-a.example/");
   });
 
-  test("without an image the Twitter card degrades to summary", () => {
+  it("without an image the Twitter card degrades to summary", () => {
     const metadata = createMetadata({
       route: { locale: "en", path: "/", site: getSite("brand-b") },
       siteName: "Brand B",

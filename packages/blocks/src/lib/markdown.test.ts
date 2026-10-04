@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 /**
  * The helpers in ./markdown.ts back every per-block serializer, so correctness
  * here protects the entire pipeline.
@@ -18,117 +18,117 @@ const resolveImageUrl: MarkdownOptions["resolveImageUrl"] = (img) =>
   `https://cdn.example.com/${img.id}.webp`;
 
 describe("lib/markdown", () => {
-  test("joinSections returns empty string for an empty array", () => {
+  it("joinSections returns empty string for an empty array", () => {
     expect(joinSections([])).toBe("");
   });
 
-  test("joinSections filters null, undefined, and whitespace-only entries", () => {
+  it("joinSections filters null, undefined, and whitespace-only entries", () => {
     expect(joinSections([null, undefined, "  ", ""])).toBe("");
   });
 
-  test("joinSections joins non-empty sections with a blank line", () => {
+  it("joinSections joins non-empty sections with a blank line", () => {
     expect(joinSections(["A", "B", "C"])).toBe("A\n\nB\n\nC");
   });
 
-  test("joinSections returns a single non-empty section unchanged", () => {
+  it("joinSections returns a single non-empty section unchanged", () => {
     expect(joinSections(["only"])).toBe("only");
   });
 
-  test("joinSections skips whitespace-only entries between real sections", () => {
+  it("joinSections skips whitespace-only entries between real sections", () => {
     expect(joinSections(["First", "   ", "Second"])).toBe("First\n\nSecond");
   });
 
-  test("eyebrowToMarkdown returns empty for null/undefined/empty/whitespace", () => {
+  it("eyebrowToMarkdown returns empty for null/undefined/empty/whitespace", () => {
     expect(eyebrowToMarkdown(null)).toBe("");
     expect(eyebrowToMarkdown()).toBe("");
     expect(eyebrowToMarkdown("")).toBe("");
     expect(eyebrowToMarkdown("   ")).toBe("");
   });
 
-  test("eyebrowToMarkdown wraps plain text in bold markers", () => {
+  it("eyebrowToMarkdown wraps plain text in bold markers", () => {
     expect(eyebrowToMarkdown("New")).toBe("**New**");
   });
 
-  test("eyebrowToMarkdown escapes # inside bold", () => {
+  it("eyebrowToMarkdown escapes # inside bold", () => {
     expect(eyebrowToMarkdown("Say #1")).toBe("**Say \\#1**");
   });
 
-  test("eyebrowToMarkdown escapes underscores inside bold", () => {
+  it("eyebrowToMarkdown escapes underscores inside bold", () => {
     expect(eyebrowToMarkdown("_italic_")).toBe("**\\_italic\\_**");
   });
 
-  test("eyebrowToMarkdown escapes square brackets inside bold", () => {
+  it("eyebrowToMarkdown escapes square brackets inside bold", () => {
     expect(eyebrowToMarkdown("[link]")).toBe("**\\[link\\]**");
   });
 
-  test("eyebrowToMarkdown escapes angle brackets (prevents HTML injection)", () => {
+  it("eyebrowToMarkdown escapes angle brackets (prevents HTML injection)", () => {
     expect(eyebrowToMarkdown("<script>")).toBe("**\\<script\\>**");
   });
 
-  test("eyebrowToMarkdown escapes backtick and pipe", () => {
+  it("eyebrowToMarkdown escapes backtick and pipe", () => {
     expect(eyebrowToMarkdown("`code` | pipe")).toBe("**\\`code\\` \\| pipe**");
   });
 
-  test("headingToMarkdown returns empty for null/undefined/whitespace", () => {
+  it("headingToMarkdown returns empty for null/undefined/whitespace", () => {
     expect(headingToMarkdown(null, 2)).toBe("");
     expect(headingToMarkdown(undefined, 2)).toBe("");
     expect(headingToMarkdown("  ", 2)).toBe("");
   });
 
-  test("headingToMarkdown emits ## prefix for level 2", () => {
+  it("headingToMarkdown emits ## prefix for level 2", () => {
     expect(headingToMarkdown("About Us", 2)).toBe("## About Us");
   });
 
-  test("headingToMarkdown emits ### prefix for level 3", () => {
+  it("headingToMarkdown emits ### prefix for level 3", () => {
     expect(headingToMarkdown("Card Title", 3)).toBe("### Card Title");
   });
 
-  test("headingToMarkdown escapes underscores in title", () => {
+  it("headingToMarkdown escapes underscores in title", () => {
     expect(headingToMarkdown("user_name field", 2)).toBe(
       "## user\\_name field"
     );
   });
 
-  test("headingToMarkdown escapes square brackets in title", () => {
+  it("headingToMarkdown escapes square brackets in title", () => {
     expect(headingToMarkdown("[Tag] heading", 2)).toBe("## \\[Tag\\] heading");
   });
 
-  test("headingToMarkdown escapes leading # so it is not a nested heading", () => {
+  it("headingToMarkdown escapes leading # so it is not a nested heading", () => {
     expect(headingToMarkdown("#hashtag", 2)).toBe("## \\#hashtag");
   });
 
-  test("headingToMarkdown escapes asterisks in title", () => {
+  it("headingToMarkdown escapes asterisks in title", () => {
     expect(headingToMarkdown("*bold* text", 3)).toBe("### \\*bold\\* text");
   });
 
-  test("headingToMarkdown escapes angle brackets (prevents HTML injection)", () => {
+  it("headingToMarkdown escapes angle brackets (prevents HTML injection)", () => {
     expect(headingToMarkdown("<script>alert(1)</script>", 2)).toBe(
       "## \\<script\\>alert(1)\\</script\\>"
     );
   });
 
-  test("buttonsToMarkdown returns empty for null and undefined", () => {
+  it("buttonsToMarkdown returns empty for null and undefined", () => {
     expect(buttonsToMarkdown(null)).toBe("");
     expect(buttonsToMarkdown()).toBe("");
   });
 
-  test("buttonsToMarkdown returns empty for an empty array", () => {
+  it("buttonsToMarkdown returns empty for an empty array", () => {
     expect(buttonsToMarkdown([])).toBe("");
   });
 
-  test("buttonsToMarkdown renders a valid button as a Markdown link list item", () => {
+  it("buttonsToMarkdown renders a valid button as a Markdown link list item", () => {
     expect(buttonsToMarkdown([{ href: "/start", text: "Get started" }])).toBe(
       "- [Get started](/start)"
     );
   });
 
-  test("buttonsToMarkdown renders plain text when href is '#'", () => {
+  it("buttonsToMarkdown renders plain text when href is '#'", () => {
     expect(buttonsToMarkdown([{ href: "#", text: "Click me" }])).toBe(
       "- Click me"
     );
   });
 
-  test("buttonsToMarkdown absolutizes internal hrefs when baseUrl is set", () => {
+  it("buttonsToMarkdown absolutizes internal hrefs when baseUrl is set", () => {
     expect(
       buttonsToMarkdown([{ href: "/start", text: "Get started" }], {
         baseUrl: "https://example.com",
@@ -136,7 +136,7 @@ describe("lib/markdown", () => {
     ).toBe("- [Get started](https://example.com/start)");
   });
 
-  test("mdLink absolutizes internal hrefs when baseUrl is set", () => {
+  it("mdLink absolutizes internal hrefs when baseUrl is set", () => {
     expect(mdLink("About", "/about", { baseUrl: "https://example.com" })).toBe(
       "[About](https://example.com/about)"
     );
@@ -146,33 +146,33 @@ describe("lib/markdown", () => {
     ).toBe("[Ext](https://other.com)");
   });
 
-  test("buttonsToMarkdown renders plain text when href is absent", () => {
+  it("buttonsToMarkdown renders plain text when href is absent", () => {
     expect(buttonsToMarkdown([{ text: "Anchor only" }])).toBe("- Anchor only");
   });
 
-  test("buttonsToMarkdown uses href as label when text is empty and href is valid", () => {
+  it("buttonsToMarkdown uses href as label when text is empty and href is valid", () => {
     expect(buttonsToMarkdown([{ href: "/docs" }])).toBe("- [/docs](/docs)");
   });
 
-  test("buttonsToMarkdown filters buttons with no text and no actionable href", () => {
+  it("buttonsToMarkdown filters buttons with no text and no actionable href", () => {
     expect(buttonsToMarkdown([{ href: "#", text: "" }])).toBe("");
     expect(buttonsToMarkdown([{ text: "" }])).toBe("");
     expect(buttonsToMarkdown([{}])).toBe("");
   });
 
-  test("buttonsToMarkdown escapes markdown chars in button text", () => {
+  it("buttonsToMarkdown escapes markdown chars in button text", () => {
     expect(
       buttonsToMarkdown([{ href: "/path", text: "user_name [docs]" }])
     ).toBe("- [user\\_name \\[docs\\]](/path)");
   });
 
-  test("buttonsToMarkdown wraps hrefs containing parentheses in angle brackets", () => {
+  it("buttonsToMarkdown wraps hrefs containing parentheses in angle brackets", () => {
     expect(buttonsToMarkdown([{ href: "/docs/foo_(bar)", text: "See" }])).toBe(
       "- [See](</docs/foo_(bar)>)"
     );
   });
 
-  test("buttonsToMarkdown joins multiple buttons with a newline, not a blank line", () => {
+  it("buttonsToMarkdown joins multiple buttons with a newline, not a blank line", () => {
     expect(
       buttonsToMarkdown([
         { href: "/primary", text: "Primary" },
@@ -181,60 +181,60 @@ describe("lib/markdown", () => {
     ).toBe("- [Primary](/primary)\n- Secondary");
   });
 
-  test("imageToMarkdown returns empty for null or undefined", () => {
+  it("imageToMarkdown returns empty for null or undefined", () => {
     expect(imageToMarkdown(null, {})).toBe("");
     expect(imageToMarkdown(undefined, {})).toBe("");
   });
 
-  test("imageToMarkdown returns empty when id, alt, and caption are all absent", () => {
+  it("imageToMarkdown returns empty when id, alt, and caption are all absent", () => {
     expect(imageToMarkdown({}, {})).toBe("");
     expect(imageToMarkdown({ alt: "", caption: "", id: null }, {})).toBe("");
   });
 
-  test("imageToMarkdown falls back to alt text when no resolver is provided", () => {
+  it("imageToMarkdown falls back to alt text when no resolver is provided", () => {
     const img: MarkdownImage = { alt: "A photo", id: "abc123" };
     expect(imageToMarkdown(img, {})).toBe("A photo");
   });
 
-  test("imageToMarkdown falls back to caption when alt is empty and there is no resolver", () => {
+  it("imageToMarkdown falls back to caption when alt is empty and there is no resolver", () => {
     const img: MarkdownImage = { alt: "", caption: "Nice view", id: "abc123" };
     expect(imageToMarkdown(img, {})).toBe("Nice view");
   });
 
-  test("imageToMarkdown emits image markdown when resolver returns a URL", () => {
+  it("imageToMarkdown emits image markdown when resolver returns a URL", () => {
     const img: MarkdownImage = { alt: "A photo", id: "abc123" };
     expect(imageToMarkdown(img, { resolveImageUrl })).toBe(
       "![A photo](https://cdn.example.com/abc123.webp)"
     );
   });
 
-  test("imageToMarkdown escapes square brackets in alt text", () => {
+  it("imageToMarkdown escapes square brackets in alt text", () => {
     const img: MarkdownImage = { alt: "A [diagram]", id: "abc123" };
     expect(imageToMarkdown(img, { resolveImageUrl })).toBe(
       "![A \\[diagram\\]](https://cdn.example.com/abc123.webp)"
     );
   });
 
-  test("imageToMarkdown escapes markdown chars in fallback alt text", () => {
+  it("imageToMarkdown escapes markdown chars in fallback alt text", () => {
     const img: MarkdownImage = { alt: "user_name [tag]", id: "abc123" };
     expect(imageToMarkdown(img, {})).toBe("user\\_name \\[tag\\]");
   });
 
-  test("imageToMarkdown falls back to text when resolver returns null", () => {
+  it("imageToMarkdown falls back to text when resolver returns null", () => {
     const img: MarkdownImage = { alt: "Fallback", id: "abc123" };
     expect(imageToMarkdown(img, { resolveImageUrl: () => null })).toBe(
       "Fallback"
     );
   });
 
-  test("imageToMarkdown falls back to text when the resolver returns nothing", () => {
+  it("imageToMarkdown falls back to text when the resolver returns nothing", () => {
     const img: MarkdownImage = { alt: "Fallback", id: "abc123" };
     expect(imageToMarkdown(img, { resolveImageUrl: () => null })).toBe(
       "Fallback"
     );
   });
 
-  test("imageToMarkdown wraps image URLs with spaces in angle brackets", () => {
+  it("imageToMarkdown wraps image URLs with spaces in angle brackets", () => {
     const img: MarkdownImage = { alt: "Photo", id: "abc123" };
     expect(
       imageToMarkdown(img, {
@@ -243,12 +243,12 @@ describe("lib/markdown", () => {
     ).toBe("![Photo](<https://cdn.example.com/my file.webp>)");
   });
 
-  test("imageToMarkdown skips the resolver when id is null", () => {
+  it("imageToMarkdown skips the resolver when id is null", () => {
     const img: MarkdownImage = { alt: "No id", id: null };
     expect(imageToMarkdown(img, { resolveImageUrl })).toBe("No id");
   });
 
-  test("imageToMarkdown appends caption as italic paragraph when caption differs from alt", () => {
+  it("imageToMarkdown appends caption as italic paragraph when caption differs from alt", () => {
     const img: MarkdownImage = {
       alt: "A diagram",
       caption: "Figure 1",
@@ -259,7 +259,7 @@ describe("lib/markdown", () => {
     );
   });
 
-  test("imageToMarkdown does not append caption when caption equals alt", () => {
+  it("imageToMarkdown does not append caption when caption equals alt", () => {
     const img: MarkdownImage = {
       alt: "Same text",
       caption: "Same text",
@@ -270,7 +270,7 @@ describe("lib/markdown", () => {
     );
   });
 
-  test("imageToMarkdown escapes markdown chars in caption", () => {
+  it("imageToMarkdown escapes markdown chars in caption", () => {
     const img: MarkdownImage = {
       alt: "Photo",
       caption: "_Caption_",
@@ -281,33 +281,33 @@ describe("lib/markdown", () => {
     );
   });
 
-  test("mdLink returns a Markdown link for a valid href", () => {
+  it("mdLink returns a Markdown link for a valid href", () => {
     expect(mdLink("Docs", "/docs")).toBe("[Docs](/docs)");
   });
 
-  test("mdLink returns escaped plain text for '#' href", () => {
+  it("mdLink returns escaped plain text for '#' href", () => {
     expect(mdLink("Anchor", "#")).toBe("Anchor");
   });
 
-  test("mdLink returns escaped plain text for null href", () => {
+  it("mdLink returns escaped plain text for null href", () => {
     expect(mdLink("Label", null)).toBe("Label");
   });
 
-  test("mdLink returns escaped plain text for undefined href", () => {
+  it("mdLink returns escaped plain text for undefined href", () => {
     expect(mdLink("Label")).toBe("Label");
   });
 
-  test("mdLink returns escaped plain text for empty-string href", () => {
+  it("mdLink returns escaped plain text for empty-string href", () => {
     expect(mdLink("Label", "")).toBe("Label");
   });
 
-  test("mdLink escapes markdown metacharacters in the label", () => {
+  it("mdLink escapes markdown metacharacters in the label", () => {
     expect(mdLink("user_name [tag]", "/path")).toBe(
       "[user\\_name \\[tag\\]](/path)"
     );
   });
 
-  test("mdLink wraps href with parentheses in angle brackets", () => {
+  it("mdLink wraps href with parentheses in angle brackets", () => {
     expect(mdLink("Link", "/wiki/foo_(bar)")).toBe("[Link](</wiki/foo_(bar)>)");
   });
 });

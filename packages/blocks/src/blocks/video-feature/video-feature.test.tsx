@@ -1,5 +1,5 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import {
   BlockLabelsProvider,
@@ -14,7 +14,7 @@ describe(VideoFeature, () => {
   const READY = { playbackId: "abc123", policy: "public", status: "ready" };
 
   // The dynamic player renders only in the browser.
-  test("VideoFeature renders the copy and a poster to press", () => {
+  it("VideoFeature renders the copy and a poster to press", () => {
     const html = render({
       caption: "Recorded live",
       eyebrow: "Watch",
@@ -31,7 +31,7 @@ describe(VideoFeature, () => {
     );
   });
 
-  test.each([
+  it.each([
     ["no upload yet", undefined],
     [
       "a failed encode",
@@ -71,7 +71,7 @@ describe(VideoFeature, () => {
     }
   );
 
-  test("VideoFeature posters from the editor's chosen frame", () => {
+  it("VideoFeature posters from the editor's chosen frame", () => {
     const html = render({
       title: "The tour",
       video: { asset: { ...READY, thumbTime: 12.5 } },
@@ -83,7 +83,7 @@ describe(VideoFeature, () => {
   });
 
   // Autoplay skips the facade; the player renders only in the browser.
-  test("VideoFeature skips the facade when the editor asks for autoplay", () => {
+  it("VideoFeature skips the facade when the editor asks for autoplay", () => {
     const html = render({
       title: "The tour",
       video: { asset: READY, autoPlay: true },
@@ -93,7 +93,7 @@ describe(VideoFeature, () => {
     expect(html).toMatch(/The tour/u);
   });
 
-  test("VideoFeature reserves the box from Mux's aspect ratio", () => {
+  it("VideoFeature reserves the box from Mux's aspect ratio", () => {
     const html = render({
       title: "The tour",
       video: { asset: { ...READY, aspectRatio: "21:9" } },
@@ -103,7 +103,7 @@ describe(VideoFeature, () => {
   });
 
   // Keep stega for visible editable text; strip it from metadata and accessible names.
-  test("VideoFeature strips stega from the title it passes on", () => {
+  it("VideoFeature strips stega from the title it passes on", () => {
     const zeroWidth = "\u200B\u200C\u200B\u200C";
     const html = render({
       title: `The tour${zeroWidth}`,
@@ -116,7 +116,7 @@ describe(VideoFeature, () => {
     expect(html).toContain(zeroWidth);
   });
 
-  test("VideoFeature names the play button in the labels the site provides", () => {
+  it("VideoFeature names the play button in the labels the site provides", () => {
     const html = renderToStaticMarkup(
       <BlockLabelsProvider
         labels={{

@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import {
   absolutizeUrl,
@@ -22,13 +22,13 @@ const paraOf = (spans: { marks?: string[]; text: string }[]) => [
 ];
 
 describe(portableTextToMarkdown, () => {
-  test("returns empty string for missing or empty input", () => {
+  it("returns empty string for missing or empty input", () => {
     expect(portableTextToMarkdown()).toBe("");
     expect(portableTextToMarkdown(null)).toBe("");
     expect(portableTextToMarkdown([])).toBe("");
   });
 
-  test("serializes headings, paragraphs and blockquotes", () => {
+  it("serializes headings, paragraphs and blockquotes", () => {
     const md = portableTextToMarkdown([
       {
         _type: "block",
@@ -55,7 +55,7 @@ describe(portableTextToMarkdown, () => {
     expect(md).toBe("## Heading\n\nA paragraph.\n\n> A quote.");
   });
 
-  test("applies decorators and custom links", () => {
+  it("applies decorators and custom links", () => {
     const md = portableTextToMarkdown([
       {
         _type: "block",
@@ -73,7 +73,7 @@ describe(portableTextToMarkdown, () => {
     expect(md).toBe("**Bold** `and code` and [a link](/features)");
   });
 
-  test("moves emphasis padding outside the delimiters", () => {
+  it("moves emphasis padding outside the delimiters", () => {
     expect(
       portableTextToMarkdown(
         paraOf([{ marks: ["strong"], text: "Bold " }, { text: "tail" }])
@@ -97,7 +97,7 @@ describe(portableTextToMarkdown, () => {
     ).toBe("lead _Em_ tail");
   });
 
-  test("a whitespace-only emphasis span gets no delimiters", () => {
+  it("a whitespace-only emphasis span gets no delimiters", () => {
     expect(
       portableTextToMarkdown(
         paraOf([
@@ -109,7 +109,7 @@ describe(portableTextToMarkdown, () => {
     ).toBe("lead   tail");
   });
 
-  test("nested strong and em keep the padding outside both delimiters", () => {
+  it("nested strong and em keep the padding outside both delimiters", () => {
     expect(
       portableTextToMarkdown(
         paraOf([{ marks: ["strong", "em"], text: "Both " }, { text: "tail" }])
@@ -117,7 +117,7 @@ describe(portableTextToMarkdown, () => {
     ).toBe("**_Both_** tail");
   });
 
-  test.each([
+  it.each([
     ["/about", "https://example.com", "https://example.com/about"],
     ["/about", "https://example.com/", "https://example.com/about"],
     ["https://other.com/x", "https://example.com", "https://other.com/x"],
@@ -128,11 +128,11 @@ describe(portableTextToMarkdown, () => {
     expect(absolutizeUrl(href, base)).toBe(expected);
   });
 
-  test("absolutizeUrl leaves paths relative without a base", () => {
+  it("absolutizeUrl leaves paths relative without a base", () => {
     expect(absolutizeUrl("/about")).toBe("/about");
   });
 
-  test("custom links become absolute when baseUrl is provided", () => {
+  it("custom links become absolute when baseUrl is provided", () => {
     const md = portableTextToMarkdown(
       [
         {
@@ -148,7 +148,7 @@ describe(portableTextToMarkdown, () => {
     expect(md).toBe("[a link](https://example.com/features)");
   });
 
-  test("custom links with an unsafe scheme drop to an empty target", () => {
+  it("custom links with an unsafe scheme drop to an empty target", () => {
     const md = portableTextToMarkdown([
       {
         _type: "block",
@@ -164,7 +164,7 @@ describe(portableTextToMarkdown, () => {
     expect(md).toBe("[click me]()");
   });
 
-  test("unsafe scheme with embedded control chars is still blocked", () => {
+  it("unsafe scheme with embedded control chars is still blocked", () => {
     const md = portableTextToMarkdown([
       {
         _type: "block",
@@ -180,7 +180,7 @@ describe(portableTextToMarkdown, () => {
     expect(md).toBe("[click me]()");
   });
 
-  test("nests bullet and numbered lists and keeps them grouped", () => {
+  it("nests bullet and numbered lists and keeps them grouped", () => {
     const md = portableTextToMarkdown([
       {
         _type: "block",
@@ -206,7 +206,7 @@ describe(portableTextToMarkdown, () => {
     expect(md).toBe("- First\n   - Nested\n1. Step");
   });
 
-  test("renders images via the resolver and falls back to text without one", () => {
+  it("renders images via the resolver and falls back to text without one", () => {
     const withUrl = portableTextToMarkdown(
       [
         {
@@ -228,7 +228,7 @@ describe(portableTextToMarkdown, () => {
     expect(withoutUrl).toBe("A diagram");
   });
 
-  test("keeps code-span text raw and fences embedded backticks", () => {
+  it("keeps code-span text raw and fences embedded backticks", () => {
     expect(
       portableTextToMarkdown([
         {
@@ -250,7 +250,7 @@ describe(portableTextToMarkdown, () => {
     ).toBe("``a`b``");
   });
 
-  test("serializes a code block as a fenced code block with language", () => {
+  it("serializes a code block as a fenced code block with language", () => {
     const md = portableTextToMarkdown([
       {
         _type: "code",
@@ -263,7 +263,7 @@ describe(portableTextToMarkdown, () => {
     expect(md).toBe("```ts\nexport const x = {\n  name: 'x',\n};\n```");
   });
 
-  test("code block without a language omits the info string", () => {
+  it("code block without a language omits the info string", () => {
     const md = portableTextToMarkdown([
       { _type: "code", code: "line one\n  line two" },
     ]);
@@ -271,17 +271,17 @@ describe(portableTextToMarkdown, () => {
     expect(md).toBe("```\nline one\n  line two\n```");
   });
 
-  test("code block fence grows past embedded backtick runs", () => {
+  it("code block fence grows past embedded backtick runs", () => {
     const md = portableTextToMarkdown([{ _type: "code", code: "a ``` b" }]);
 
     expect(md).toBe("````\na ``` b\n````");
   });
 
-  test("empty code block serializes to nothing", () => {
+  it("empty code block serializes to nothing", () => {
     expect(portableTextToMarkdown([{ _type: "code", code: "   " }])).toBe("");
   });
 
-  test("wraps link URLs containing parens or spaces in angle brackets", () => {
+  it("wraps link URLs containing parens or spaces in angle brackets", () => {
     const md = portableTextToMarkdown([
       {
         _type: "block",
@@ -294,7 +294,7 @@ describe(portableTextToMarkdown, () => {
     expect(md).toBe("[link](</foo_(bar)>)");
   });
 
-  test("passes span text through without escaping Markdown metacharacters", () => {
+  it("passes span text through without escaping Markdown metacharacters", () => {
     // The official library does not escape raw body text — callers that need
     // escaped plain-string output should use `escapeMarkdown` directly.
     const md = portableTextToMarkdown([
@@ -308,7 +308,7 @@ describe(portableTextToMarkdown, () => {
     expect(md).toBe("user_name_field and foo[bar]");
   });
 
-  test("block-leading: escapes bullet, plus, and star markers at paragraph start", () => {
+  it("block-leading: escapes bullet, plus, and star markers at paragraph start", () => {
     for (const [text, expected] of [
       ["- x", "\\- x"],
       ["+ item", "\\+ item"],
@@ -326,7 +326,7 @@ describe(portableTextToMarkdown, () => {
     }
   });
 
-  test("block-leading: escapes ordered-list markers (period and paren) at paragraph start", () => {
+  it("block-leading: escapes ordered-list markers (period and paren) at paragraph start", () => {
     for (const [text, expected] of [
       ["1. x", "1\\. x"],
       ["2) y", "2\\) y"],
@@ -344,7 +344,7 @@ describe(portableTextToMarkdown, () => {
     }
   });
 
-  test("block-leading: escapes blockquote marker at paragraph start", () => {
+  it("block-leading: escapes blockquote marker at paragraph start", () => {
     expect(
       portableTextToMarkdown([
         {
@@ -356,7 +356,7 @@ describe(portableTextToMarkdown, () => {
     ).toBe("\\> quoted");
   });
 
-  test("block-leading: escapes ATX heading markers at paragraph start", () => {
+  it("block-leading: escapes ATX heading markers at paragraph start", () => {
     for (const [text, expected] of [
       ["# H1", "\\# H1"],
       ["## H2", "\\## H2"],
@@ -374,7 +374,7 @@ describe(portableTextToMarkdown, () => {
     }
   });
 
-  test("block-leading: escapes thematic break sequences in normal paragraphs", () => {
+  it("block-leading: escapes thematic break sequences in normal paragraphs", () => {
     for (const text of ["---", "***", "___"]) {
       expect(
         portableTextToMarkdown([
@@ -388,7 +388,7 @@ describe(portableTextToMarkdown, () => {
     }
   });
 
-  test("block-leading: real bullet and number listItems still render as list markers (not escaped)", () => {
+  it("block-leading: real bullet and number listItems still render as list markers (not escaped)", () => {
     const md = portableTextToMarkdown([
       {
         _type: "block",
@@ -407,7 +407,7 @@ describe(portableTextToMarkdown, () => {
     expect(md).toContain("1. Step");
   });
 
-  test("block-leading: inline underscores in normal paragraphs are not over-escaped (guard)", () => {
+  it("block-leading: inline underscores in normal paragraphs are not over-escaped (guard)", () => {
     expect(
       portableTextToMarkdown([
         {
@@ -419,7 +419,7 @@ describe(portableTextToMarkdown, () => {
     ).toBe("user_name_field");
   });
 
-  test("serializes a table to a GFM pipe table", () => {
+  it("serializes a table to a GFM pipe table", () => {
     const md = portableTextToMarkdown([
       {
         _type: "table",
@@ -441,7 +441,7 @@ describe(portableTextToMarkdown, () => {
     expect(md).toBe("| Name | Role |\n| --- | --- |\n| Ada | Engineer |");
   });
 
-  test("table cells escape pipes and collapse newlines to <br>", () => {
+  it("table cells escape pipes and collapse newlines to <br>", () => {
     const md = portableTextToMarkdown([
       {
         _type: "table",
@@ -462,7 +462,7 @@ describe(portableTextToMarkdown, () => {
     expect(md).toBe("| A \\| B |\n| --- |\n| Line one<br>Line two |");
   });
 
-  test("table rows are padded to the widest row's column count", () => {
+  it("table rows are padded to the widest row's column count", () => {
     const md = portableTextToMarkdown([
       {
         _type: "table",
@@ -477,11 +477,11 @@ describe(portableTextToMarkdown, () => {
     expect(md).toBe("| A | B |\n| --- | --- |\n| C |  |");
   });
 
-  test("empty table serializes to nothing", () => {
+  it("empty table serializes to nothing", () => {
     expect(portableTextToMarkdown([{ _type: "table", rows: [] }])).toBe("");
   });
 
-  test("never emits raw JSX-style tags", () => {
+  it("never emits raw JSX-style tags", () => {
     const md = portableTextToMarkdown([
       {
         _type: "block",

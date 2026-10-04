@@ -1,7 +1,7 @@
 /* oxlint-disable vitest/prefer-to-be-truthy -- Validation succeeds only for true; error strings are truthy. */
 import { evaluate, parse } from "groq-js";
 import type { ValidationContext } from "sanity";
-import { describe, expect, test, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { redirectDestinationRule, redirectSourceRule } from "./redirect";
 
@@ -55,33 +55,33 @@ const OLD_TO_NEW: Row = {
 };
 
 describe(redirectSourceRule, () => {
-  test("lets a second old path be consolidated onto a destination in use", async () => {
+  it("lets a second old path be consolidated onto a destination in use", async () => {
     const { context: ctx } = editing("/older", "/new", [OLD_TO_NEW]);
     await expect(redirectSourceRule(path("/older"), ctx)).resolves.toBe(true);
   });
 
-  test("rejects a second redirect from the same source", async () => {
+  it("rejects a second redirect from the same source", async () => {
     const { context: ctx } = editing("/old", "/other", [OLD_TO_NEW]);
     await expect(redirectSourceRule(path("/old"), ctx)).resolves.toContain(
       "already sends /old to /new"
     );
   });
 
-  test("rejects the return leg of a cycle", async () => {
+  it("rejects the return leg of a cycle", async () => {
     const { context: ctx } = editing("/new", "/old", [OLD_TO_NEW]);
     await expect(redirectSourceRule(path("/new"), ctx)).resolves.toContain(
       "redirected twice"
     );
   });
 
-  test("rejects a chain that starts where another redirect ends", async () => {
+  it("rejects a chain that starts where another redirect ends", async () => {
     const { context: ctx } = editing("/new", "/newest", [OLD_TO_NEW]);
     await expect(redirectSourceRule(path("/new"), ctx)).resolves.toContain(
       "/old already points at this path"
     );
   });
 
-  test("rejects a blank, malformed or self-pointing source", async () => {
+  it("rejects a blank, malformed or self-pointing source", async () => {
     const { context: ctx, fetch } = editing("/old", "/old");
     await expect(redirectSourceRule(undefined, ctx)).resolves.toBe(
       "Can't be blank"
@@ -100,21 +100,21 @@ describe(redirectSourceRule, () => {
 });
 
 describe(redirectDestinationRule, () => {
-  test("lets a second old path be consolidated onto a destination in use", async () => {
+  it("lets a second old path be consolidated onto a destination in use", async () => {
     const { context: ctx } = editing("/older", "/new", [OLD_TO_NEW]);
     await expect(redirectDestinationRule(path("/new"), ctx)).resolves.toBe(
       true
     );
   });
 
-  test("rejects a destination that is itself redirected", async () => {
+  it("rejects a destination that is itself redirected", async () => {
     const { context: ctx } = editing("/oldest", "/old", [OLD_TO_NEW]);
     await expect(redirectDestinationRule(path("/old"), ctx)).resolves.toContain(
       "Point this redirect at /new instead"
     );
   });
 
-  test("keeps a query string but rejects a blank or malformed destination", async () => {
+  it("keeps a query string but rejects a blank or malformed destination", async () => {
     const { context: ctx } = editing("/old", "/new?ref=old");
     await expect(
       redirectDestinationRule(path("/new?ref=old"), ctx)
@@ -129,7 +129,7 @@ describe(redirectDestinationRule, () => {
 });
 
 describe("every version of the redirect being edited", () => {
-  test.each(["r-1", "drafts.r-1", "versions.autumn.r-1"])(
+  it.each(["r-1", "drafts.r-1", "versions.autumn.r-1"])(
     "does not conflict with its own published row (%s)",
     async (_id) => {
       const { context: ctx } = editing(
@@ -152,7 +152,7 @@ describe("every version of the redirect being edited", () => {
 });
 
 describe("redirect scope", () => {
-  test("ignores redirects on another site", async () => {
+  it("ignores redirects on another site", async () => {
     const rows: Row[] = [{ ...OLD_TO_NEW, site: "brand-b" }];
     const { context: ctx } = editing("/old", "/new", rows);
     await expect(redirectSourceRule(path("/old"), ctx)).resolves.toBe(true);
@@ -162,7 +162,7 @@ describe("redirect scope", () => {
     ).resolves.toBe(true);
   });
 
-  test.each(["drafts.r-2", "versions.autumn.r-2"])(
+  it.each(["drafts.r-2", "versions.autumn.r-2"])(
     "checks other documents' unpublished versions (%s)",
     async (_id) => {
       const { context: ctx } = editing("/old", "/elsewhere", [

@@ -1,5 +1,5 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import type { ShowcaseGridItem } from "./showcase-grid";
 import { ShowcaseGrid } from "./showcase-grid";
@@ -22,7 +22,7 @@ const cardKeys = (html: string) =>
     .map((card) => /Site (?<key>\w)/u.exec(card)?.groups?.key);
 
 describe(ShowcaseGrid, () => {
-  test("ShowcaseGrid promotes the first item when nothing is flagged featured", () => {
+  it("ShowcaseGrid promotes the first item when nothing is flagged featured", () => {
     const html = renderToStaticMarkup(
       <ShowcaseGrid
         items={[item("a"), item("b"), item("c")]}
@@ -33,7 +33,7 @@ describe(ShowcaseGrid, () => {
     expect(cardKeys(html)).toStrictEqual(["b", "c"]);
   });
 
-  test("ShowcaseGrid honours an explicit featured flag", () => {
+  it("ShowcaseGrid honours an explicit featured flag", () => {
     const html = renderToStaticMarkup(
       <ShowcaseGrid
         items={[item("a"), item("b", { featured: true }), item("c")]}
@@ -44,7 +44,7 @@ describe(ShowcaseGrid, () => {
     expect(cardKeys(html)).toStrictEqual(["a", "c"]);
   });
 
-  test("ShowcaseGrid gives every featured item a banner", () => {
+  it("ShowcaseGrid gives every featured item a banner", () => {
     const html = renderToStaticMarkup(
       <ShowcaseGrid
         items={[
@@ -59,7 +59,7 @@ describe(ShowcaseGrid, () => {
     expect(cardKeys(html)).toStrictEqual(["a"]);
   });
 
-  test("ShowcaseGrid keeps the editor's alt text on screenshots and logos", () => {
+  it("ShowcaseGrid keeps the editor's alt text on screenshots and logos", () => {
     const html = renderToStaticMarkup(
       <ShowcaseGrid
         items={[
@@ -83,7 +83,7 @@ describe(ShowcaseGrid, () => {
     expect(html).not.toMatch(/website screenshot|Site a logo/u);
   });
 
-  test("ShowcaseGrid links a card out when it has a url", () => {
+  it("ShowcaseGrid links a card out when it has a url", () => {
     const html = renderToStaticMarkup(
       <ShowcaseGrid
         items={[item("a", { url: "https://example.com" })]}
@@ -96,7 +96,7 @@ describe(ShowcaseGrid, () => {
   });
 
   // oxlint-disable-next-line no-script-url -- the unsafe scheme is the input under test
-  test("ShowcaseGrid drops a javascript: url rather than rendering it", () => {
+  it("ShowcaseGrid drops a javascript: url rather than rendering it", () => {
     const html = renderToStaticMarkup(
       <ShowcaseGrid
         // oxlint-disable-next-line no-script-url -- the unsafe scheme is the input under test
@@ -109,7 +109,7 @@ describe(ShowcaseGrid, () => {
     expect(html).not.toContain("javascript:");
   });
 
-  test("ShowcaseGrid renders a heading-only section when there are no items", () => {
+  it("ShowcaseGrid renders a heading-only section when there are no items", () => {
     const html = renderToStaticMarkup(
       <ShowcaseGrid items={[]} title="Showcase" />
     );

@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { faqAccordionToJsonLd } from "./json-ld";
 
@@ -33,14 +33,14 @@ describe(faqAccordionToJsonLd, () => {
     result: ReturnType<typeof faqAccordionToJsonLd>
   ): JsonLdQuestion[] => result?.mainEntity as unknown as JsonLdQuestion[];
 
-  test("returns null for empty or missing faqs", () => {
+  it("returns null for empty or missing faqs", () => {
     expect(faqAccordionToJsonLd({ categories: [] })).toBeNull();
     expect(faqAccordionToJsonLd({})).toBeNull();
     expect(faqAccordionToJsonLd({ categories: null })).toBeNull();
     expect(faqAccordionToJsonLd({ categories: category([]) })).toBeNull();
   });
 
-  test("returns null when no faq has both title and richText", () => {
+  it("returns null when no faq has both title and richText", () => {
     expect(
       faqAccordionToJsonLd({
         categories: category([
@@ -60,13 +60,13 @@ describe(faqAccordionToJsonLd, () => {
     ]),
   });
 
-  test("builds a FAQPage with one entity per faq", () => {
+  it("builds a FAQPage with one entity per faq", () => {
     expect(singleFaq).not.toBeNull();
     expect(singleFaq?.["@type"]).toBe("FAQPage");
     expect(questions(singleFaq)).toHaveLength(1);
   });
 
-  test("maps a faq to a Question with an accepted Answer", () => {
+  it("maps a faq to a Question with an accepted Answer", () => {
     const [question] = questions(singleFaq);
     const answer = question?.acceptedAnswer as JsonLdAnswer;
     expect(question?.["@type"]).toBe("Question");
@@ -75,7 +75,7 @@ describe(faqAccordionToJsonLd, () => {
     expect(answer.text).toBe("A serialization format.");
   });
 
-  test("filters out faqs missing title or richText, keeps valid ones", () => {
+  it("filters out faqs missing title or richText, keeps valid ones", () => {
     const result = faqAccordionToJsonLd({
       categories: category([
         {
@@ -93,7 +93,7 @@ describe(faqAccordionToJsonLd, () => {
     expect(entities[0]?.name).toBe("Valid?");
   });
 
-  test("aggregates valid faqs across multiple categories", () => {
+  it("aggregates valid faqs across multiple categories", () => {
     const result = faqAccordionToJsonLd({
       categories: [
         { faqs: [{ richText: [block("block", [span("A1")])], title: "Q1" }] },
@@ -107,7 +107,7 @@ describe(faqAccordionToJsonLd, () => {
     expect(entities.at(1)?.name).toBe("Q2");
   });
 
-  test("joins multiple spans across multiple blocks", () => {
+  it("joins multiple spans across multiple blocks", () => {
     const result = faqAccordionToJsonLd({
       categories: category([
         {
@@ -125,7 +125,7 @@ describe(faqAccordionToJsonLd, () => {
     expect(answer.text).toBe("First. Second. Third.");
   });
 
-  test("ignores non-block rich text nodes", () => {
+  it("ignores non-block rich text nodes", () => {
     const result = faqAccordionToJsonLd({
       categories: category([
         {

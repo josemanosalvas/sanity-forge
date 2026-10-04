@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { strings } from "../seed/manifest.ts";
 import {
@@ -81,7 +81,7 @@ const scoped = (document: SeedDocument) => ({
 });
 
 describe(buildSeedDocuments, () => {
-  test("creates the singletons under the IDs the site reads, scoped to their site and language", () => {
+  it("creates the singletons under the IDs the site reads, scoped to their site and language", () => {
     const documents = build();
     const byId = new Map(documents.map((document) => [document._id, document]));
     const scopes = [
@@ -100,7 +100,7 @@ describe(buildSeedDocuments, () => {
     ]);
   });
 
-  test("links each page to its translations with weak references keyed by language", () => {
+  it("links each page to its translations with weak references keyed by language", () => {
     const documents = build();
     const byId = new Map(documents.map((document) => [document._id, document]));
     const metadata = documents.filter(
@@ -130,7 +130,7 @@ describe(buildSeedDocuments, () => {
     ]);
   });
 
-  test("uses the root slug for home pages and the localized slug for inner pages", () => {
+  it("uses the root slug for home pages and the localized slug for inner pages", () => {
     const slugs = build()
       .filter((document) => document._type === "page")
       .map((page) => [page._id, (page.slug as { current: string }).current]);
@@ -142,7 +142,7 @@ describe(buildSeedDocuments, () => {
     ]);
   });
 
-  test("every reference resolves and every internal link targets a page of the linking document's site and language", () => {
+  it("every reference resolves and every internal link targets a page of the linking document's site and language", () => {
     const documents = build();
     const byId = new Map(documents.map((document) => [document._id, document]));
     const unresolved = documents.flatMap((document) =>
@@ -166,7 +166,7 @@ describe(buildSeedDocuments, () => {
     expect(links.filter((link) => !link.matches)).toStrictEqual([]);
   });
 
-  test("images that the schema requires alt text for carry a non-empty one, and array keys are unique", () => {
+  it("images that the schema requires alt text for carry a non-empty one, and array keys are unique", () => {
     const documents = build();
     const found = documents.flatMap(images);
     const missingAlt = found.filter(
@@ -184,7 +184,7 @@ describe(buildSeedDocuments, () => {
     expect(documents.flatMap(duplicateKeyPaths)).toStrictEqual([]);
   });
 
-  test("credits Wikipedia on every page and links the licence from every footer", () => {
+  it("credits Wikipedia on every page and links the licence from every footer", () => {
     const documents = build();
     const uncredited = documents
       .filter((document) => document._type === "page")
@@ -201,7 +201,7 @@ describe(buildSeedDocuments, () => {
     expect(footersWithoutLicence).toStrictEqual([]);
   });
 
-  test("refuses a locale the site does not serve, and a language without a slug", () => {
+  it("refuses a locale the site does not serve, and a language without a slug", () => {
     expect(() =>
       build({ ...site, locales: ["en", "fr"], site: "brand-b" })
     ).toThrow("brand-b does not serve fr");
@@ -212,7 +212,7 @@ describe(buildSeedDocuments, () => {
 });
 
 describe(metaDescription, () => {
-  test("keeps short text and cuts long text at a sentence or word boundary", () => {
+  it("keeps short text and cuts long text at a sentence or word boundary", () => {
     expect(metaDescription("Short.")).toBe("Short.");
     const sentence = "A sentence that ends here. ";
     expect(metaDescription(sentence.repeat(8))).toBe(sentence.repeat(5).trim());
@@ -223,7 +223,7 @@ describe(metaDescription, () => {
 });
 
 describe(workAlt, () => {
-  test("drops empty parts", () => {
+  it("drops empty parts", () => {
     expect(workAlt(work(9, "Scenes from the Tale of Genji", ""))).toBe(
       "Scenes from the Tale of Genji, 1889"
     );

@@ -1,10 +1,10 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { HeroBlock } from "./hero";
 
 describe(HeroBlock, () => {
-  test("HeroBlock renders the title and button content", () => {
+  it("HeroBlock renders the title and button content", () => {
     const html = renderToStaticMarkup(
       <HeroBlock
         badge="New"
@@ -33,14 +33,14 @@ describe(HeroBlock, () => {
     expect(html).toMatch(/New/u);
   });
 
-  test("HeroBlock renders without image when not provided", () => {
+  it("HeroBlock renders without image when not provided", () => {
     const html = renderToStaticMarkup(<HeroBlock title="No image test" />);
 
     expect(html).toMatch(/No image test/u);
   });
 
   // The display:contents wrapper has no overlay box; both hero boxes need data-sanity.
-  test("leading HeroBlock puts the visual editing attribute on both boxes", () => {
+  it("leading HeroBlock puts the visual editing attribute on both boxes", () => {
     const html = renderToStaticMarkup(
       <HeroBlock dataSanity="drag-me" isFirst title="Pinned" />
     );
@@ -56,7 +56,7 @@ describe(HeroBlock, () => {
     status: "ready",
   };
 
-  test("only the leading hero fetches its still eagerly", () => {
+  it("only the leading hero fetches its still eagerly", () => {
     const leading = renderToStaticMarkup(
       <HeroBlock isFirst title="H" video={{ light: { mux: READY_MUX } }} />
     );
@@ -71,14 +71,14 @@ describe(HeroBlock, () => {
     expect(later).toMatch(/<img[^>]*loading="lazy"/u);
   });
 
-  test("HeroBlock falls back to the Mux still when no picture is set", () => {
+  it("HeroBlock falls back to the Mux still when no picture is set", () => {
     const html = renderToStaticMarkup(
       <HeroBlock isFirst title="H" video={{ light: { mux: READY_MUX } }} />
     );
     expect(html).toContain("https://image.mux.com/abc123/thumbnail.webp");
   });
 
-  test("HeroBlock renders one still per theme only when they differ", () => {
+  it("HeroBlock renders one still per theme only when they differ", () => {
     const shared = renderToStaticMarkup(
       <HeroBlock
         isFirst
@@ -103,7 +103,7 @@ describe(HeroBlock, () => {
   });
 
   // SSR exposes the poster, so assert the selected CDN there.
-  test("a sanity-delivered hero does not borrow the Mux still", () => {
+  it("a sanity-delivered hero does not borrow the Mux still", () => {
     const html = renderToStaticMarkup(
       <HeroBlock
         isFirst
@@ -121,7 +121,7 @@ describe(HeroBlock, () => {
     expect(html).not.toContain("image.mux.com");
   });
 
-  test("a mux-delivered hero still falls back to the Mux still", () => {
+  it("a mux-delivered hero still falls back to the Mux still", () => {
     const html = renderToStaticMarkup(
       <HeroBlock
         isFirst
@@ -133,7 +133,7 @@ describe(HeroBlock, () => {
     expect(html).toContain("https://image.mux.com/abc123/thumbnail.webp");
   });
 
-  test("a hero with no mediaType keeps rendering from what it carries", () => {
+  it("a hero with no mediaType keeps rendering from what it carries", () => {
     const files = renderToStaticMarkup(
       <HeroBlock
         isFirst

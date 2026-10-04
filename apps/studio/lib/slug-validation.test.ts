@@ -1,5 +1,5 @@
 import type { SlugValidationContext } from "sanity";
-import { describe, expect, test, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import {
   createSlugErrorValidator,
@@ -10,14 +10,14 @@ import {
 describe("page slugs", () => {
   const validate = createSlugErrorValidator(getDocumentTypeConfig("page"));
 
-  test.each(["/", "/about", "/products/cloud"])(
+  it.each(["/", "/about", "/products/cloud"])(
     "accepts the public path %s",
     // The validator returns `true` or an error string, so "no string" is exact.
     (current) =>
       expect(validate({ current })).not.toStrictEqual(expect.any(String))
   );
 
-  test.each([
+  it.each([
     "/de/about",
     "/api/subscribe",
     "/sitemap/brand-a",
@@ -27,7 +27,7 @@ describe("page slugs", () => {
     expect(validate({ current })).toStrictEqual(expect.any(String))
   );
 
-  test.each(["home", "drafts.home", "versions.release.home"])(
+  it.each(["home", "drafts.home", "versions.release.home"])(
     "checks the site and language without conflicting with %s",
     async (_id) => {
       const fetch = vi.fn<() => Promise<boolean>>().mockResolvedValue(true);

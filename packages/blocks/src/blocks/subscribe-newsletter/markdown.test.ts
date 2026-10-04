@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { subscribeNewsletterToMarkdown } from "./markdown";
 
@@ -11,17 +11,17 @@ const para = (text: string) => [
 ];
 
 describe(subscribeNewsletterToMarkdown, () => {
-  test("subscribeNewsletterToMarkdown returns empty string for a fully empty block", () => {
+  it("subscribeNewsletterToMarkdown returns empty string for a fully empty block", () => {
     expect(subscribeNewsletterToMarkdown({}, {})).toBe("");
   });
 
-  test("subscribeNewsletterToMarkdown renders title only", () => {
+  it("subscribeNewsletterToMarkdown renders title only", () => {
     expect(subscribeNewsletterToMarkdown({ title: "Subscribe" }, {})).toBe(
       "## Subscribe"
     );
   });
 
-  test("subscribeNewsletterToMarkdown renders title and subTitle, and omits the form's helperText like the page does", () => {
+  it("subscribeNewsletterToMarkdown renders title and subTitle, and omits the form's helperText like the page does", () => {
     const result = subscribeNewsletterToMarkdown(
       {
         helperText: para("No spam, ever."),
@@ -33,7 +33,7 @@ describe(subscribeNewsletterToMarkdown, () => {
     expect(result).toBe("## Stay in the loop\n\nGet weekly updates.");
   });
 
-  test("subscribeNewsletterToMarkdown escapes markdown chars in title", () => {
+  it("subscribeNewsletterToMarkdown escapes markdown chars in title", () => {
     const result = subscribeNewsletterToMarkdown(
       { title: "Subscribe to #updates" },
       {}
@@ -41,7 +41,7 @@ describe(subscribeNewsletterToMarkdown, () => {
     expect(result).toBe("## Subscribe to \\#updates");
   });
 
-  test("subscribeNewsletterToMarkdown handles undefined subTitle and helperText", () => {
+  it("subscribeNewsletterToMarkdown handles undefined subTitle and helperText", () => {
     expect(() =>
       subscribeNewsletterToMarkdown(
         { helperText: undefined, subTitle: undefined, title: "Sub" },
@@ -50,7 +50,7 @@ describe(subscribeNewsletterToMarkdown, () => {
     ).not.toThrow();
   });
 
-  test("subscribeNewsletterToMarkdown emits no form or input markup", () => {
+  it("subscribeNewsletterToMarkdown emits no form or input markup", () => {
     const result = subscribeNewsletterToMarkdown(
       { subTitle: para("Enter your email."), title: "Subscribe" },
       {}
