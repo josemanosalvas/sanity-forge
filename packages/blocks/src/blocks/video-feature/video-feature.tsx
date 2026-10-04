@@ -5,6 +5,7 @@ import type { RichTextValue } from "../../components/rich-text";
 import { RichText } from "../../components/rich-text";
 import { muxPlaybackId } from "../../lib/mux";
 import type { MuxVideoData } from "../../lib/mux";
+import { sectionId } from "../../lib/section-id";
 
 export interface VideoFeatureVideo extends MuxVideoOptions {
   asset?: MuxVideoData | null;
@@ -13,6 +14,7 @@ export interface VideoFeatureVideo extends MuxVideoOptions {
 export interface VideoFeatureProps {
   caption?: string | null;
   eyebrow?: string | null;
+  repeatKey?: string;
   richText?: RichTextValue;
   title?: string | null;
   video?: VideoFeatureVideo | null;
@@ -23,13 +25,17 @@ export const VideoFeature = ({
   eyebrow,
   richText,
   title,
+  repeatKey,
   video,
 }: Readonly<VideoFeatureProps>) => {
   // Keep published copy visible if the video asset becomes unavailable.
   const hasVideo = Boolean(muxPlaybackId(video?.asset));
 
   return (
-    <section className="block-section" id="video-feature">
+    <section
+      className="block-section"
+      id={sectionId("video-feature", repeatKey)}
+    >
       <div className="container grid gap-10">
         <BlockHeader eyebrow={eyebrow} title={title}>
           <RichText

@@ -3,6 +3,7 @@ import { CTABlock } from "@repo/blocks/cta";
 import { FaqAccordion } from "@repo/blocks/faq-accordion";
 import { FeatureCardsWithIcon } from "@repo/blocks/feature-cards-icon";
 import { HeroBlock } from "@repo/blocks/hero";
+import { sectionRepeatKeys } from "@repo/blocks/lib/section-id";
 import { LogoCloud } from "@repo/blocks/logo-cloud";
 import { RichTextBlock } from "@repo/blocks/rich-text-block";
 import { ShowcaseGrid } from "@repo/blocks/showcase-grid";
@@ -22,41 +23,66 @@ import type { PageBuilderBlock } from "@/types";
 const renderBlock = (
   block: PageBuilderBlock,
   isFirst: boolean,
-  dataSanity?: string
+  dataSanity?: string,
+  repeatKey?: string
 ): ReactNode => {
   switch (block._type) {
     case "cta": {
-      return <CTABlock {...block} />;
+      return <CTABlock {...block} repeatKey={repeatKey} />;
     }
     case "faqAccordion": {
-      return <FaqAccordion {...block} />;
+      return <FaqAccordion {...block} repeatKey={repeatKey} />;
     }
     case "hero": {
-      return <HeroBlock {...block} dataSanity={dataSanity} isFirst={isFirst} />;
+      return (
+        <HeroBlock
+          {...block}
+          dataSanity={dataSanity}
+          isFirst={isFirst}
+          repeatKey={repeatKey}
+        />
+      );
     }
     case "featureCardsIcon": {
-      return <FeatureCardsWithIcon {...block} />;
+      return <FeatureCardsWithIcon {...block} repeatKey={repeatKey} />;
     }
     case "subscribeNewsletter": {
-      return <SubscribeNewsletter {...block} />;
+      return <SubscribeNewsletter {...block} repeatKey={repeatKey} />;
     }
     case "logoCloud": {
-      return <LogoCloud {...block} />;
+      return <LogoCloud {...block} repeatKey={repeatKey} />;
     }
     case "socialGrid": {
-      return <SocialGrid {...block} />;
+      return <SocialGrid {...block} repeatKey={repeatKey} />;
     }
     case "showcaseGrid": {
-      return <ShowcaseGrid {...block} isFirst={isFirst} />;
+      return (
+        <ShowcaseGrid {...block} isFirst={isFirst} repeatKey={repeatKey} />
+      );
     }
     case "richTextBlock": {
       return <RichTextBlock {...block} />;
     }
     case "videoFeature": {
-      return <VideoFeature {...block} />;
+      return <VideoFeature {...block} repeatKey={repeatKey} />;
     }
     default: {
       return null;
+    }
+  }
+};
+
+/** Mirrors the early returns of the blocks that render nothing without items. */
+const rendersSection = (block: PageBuilderBlock) => {
+  switch (block._type) {
+    case "logoCloud": {
+      return Boolean(block.logos?.length);
+    }
+    case "socialGrid": {
+      return Boolean(block.socials?.length);
+    }
+    default: {
+      return true;
     }
   }
 };
@@ -86,8 +112,9 @@ export const renderPageBlocks = ({
   id: string;
   type: string;
   editable: boolean;
-}): RenderedBlock[] =>
-  blocks.map((block, index) => {
+}): RenderedBlock[] => {
+  const repeatKeys = sectionRepeatKeys(blocks, rendersSection);
+  return blocks.map((block, index) => {
     const isFirst = index === 0;
     const leadingHero = isFirst && block._type === "hero";
     const dataSanity =
@@ -98,7 +125,7 @@ export const renderPageBlocks = ({
             type,
           })
         : undefined;
-    const content = renderBlock(block, isFirst, dataSanity);
+    const content = renderBlock(block, isFirst, dataSanity, repeatKeys[index]);
     const fallback = editable ? <UnknownBlock blockType={block._type} /> : null;
     return {
       key: block._key,
@@ -106,6 +133,7 @@ export const renderPageBlocks = ({
       type: block._type,
     };
   });
+};
 
 export const PageBlocks = ({
   blocks,

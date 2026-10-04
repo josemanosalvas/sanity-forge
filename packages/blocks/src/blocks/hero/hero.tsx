@@ -14,6 +14,7 @@ import {
   muxThumbnailUrl,
 } from "../../lib/mux";
 import { getImageDimensions } from "../../lib/sanity-image";
+import { sectionId } from "../../lib/section-id";
 import type { HeroVideoData, HeroVideoVariant } from "./hero-video";
 import { HeroVideo } from "./hero-video";
 import { isMuxPath, mediaTypeOf } from "./media-type";
@@ -23,6 +24,7 @@ export interface HeroBlockProps {
   buttons?: ButtonProps[] | null;
   dataSanity?: string;
   isFirst?: boolean;
+  repeatKey?: string;
   richText?: RichTextValue;
   title?: string | null;
   video?: HeroVideoData | null;
@@ -151,6 +153,7 @@ export const HeroBlock = ({
   dataSanity,
   richText,
   isFirst,
+  repeatKey,
   video,
 }: Readonly<HeroBlockProps>) => {
   const banner = (
@@ -184,7 +187,7 @@ export const HeroBlock = ({
     return (
       <section
         className="bg-background relative flex min-h-svh flex-col"
-        id="hero"
+        id={sectionId("hero", repeatKey)}
       >
         <div className="relative min-h-0 flex-1 overflow-hidden">{banner}</div>
         <div className="bg-background relative z-10 pt-6 pb-8 md:pt-8 md:pb-12">
@@ -199,7 +202,7 @@ export const HeroBlock = ({
       <div
         className="hero-park bg-background relative z-0 h-[calc(100svh-var(--hero-copy))] overflow-hidden lg:sticky lg:top-0"
         data-sanity={dataSanity}
-        id="hero"
+        id={sectionId("hero", repeatKey)}
       >
         <div className="hero-blur absolute inset-0">{banner}</div>
       </div>

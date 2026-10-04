@@ -1,19 +1,22 @@
 import { BlockHeader } from "../../components/block-header";
 import { RichText } from "../../components/rich-text";
 import type { RichTextValue } from "../../components/rich-text";
+import { sectionId } from "../../lib/section-id";
 
 export interface {{ pascalCase name }}Props {
   eyebrow?: string | null;
+  repeatKey?: string;
   richText?: RichTextValue;
   title?: string | null;
 }
 
 export const {{ pascalCase name }} = ({
   eyebrow,
+  repeatKey,
   richText,
   title,
 }: Readonly<{{ pascalCase name }}Props>) => (
-  <section className="block-section" id="{{ name }}">
+  <section className="block-section" id={sectionId("{{ name }}", repeatKey)}>
     <div className="container">
       <BlockHeader eyebrow={eyebrow} title={title}>
         <RichText

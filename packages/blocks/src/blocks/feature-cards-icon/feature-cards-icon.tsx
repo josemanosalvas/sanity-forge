@@ -2,6 +2,7 @@ import { BlockHeader } from "../../components/block-header";
 import type { RichTextValue } from "../../components/rich-text";
 import { RichText } from "../../components/rich-text";
 import { SanityIcon } from "../../components/sanity-icon";
+import { sectionId } from "../../lib/section-id";
 
 export interface FeatureCard {
   _key?: string | null;
@@ -13,6 +14,7 @@ export interface FeatureCard {
 export interface FeatureCardsIconProps {
   cards?: FeatureCard[] | null;
   eyebrow?: string | null;
+  repeatKey?: string;
   richText?: RichTextValue;
   title?: string | null;
 }
@@ -55,8 +57,9 @@ export const FeatureCardsWithIcon = ({
   title,
   richText,
   cards,
+  repeatKey,
 }: Readonly<FeatureCardsIconProps>) => (
-  <section className="block-section" id="features">
+  <section className="block-section" id={sectionId("features", repeatKey)}>
     <div className="container">
       <BlockHeader eyebrow={eyebrow} title={title}>
         <RichText

@@ -12,6 +12,7 @@ import type { RichTextValue } from "../../components/rich-text";
 import { RichText } from "../../components/rich-text";
 import type { SanityImageData } from "../../components/sanity-image";
 import { SanityImage } from "../../components/sanity-image";
+import { sectionId } from "../../lib/section-id";
 
 export interface NewsletterTestimonial {
   authorImage?: SanityImageData | null;
@@ -26,6 +27,7 @@ export interface SubscribeNewsletterProps {
   helperText?: RichTextValue;
   method?: ComponentProps<"form">["method"];
   onSubmit?: ComponentProps<"form">["onSubmit"];
+  repeatKey?: string;
   subTitle?: RichTextValue;
   testimonial?: NewsletterTestimonial | null;
   title?: string | null;
@@ -113,6 +115,7 @@ export const SubscribeNewsletter = ({
   helperText,
   method,
   onSubmit,
+  repeatKey,
   testimonial,
 }: Readonly<SubscribeNewsletterProps>) => {
   const { newsletter } = useBlockLabels();
@@ -128,7 +131,7 @@ export const SubscribeNewsletter = ({
   );
 
   return (
-    <section className="block-section" id="subscribe">
+    <section className="block-section" id={sectionId("subscribe", repeatKey)}>
       <div className="container">
         <div
           className={cn(

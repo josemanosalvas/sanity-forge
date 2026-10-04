@@ -5,6 +5,7 @@ import { RichText } from "../../components/rich-text";
 import type { ButtonProps } from "../../components/sanity-buttons";
 import { SanityButtons } from "../../components/sanity-buttons";
 import type { SanityImageData } from "../../components/sanity-image";
+import { sectionId } from "../../lib/section-id";
 
 export interface CtaUsedByTeamsLogo {
   _key: string;
@@ -21,6 +22,7 @@ export interface CtaUsedByTeams {
 export interface CtaBlockProps {
   buttons?: ButtonProps[] | null;
   eyebrow?: string | null;
+  repeatKey?: string;
   richText?: RichTextValue;
   title?: string | null;
   usedByTeams?: CtaUsedByTeams | null;
@@ -43,13 +45,14 @@ export const CTABlock = ({
   title,
   eyebrow,
   buttons,
+  repeatKey,
   usedByTeams,
 }: Readonly<CtaBlockProps>) => {
   const logos = usedByTeams?.logos?.filter((logo) => logo.image?.id) ?? [];
   const hasLogos = logos.length > 0;
 
   return (
-    <section className="block-section" id="cta">
+    <section className="block-section" id={sectionId("cta", repeatKey)}>
       <div className="container">
         <div className="flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
           <div className="flex max-w-[690px] flex-col items-start gap-6 lg:min-w-0">

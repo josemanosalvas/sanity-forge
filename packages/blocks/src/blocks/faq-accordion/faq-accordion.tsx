@@ -11,6 +11,7 @@ import type { RichTextValue } from "../../components/rich-text";
 import { RichText } from "../../components/rich-text";
 import { useDisclosureAnimation } from "../../hooks/use-disclosure-animation";
 import { sanitizeHref } from "../../lib/safe-href";
+import { sectionId } from "../../lib/section-id";
 
 export interface FaqItem {
   _key?: string | null;
@@ -38,6 +39,7 @@ export interface FaqAccordionProps {
   categories?: FaqCategory[] | null;
   eyebrow?: string | null;
   link?: FaqLink | null;
+  repeatKey?: string;
   subtitle?: string | null;
   title?: string | null;
 }
@@ -256,6 +258,7 @@ export const FaqAccordion = ({
   title,
   subtitle,
   link,
+  repeatKey,
 }: Readonly<FaqAccordionProps>) => {
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -273,7 +276,7 @@ export const FaqAccordion = ({
   const accordionKey = `faq-${_key}-${activeCategory?._key ?? boundedIndex}`;
 
   return (
-    <section className="block-section" id="faq">
+    <section className="block-section" id={sectionId("faq", repeatKey)}>
       <div className="container">
         <FaqHeader eyebrow={eyebrow} subtitle={subtitle} title={title} />
 
