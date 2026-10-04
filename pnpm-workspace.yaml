@@ -7,7 +7,7 @@ catalog:
   # Toolchain
   "@shadcn/lint": ^0.2.0
   "@turbo/gen": ^2.11.7
-  oxfmt: ^0.66.0
+  oxfmt: ^0.71.0
   oxlint: ^1.86.0
   sherif: ^1.13.0
   turbo: ^2.11.7
