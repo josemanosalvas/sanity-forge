@@ -1,5 +1,5 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import type { PageBuilderBlock } from "@/types";
 
@@ -46,20 +46,18 @@ const SECTIONS: [string, PageBuilderBlock["_type"], object][] = [
 ];
 
 describe(renderPageBlocks, () => {
-  test.each(SECTIONS)(
-    "a repeated %s block appends its key",
-    (id, _type, data) =>
-      expect(
-        ids(
-          render([
-            { _key: "a", _type, ...data },
-            { _key: "b", _type, ...data },
-          ])
-        )
-      ).toStrictEqual([id, `${id}-b`])
+  it.each(SECTIONS)("a repeated %s block appends its key", (id, _type, data) =>
+    expect(
+      ids(
+        render([
+          { _key: "a", _type, ...data },
+          { _key: "b", _type, ...data },
+        ])
+      )
+    ).toStrictEqual([id, `${id}-b`])
   );
 
-  test("keys repeats per type, wherever they are on the page", () =>
+  it("keys repeats per type, wherever they are on the page", () =>
     expect(
       ids(
         render([
@@ -71,7 +69,7 @@ describe(renderPageBlocks, () => {
       )
     ).toStrictEqual(["hero", "faq", "hero-h2", "faq-f2"]));
 
-  test.each([
+  it.each([
     ["logo-cloud", "logoCloud", { logos: [] }, { logos: LOGOS }],
     ["socials", "socialGrid", { socials: null }, { socials: SOCIALS }],
   ] as const)(

@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { CTABlock } from "../blocks/cta/cta";
 import { FaqAccordion } from "../blocks/faq-accordion/faq-accordion";
@@ -15,17 +15,17 @@ import { placeholderImage } from "../testing/fixtures";
 import { sectionId, sectionRepeatKeys } from "./section-id";
 
 describe(sectionId, () => {
-  test("keeps the bare id without a repeat key", () =>
+  it("keeps the bare id without a repeat key", () =>
     expect(sectionId("faq")).toBe("faq"));
 
-  test("appends the repeat key", () =>
+  it("appends the repeat key", () =>
     expect(sectionId("faq", "a1b2c3")).toBe("faq-a1b2c3"));
 });
 
 const always = () => true;
 
 describe(sectionRepeatKeys, () => {
-  test("keys only the blocks whose type is already higher on the page", () =>
+  it("keys only the blocks whose type is already higher on the page", () =>
     expect(
       sectionRepeatKeys(
         [
@@ -39,7 +39,7 @@ describe(sectionRepeatKeys, () => {
       )
     ).toStrictEqual([undefined, undefined, "f2", "c2", "f3"]));
 
-  test("follows the order, so the block moved to the top takes the bare id", () =>
+  it("follows the order, so the block moved to the top takes the bare id", () =>
     expect(
       sectionRepeatKeys(
         [
@@ -50,7 +50,7 @@ describe(sectionRepeatKeys, () => {
       )
     ).toStrictEqual([undefined, "f1"]));
 
-  test("leaves the bare id to the first block that renders a section", () =>
+  it("leaves the bare id to the first block that renders a section", () =>
     expect(
       sectionRepeatKeys(
         [
@@ -131,11 +131,11 @@ const SECTIONS: [string, string, (repeatKey?: string) => ReactElement][] = [
 ];
 
 describe("page-builder section ids", () => {
-  test.each(SECTIONS)("the first %s block keeps its id", (_name, id, render) =>
+  it.each(SECTIONS)("the first %s block keeps its id", (_name, id, render) =>
     expect(renderToStaticMarkup(render())).toContain(` id="${id}"`)
   );
 
-  test.each(SECTIONS)(
+  it.each(SECTIONS)(
     "a repeated %s block appends its key",
     (_name, id, render) => {
       const html = renderToStaticMarkup(render("k2"));
