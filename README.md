@@ -8,7 +8,7 @@ Public datasets expose all published documents through the Sanity API, across ev
 
 ## Setup
 
-Requires pnpm 12 and a Sanity project with a dataset. pnpm provisions Node 24 from `devEngines.runtime`. If Corepack runs pnpm for you, it must be version 0.34.5 or newer (bundled with Node 24.12+); older versions fail to start pnpm 12 with `Cannot find module …/bin/pnpm.cjs`.
+Requires pnpm 12 and a Sanity project with a dataset. pnpm provisions Node 26 from `devEngines.runtime`. If Corepack runs pnpm for you, it must be version 0.34.5 or newer (bundled with Node 24.12+); older versions fail to start pnpm 12 with `Cannot find module …/bin/pnpm.cjs`.
 
 ```bash
 pnpm install
@@ -155,7 +155,7 @@ One Vercel project serves every hostname in `sites.ts`; attach all production do
 | Install Command | `pnpm install --frozen-lockfile` |
 | Build Command | `pnpm turbo run build --filter=web` |
 | Output Directory | `apps/web/.next` |
-| Node.js | `engines.node` in `package.json` (`>=24`) |
+| Node.js | `engines.node` in `package.json` (`>=26`) |
 
 Environment variables: everything in `apps/web/.env.example` marked required, plus `SANITY_STUDIO_PROJECT_ID` and `SANITY_STUDIO_DATASET` for the build, `NEXT_PUBLIC_SANITY_STUDIO_URL` set to the deployed Studio origin (a loopback value is dropped from the frame-ancestors policy), and `SANITY_REVALIDATE_SECRET` (at least 32 characters; shorter values are refused by the route) if the invalidation Function is deployed. After 30 unauthorized revalidation requests or 20 failed Draft Mode handshakes per minute, that address receives HTTP 429 until its window resets. Successful requests do not consume the budget, but an exhausted address is blocked before authentication. Limits apply per server instance. `SANITY_API_READ_TOKEN` must be a Viewer token: validated Draft Mode sessions receive it in the browser for Sanity Live. Reverse proxies must overwrite `x-forwarded-host` for site selection and `x-forwarded-for` for rate limiting. Requests on a site's `www.`/apex twin are redirected to the production hostname with a 308.
 
