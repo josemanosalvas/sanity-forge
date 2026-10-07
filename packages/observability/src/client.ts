@@ -8,6 +8,7 @@ import {
   replayIntegration,
 } from "@sentry/nextjs";
 
+import { dataCollection } from "./data-collection";
 import { keys } from "./keys";
 
 /** Use a literal environment lookup so Next can inline the replay flag. */
@@ -23,8 +24,8 @@ export const initializeObservability = (): void => {
   }
 
   init({
+    dataCollection,
     dsn,
-    enableLogs: true,
     integrations: [
       ...(REPLAY_ENABLED
         ? [replayIntegration({ blockAllMedia: true, maskAllText: true })]

@@ -3,6 +3,7 @@
  */
 import { consoleLoggingIntegration, init } from "@sentry/nextjs";
 
+import { dataCollection } from "./data-collection";
 import { keys } from "./keys";
 
 export const initializeObservability = (): void => {
@@ -15,8 +16,8 @@ export const initializeObservability = (): void => {
   }
 
   init({
+    dataCollection,
     dsn,
-    enableLogs: true,
     // Local variables can hold the Sanity token; never send them from production.
     includeLocalVariables: process.env.NODE_ENV !== "production",
     integrations: [consoleLoggingIntegration({ levels: ["error", "warn"] })],
