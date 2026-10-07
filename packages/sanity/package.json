@@ -16,8 +16,9 @@
   "scripts": {
     "clean": "git clean -xdf .cache .turbo node_modules",
     "typecheck": "tsc --noEmit",
-    "typegen": "sanity typegen generate",
-    "typegen:watch": "sanity typegen generate --watch"
+    "typegen": "sanity typegen generate && groq-compiler dedupe-types src/sanity.types.ts --out src/sanity.types.ts --typescript node_modules/typescript-6 && groq-compiler typegen src/sanity.types.ts --out src/compiled-queries.ts --share with-params --nested",
+    "typegen:watch": "sanity typegen generate --watch",
+    "test": "vitest run"
   },
   "dependencies": {
     "@repo/blocks": "workspace:*",
@@ -25,6 +26,7 @@
     "@sanity/client": "catalog:",
     "@sanity/image-url": "catalog:",
     "@t3-oss/env-nextjs": "catalog:",
+    "groq-compiler": "file:vendor/groq-compiler-0.1.0.tgz",
     "next-sanity": "catalog:",
     "server-only": "catalog:",
     "zod": "catalog:"
@@ -34,12 +36,15 @@
     "@sanity/codegen": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
+    "groq-js": "catalog:",
     "next": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "sanity": "catalog:",
     "styled-components": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "typescript-6": "npm:typescript@6.0.3",
+    "vitest": "catalog:"
   },
   "peerDependencies": {
     "next": "catalog:",

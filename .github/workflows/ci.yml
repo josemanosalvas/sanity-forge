@@ -70,7 +70,7 @@ jobs:
       - uses: ./tooling/github/setup
       - run: pnpm typegen
       - name: Verify generated types are committed
-        run: git diff --exit-code -- packages/sanity/src/sanity.types.ts apps/studio/schema.json
+        run: git diff --exit-code -- packages/sanity/src/sanity.types.ts packages/sanity/src/compiled-queries.ts apps/studio/schema.json
 
   schema:
     name: Sanity schema validation

@@ -32,12 +32,18 @@ export const keys = () =>
       NEXT_PUBLIC_SANITY_PROJECT_ID: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
       NEXT_PUBLIC_SANITY_STUDIO_URL: process.env.NEXT_PUBLIC_SANITY_STUDIO_URL,
       SANITY_API_READ_TOKEN: process.env.SANITY_API_READ_TOKEN,
+      SANITY_COMPILED_QUERIES: process.env.SANITY_COMPILED_QUERIES,
       SANITY_LOG_READS: process.env.SANITY_LOG_READS,
       SANITY_REVALIDATE_SECRET: process.env.SANITY_REVALIDATE_SECRET,
     },
     server: {
       /** Viewer token, required at runtime by `src/token.ts`. */
       SANITY_API_READ_TOKEN: z.string().min(1).optional(),
+      /** Opt-in: send each query as compiled by groq-compiler (see `src/compiled-queries.ts`). */
+      SANITY_COMPILED_QUERIES: z
+        .enum(["true", "false"])
+        .default("false")
+        .transform((value) => value === "true"),
       /** Logs every Sanity read that runs, i.e. every cache miss. */
       SANITY_LOG_READS: z.stringbool().default(false),
       SANITY_REVALIDATE_SECRET: z.string().min(1).optional(),

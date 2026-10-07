@@ -1,3 +1,4 @@
+import { compiledQuery } from "groq-compiler/sanity";
 import type { QueryParams } from "next-sanity";
 import {
   defineLive,
@@ -8,9 +9,13 @@ import type { LivePerspective } from "next-sanity/live";
 import { cookies, draftMode } from "next/headers";
 
 import { client } from "./client";
+import { compiledQueries } from "./compiled-queries";
 import { keys } from "./keys";
 import { contentTags, SYNC_TAG_PREFIX } from "./tags";
 import { token } from "./token";
+
+// Equivalent text proven with groq-js at `pnpm typegen`; result types stay keyed by the original query.
+const useCompiledQueries = keys().SANITY_COMPILED_QUERIES;
 
 const live = defineLive({
   // Shared with the browser only for validated Draft Mode sessions.
@@ -29,12 +34,18 @@ type SanityFetch = typeof live.sanityFetch;
 
 const logReads = keys().SANITY_LOG_READS;
 
-/** Add purge tags while preserving next-sanity overloads and stega result types. */
+/**
+ * Add webhook tags while preserving next-sanity overloads and stega result types. With
+ * `SANITY_COMPILED_QUERIES=true`, send each query's compiled text instead.
+ */
 export const sanityFetch = (async (options: Parameters<SanityFetch>[0]) => {
   const params = await options.params;
   const result = await live.sanityFetch({
     ...options,
     params,
+    query: useCompiledQueries
+      ? compiledQuery(compiledQueries, options.query)
+      : options.query,
     tags: [...(options.tags ?? []), ...contentTags(params)],
   });
   // Reads run inside `use cache`, so each line is one cache miss.

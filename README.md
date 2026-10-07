@@ -89,11 +89,15 @@ Import concrete modules through package exports, such as `@repo/blocks/hero` or 
 | `pnpm build` | Build all apps; web needs working Sanity credentials |
 | `pnpm verify` | Formatting, lint, workspace and dependency boundaries, tests, typecheck |
 | `pnpm fix` | Apply lint and format fixes |
-| `pnpm typegen` | Extract schemas and regenerate GROQ result types |
+| `pnpm typegen` | Extract schemas, regenerate GROQ result types, and compile every query (`packages/sanity/src/compiled-queries.ts`) |
 | `pnpm --filter <package> test` | Focused Vitest tests for one package, e.g. `web` or `@repo/blocks` |
 | `pnpm test:e2e` | Playwright against the production web server |
 | `pnpm turbo gen block` | Scaffold and register a block; add its web renderer and behavior tests |
 | `pnpm turbo gen package` | Scaffold a workspace package |
+
+### Compiled queries
+
+`pnpm typegen` also runs [groq-compiler](packages/sanity/vendor/) on TypeGen's query registry: it names repeated result shapes in `sanity.types.ts` (104 KB → 83 KB) and writes `compiled-queries.ts`, which maps each query to an equivalent smaller text proven with groq-js (the page query: 18,809 → 4,340 bytes, so `@sanity/client` sends it as a cacheable GET instead of a POST). Set `SANITY_COMPILED_QUERIES=true` to send the compiled text; result types and results stay the same. The compiled page query shares projections as custom GROQ functions that read query parameters and call each other: Sanity's docs neither allow nor forbid either, and both returned identical results on the real API. CI checks that `compiled-queries.ts` is regenerated with the types.
 
 ### Blocks
 
