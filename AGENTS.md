@@ -26,7 +26,7 @@ Sanity Forge is a pnpm/Turborepo monorepo for multilingual, multi-site content w
 
 ## Build, Test, and Development Commands
 
-Use pnpm 11; the repository pins pnpm 11.25.0 and provisions Node 24.
+Use pnpm 12; the repository pins pnpm 12.9.1 and provisions Node 24. Through Corepack, pnpm 12 needs Corepack 0.34.5 or newer (bundled with Node 24.12+).
 
 - `pnpm install`: install workspace dependencies.
 - `pnpm dev`: start web (3000), Studio (3333), and Storybook (6006). Use `pnpm dev:web` to focus on the frontend.

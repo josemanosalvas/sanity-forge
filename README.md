@@ -8,7 +8,7 @@ Public datasets expose all published documents through the Sanity API, across ev
 
 ## Setup
 
-Requires pnpm 11 and a Sanity project with a dataset. pnpm provisions Node 24 from `devEngines.runtime`.
+Requires pnpm 12 and a Sanity project with a dataset. pnpm provisions Node 24 from `devEngines.runtime`. If Corepack runs pnpm for you, it must be version 0.34.5 or newer (bundled with Node 24.12+); older versions fail to start pnpm 12 with `Cannot find module …/bin/pnpm.cjs`.
 
 ```bash
 pnpm install
