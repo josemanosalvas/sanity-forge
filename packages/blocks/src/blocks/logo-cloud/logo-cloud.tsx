@@ -6,6 +6,7 @@ import { useBlockLabels } from "../../components/block-labels";
 import { LogoLinkCell } from "../../components/logo-link-cell";
 import type { SanityImageData } from "../../components/sanity-image";
 import { normalizedLogoHeight } from "../../lib/logo-height";
+import { sectionId } from "../../lib/section-id";
 
 export interface LogoCloudLogo {
   _key: string;
@@ -16,6 +17,7 @@ export interface LogoCloudLogo {
 
 export interface LogoCloudProps {
   logos?: LogoCloudLogo[] | null;
+  repeatKey?: string;
 }
 
 const Logo = ({ logo }: Readonly<{ logo: LogoCloudLogo }>) => (
@@ -41,7 +43,7 @@ const HOVER_PLAYBACK_RATE = 0.6;
 
 const CYCLE_CLASS = "flex shrink-0 items-center gap-12 pr-12";
 
-export const LogoCloud = ({ logos }: Readonly<LogoCloudProps>) => {
+export const LogoCloud = ({ logos, repeatKey }: Readonly<LogoCloudProps>) => {
   const labels = useBlockLabels();
   const trackRef = useRef<HTMLDivElement>(null);
 
@@ -64,7 +66,7 @@ export const LogoCloud = ({ logos }: Readonly<LogoCloudProps>) => {
     <section
       aria-label={labels.logoCloud}
       className="bg-highlight overflow-hidden py-6"
-      id="logo-cloud"
+      id={sectionId("logo-cloud", repeatKey)}
       onMouseEnter={() => setPlaybackRate(HOVER_PLAYBACK_RATE)}
       onMouseLeave={() => setPlaybackRate(1)}
     >

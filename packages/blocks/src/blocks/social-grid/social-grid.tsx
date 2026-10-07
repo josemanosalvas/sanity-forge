@@ -18,6 +18,7 @@ import type { IconProps } from "../../components/icons";
 import { SanityImage } from "../../components/sanity-image";
 import type { SanityImageData } from "../../components/sanity-image";
 import { sanitizeHref } from "../../lib/safe-href";
+import { sectionId } from "../../lib/section-id";
 
 export interface SocialGridItem {
   _key: string;
@@ -30,6 +31,7 @@ export interface SocialGridItem {
 
 export interface SocialGridProps {
   eyebrow?: string | null;
+  repeatKey?: string;
   title?: string | null;
   subtitle?: string | null;
   socials?: SocialGridItem[] | null;
@@ -127,13 +129,14 @@ export const SocialGrid = ({
   title,
   subtitle,
   socials,
+  repeatKey,
 }: Readonly<SocialGridProps>) => {
   if (!(Array.isArray(socials) && socials.length > 0)) {
     return null;
   }
 
   return (
-    <section className="block-section" id="socials">
+    <section className="block-section" id={sectionId("socials", repeatKey)}>
       <div className="container">
         <BlockHeader eyebrow={eyebrow} title={title}>
           {subtitle ? (

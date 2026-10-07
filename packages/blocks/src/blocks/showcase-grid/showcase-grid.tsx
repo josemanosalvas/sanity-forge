@@ -6,6 +6,7 @@ import type { SanityImageData } from "../../components/sanity-image";
 import { normalizedLogoHeight } from "../../lib/logo-height";
 import { sanitizeHref } from "../../lib/safe-href";
 import { resolveAssetId } from "../../lib/sanity-image";
+import { sectionId } from "../../lib/section-id";
 
 export interface ShowcaseGridItem {
   _key: string;
@@ -22,6 +23,7 @@ export interface ShowcaseGridProps {
   description?: string | null;
   items?: ShowcaseGridItem[] | null;
   isFirst?: boolean;
+  repeatKey?: string;
 }
 
 interface CardView {
@@ -354,6 +356,7 @@ export const ShowcaseGrid = ({
   description,
   items,
   isFirst = false,
+  repeatKey,
 }: Readonly<ShowcaseGridProps>) => {
   const cmsItems = items ?? [];
   const label = title?.trim() ? null : (
@@ -377,7 +380,7 @@ export const ShowcaseGrid = ({
 
   if (featuredItems.length === 0) {
     return (
-      <section className="block-section" id="showcase">
+      <section className="block-section" id={sectionId("showcase", repeatKey)}>
         {label}
         <div className="container">
           <ShowcaseHeader description={description} title={title} />
@@ -387,7 +390,7 @@ export const ShowcaseGrid = ({
   }
 
   return (
-    <section className="block-section" id="showcase">
+    <section className="block-section" id={sectionId("showcase", repeatKey)}>
       {label}
       <div className="flex flex-col gap-16">
         <div className="container">
