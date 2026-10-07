@@ -32,11 +32,14 @@ export const keys = () =>
       NEXT_PUBLIC_SANITY_PROJECT_ID: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
       NEXT_PUBLIC_SANITY_STUDIO_URL: process.env.NEXT_PUBLIC_SANITY_STUDIO_URL,
       SANITY_API_READ_TOKEN: process.env.SANITY_API_READ_TOKEN,
+      SANITY_LOG_READS: process.env.SANITY_LOG_READS,
       SANITY_REVALIDATE_SECRET: process.env.SANITY_REVALIDATE_SECRET,
     },
     server: {
       /** Viewer token, required at runtime by `src/token.ts`. */
       SANITY_API_READ_TOKEN: z.string().min(1).optional(),
+      /** Logs every Sanity read that runs, i.e. every cache miss. */
+      SANITY_LOG_READS: z.stringbool().default(false),
       SANITY_REVALIDATE_SECRET: z.string().min(1).optional(),
     },
     skipValidation: process.env.SKIP_ENV_VALIDATION === "true",

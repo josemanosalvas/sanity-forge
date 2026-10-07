@@ -1,0 +1,25 @@
+{
+  "name": "blueprint",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "clean": "git clean -xdf .cache .sanity .turbo node_modules functions/*/.build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@repo/sanity": "workspace:*"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@sanity/blueprints": "^0.28.0",
+    "@sanity/functions": "^1.8.1",
+    "@types/node": "catalog:",
+    "sanity": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  }
+}

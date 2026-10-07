@@ -76,6 +76,7 @@ Links never cross sites. The Studio offers a document only its own site's pages,
 - `apps/web`: Next.js App Router frontend.
 - `apps/studio`: Sanity schemas, editing structure and Presentation configuration.
 - `apps/storybook`: UI and block stories.
+- `apps/blueprint`: Sanity Blueprint with the Function that invalidates the web cache on publish.
 - `packages/blocks`: each `src/blocks/<name>/` contains its renderer, schema, query, Markdown serializer, tests and stories. Shared components, hooks and helpers sit alongside `blocks/` under `src/`.
 - `packages/ui`: shadcn primitives, styles and theme provider.
 - Other packages provide Sanity access, internationalization, SEO, security, analytics and observability. `tooling/` holds shared configuration.
@@ -119,22 +120,30 @@ Sanity reads run inside `use cache`. Resolve preview cookies outside the cache a
 
 Draft Mode exits through the preview bar's Server Action; `POST /api/draft-mode/disable?to=/path` is the equivalent endpoint for tooling outside the site.
 
-For revalidation when no browser has Sanity Live open, configure a GROQ-powered webhook:
+Sanity Live revalidates only while a browser has the site open. For publishes nobody is watching, the `invalidate-tags` Sanity Function in [`apps/blueprint`](apps/blueprint) receives each publish's sync tags and posts them to `/api/revalidate`, which invalidates exactly the cached reads that depend on the changed content. The next request for an affected read still receives stale content while the cache refreshes. Redirect edits require a rebuild.
 
-| Setting           | Value                                               |
-| ----------------- | --------------------------------------------------- |
-| URL               | `https://your-site/api/revalidate`                  |
-| Method / triggers | POST; create, update, delete; draft events disabled |
-| Projection        | `{_type, site}`                                     |
-| Secret            | Same as `SANITY_REVALIDATE_SECRET` (32+ characters) |
+Deploy it once per dataset; Sanity allows one sync tag Function per dataset. Copy `apps/blueprint/.env.example` to `apps/blueprint/.env` and set the project and dataset, then log in (`pnpm --filter blueprint exec sanity login`) with a role that can deploy Studios:
 
-Filter:
-
-```groq
-_type in ["page", "settings", "navigation", "footer", "faq", "translation.metadata", "sanity.imageAsset", "sanity.fileAsset", "mux.videoAsset"]
+```sh
+pnpm --filter blueprint exec sanity blueprints init --project-id <project-id> --stack-name production
+pnpm --filter blueprint exec sanity blueprints plan
+pnpm --filter blueprint exec sanity blueprints deploy
+pnpm --filter blueprint exec sanity functions env add invalidate-tags REVALIDATE_URL https://your-site/api/revalidate
+pnpm --filter blueprint exec sanity functions env add invalidate-tags SANITY_REVALIDATE_SECRET <same value as the web app>
+pnpm --filter blueprint exec sanity functions logs invalidate-tags
 ```
 
-Site documents invalidate that site's reads; shared documents invalidate all sites. The next request can receive stale content while the cache refreshes. Redirect edits require a rebuild.
+A delivery that fails is logged by the Function and never acknowledged to Sanity. If an earlier setup has a GROQ-powered webhook pointing at `/api/revalidate`, delete it: the route no longer accepts signed webhook payloads.
+
+To recover from missed invalidations, an operator can purge every read, or one site's reads, with the same secret:
+
+```sh
+curl -X POST https://your-site/api/revalidate \
+  -H "Authorization: Bearer $SANITY_REVALIDATE_SECRET" \
+  -d '{"purge": true, "site": "brand-a"}'
+```
+
+Omit `site` to purge every site. Set `SANITY_LOG_READS=true` on the web server to log one line per Sanity read that runs, that is, per cache miss, with its parameters and sync tags.
 
 ## Deployment
 
@@ -148,7 +157,7 @@ One Vercel project serves every hostname in `sites.ts`; attach all production do
 | Output Directory | `apps/web/.next` |
 | Node.js | `engines.node` in `package.json` (`>=24`) |
 
-Environment variables: everything in `apps/web/.env.example` marked required, plus `SANITY_STUDIO_PROJECT_ID` and `SANITY_STUDIO_DATASET` for the build, `NEXT_PUBLIC_SANITY_STUDIO_URL` set to the deployed Studio origin (a loopback value is dropped from the frame-ancestors policy), and `SANITY_REVALIDATE_SECRET` (at least 32 characters; shorter values are refused by the route) if the webhook is used. After 30 failed webhook requests or 20 failed Draft Mode handshakes per minute, that address receives HTTP 429 until its window resets. Successful requests do not consume the budget, but an exhausted address is blocked before authentication. Limits apply per server instance. `SANITY_API_READ_TOKEN` must be a Viewer token: validated Draft Mode sessions receive it in the browser for Sanity Live. Reverse proxies must overwrite `x-forwarded-host` for site selection and `x-forwarded-for` for rate limiting. Requests on a site's `www.`/apex twin are redirected to the production hostname with a 308.
+Environment variables: everything in `apps/web/.env.example` marked required, plus `SANITY_STUDIO_PROJECT_ID` and `SANITY_STUDIO_DATASET` for the build, `NEXT_PUBLIC_SANITY_STUDIO_URL` set to the deployed Studio origin (a loopback value is dropped from the frame-ancestors policy), and `SANITY_REVALIDATE_SECRET` (at least 32 characters; shorter values are refused by the route) if the invalidation Function is deployed. After 30 unauthorized revalidation requests or 20 failed Draft Mode handshakes per minute, that address receives HTTP 429 until its window resets. Successful requests do not consume the budget, but an exhausted address is blocked before authentication. Limits apply per server instance. `SANITY_API_READ_TOKEN` must be a Viewer token: validated Draft Mode sessions receive it in the browser for Sanity Live. Reverse proxies must overwrite `x-forwarded-host` for site selection and `x-forwarded-for` for rate limiting. Requests on a site's `www.`/apex twin are redirected to the production hostname with a 308.
 
 Every deployed hostname also has to be a CORS origin with credentials: the production domains, the preview URLs and the Studio. See [CORS origins](#cors-origins).
 
