@@ -1,13 +1,13 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { socialGridToMarkdown } from "./markdown";
 
 describe(socialGridToMarkdown, () => {
-  test("socialGridToMarkdown returns empty string for a fully empty block", () => {
+  it("socialGridToMarkdown returns empty string for a fully empty block", () => {
     expect(socialGridToMarkdown({}, {})).toBe("");
   });
 
-  test("socialGridToMarkdown renders the eyebrow, title and subtitle", () => {
+  it("socialGridToMarkdown renders the eyebrow, title and subtitle", () => {
     const result = socialGridToMarkdown(
       {
         eyebrow: "Socials",
@@ -21,7 +21,7 @@ describe(socialGridToMarkdown, () => {
     expect(result).toContain("Stay updated with the latest.");
   });
 
-  test("socialGridToMarkdown renders socials as a linked list", () => {
+  it("socialGridToMarkdown renders socials as a linked list", () => {
     const result = socialGridToMarkdown(
       {
         socials: [
@@ -41,7 +41,7 @@ describe(socialGridToMarkdown, () => {
     expect(result).not.toContain("](#)");
   });
 
-  test("socialGridToMarkdown falls back to the platform when no label is set", () => {
+  it("socialGridToMarkdown falls back to the platform when no label is set", () => {
     const result = socialGridToMarkdown(
       {
         socials: [{ _key: "s1", href: "https://yt.com", platform: "youtube" }],
@@ -51,7 +51,7 @@ describe(socialGridToMarkdown, () => {
     expect(result).toContain("- [youtube](https://yt.com)");
   });
 
-  test("socialGridToMarkdown emits no HTML or JSX tags", () => {
+  it("socialGridToMarkdown emits no HTML or JSX tags", () => {
     const result = socialGridToMarkdown(
       {
         eyebrow: "Socials",

@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { rungFor } from "./hero-video";
 import { isMuxPath, mediaTypeOf } from "./media-type";
@@ -11,19 +11,19 @@ describe("hero/media-type", () => {
     status: "ready",
   };
 
-  test("an explicit mediaType wins over what the variant carries", () => {
+  it("an explicit mediaType wins over what the variant carries", () => {
     expect(mediaTypeOf({ mediaType: "sanity", mux: READY_MUX })).toBe("sanity");
     expect(mediaTypeOf({ mediaType: "mux", mux: null })).toBe("mux");
   });
 
-  test("an absent mediaType is inferred from what is actually there", () => {
+  it("an absent mediaType is inferred from what is actually there", () => {
     expect(mediaTypeOf({ mux: READY_MUX })).toBe("mux");
     expect(mediaTypeOf({})).toBe("sanity");
     expect(mediaTypeOf(null)).toBe("sanity");
     expect(mediaTypeOf()).toBe("sanity");
   });
 
-  test("an unplayable Mux asset infers the file path, not Mux", () => {
+  it("an unplayable Mux asset infers the file path, not Mux", () => {
     expect(mediaTypeOf({ mux: { ...READY_MUX, policy: "signed" } })).toBe(
       "sanity"
     );
@@ -32,14 +32,14 @@ describe("hero/media-type", () => {
     );
   });
 
-  test("an unrecognised mediaType falls back to inference", () => {
+  it("an unrecognised mediaType falls back to inference", () => {
     expect(mediaTypeOf({ mediaType: "cloudflare", mux: READY_MUX })).toBe(
       "mux"
     );
     expect(mediaTypeOf({ mediaType: "", mux: null })).toBe("sanity");
   });
 
-  test("the progressive-MP4 path is recognised and counts as Mux", () => {
+  it("the progressive-MP4 path is recognised and counts as Mux", () => {
     expect(mediaTypeOf({ mediaType: "mux-mp4", mux: READY_MUX })).toBe(
       "mux-mp4"
     );
@@ -50,7 +50,7 @@ describe("hero/media-type", () => {
     expect(isMuxPath("sanity")).toBeFalsy();
   });
 
-  test.each([
+  it.each([
     { rung: "1080p", width: 1440 },
     { rung: "1080p", width: 1280 },
     { rung: "720p", width: 390 },

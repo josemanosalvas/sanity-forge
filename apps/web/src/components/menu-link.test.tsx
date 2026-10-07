@@ -3,7 +3,7 @@ import { getSite } from "@repo/internationalization/sites";
 import { NextIntlClientProvider } from "next-intl";
 import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { MenuLink } from "./menu-link";
 
@@ -20,7 +20,7 @@ const renderOnGermanSite = (node: ReactNode) =>
   );
 
 describe(MenuLink, () => {
-  test("renders a safe GROQ-localized internal href verbatim", () => {
+  it("renders a safe GROQ-localized internal href verbatim", () => {
     const html = renderOnGermanSite(
       <MenuLink
         description="Wer wir sind"
@@ -34,7 +34,7 @@ describe(MenuLink, () => {
     expect(html).toContain("Wer wir sind");
   });
 
-  test("renders a safe external href verbatim and marks new-tab links", () => {
+  it("renders a safe external href verbatim and marks new-tab links", () => {
     const html = renderOnGermanSite(
       <MenuLink href="https://example.com" name="Example" openInNewTab />
     );
@@ -43,11 +43,11 @@ describe(MenuLink, () => {
     expect(html).toContain('rel="noopener noreferrer"');
   });
 
-  test("renders nothing without an href", () => {
+  it("renders nothing without an href", () => {
     expect(renderOnGermanSite(<MenuLink name="Broken" />)).toBe("");
   });
 
-  test("drops an href outside the protocol allowlist", () => {
+  it("drops an href outside the protocol allowlist", () => {
     const html = renderOnGermanSite(
       // oxlint-disable-next-line no-script-url -- unsafe scheme under test
       <MenuLink href="javascript:alert(1)" name="Angriff" />

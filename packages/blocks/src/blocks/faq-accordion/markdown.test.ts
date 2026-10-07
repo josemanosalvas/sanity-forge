@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { faqAccordionToMarkdown } from "./markdown";
 
@@ -15,11 +15,11 @@ const category = (
 ) => [{ _key: "cat-1", faqs, title: "General" }];
 
 describe(faqAccordionToMarkdown, () => {
-  test("faqAccordionToMarkdown returns empty string for a fully empty block", () => {
+  it("faqAccordionToMarkdown returns empty string for a fully empty block", () => {
     expect(faqAccordionToMarkdown({}, {})).toBe("");
   });
 
-  test("faqAccordionToMarkdown renders eyebrow and title with no faqs", () => {
+  it("faqAccordionToMarkdown renders eyebrow and title with no faqs", () => {
     const result = faqAccordionToMarkdown(
       { eyebrow: "Help", title: "FAQ" },
       {}
@@ -27,7 +27,7 @@ describe(faqAccordionToMarkdown, () => {
     expect(result).toBe("**Help**\n\n## FAQ");
   });
 
-  test("faqAccordionToMarkdown renders subtitle below title", () => {
+  it("faqAccordionToMarkdown renders subtitle below title", () => {
     const result = faqAccordionToMarkdown(
       { subtitle: "Your questions answered", title: "FAQ" },
       {}
@@ -35,7 +35,7 @@ describe(faqAccordionToMarkdown, () => {
     expect(result).toContain("Your questions answered");
   });
 
-  test("faqAccordionToMarkdown escapes markdown chars in subtitle", () => {
+  it("faqAccordionToMarkdown escapes markdown chars in subtitle", () => {
     const result = faqAccordionToMarkdown(
       { subtitle: "Ask [us] anything_here | now", title: "FAQ" },
       {}
@@ -43,7 +43,7 @@ describe(faqAccordionToMarkdown, () => {
     expect(result).toContain("Ask \\[us\\] anything\\_here \\| now");
   });
 
-  test("faqAccordionToMarkdown renders each faq as h3 followed by its answer", () => {
+  it("faqAccordionToMarkdown renders each faq as h3 followed by its answer", () => {
     const result = faqAccordionToMarkdown(
       {
         categories: category([
@@ -57,7 +57,7 @@ describe(faqAccordionToMarkdown, () => {
     expect(result).toContain("An answer.");
   });
 
-  test("faqAccordionToMarkdown serializes faqs across multiple categories", () => {
+  it("faqAccordionToMarkdown serializes faqs across multiple categories", () => {
     const result = faqAccordionToMarkdown(
       {
         categories: [
@@ -80,7 +80,7 @@ describe(faqAccordionToMarkdown, () => {
     expect(result).toContain("### Q2");
   });
 
-  test("faqAccordionToMarkdown skips faqs that have no title", () => {
+  it("faqAccordionToMarkdown skips faqs that have no title", () => {
     const result = faqAccordionToMarkdown(
       {
         categories: category([
@@ -97,13 +97,13 @@ describe(faqAccordionToMarkdown, () => {
     expect(result).toContain("### Valid Q");
   });
 
-  test("faqAccordionToMarkdown handles null categories without throwing", () => {
+  it("faqAccordionToMarkdown handles null categories without throwing", () => {
     expect(() =>
       faqAccordionToMarkdown({ categories: null, title: "FAQ" }, {})
     ).not.toThrow();
   });
 
-  test("faqAccordionToMarkdown prefers link description over link title", () => {
+  it("faqAccordionToMarkdown prefers link description over link title", () => {
     const result = faqAccordionToMarkdown(
       {
         categories: category([{ richText: para("A"), title: "Q" }]),
@@ -116,7 +116,7 @@ describe(faqAccordionToMarkdown, () => {
     expect(result).not.toContain("MoreX");
   });
 
-  test("faqAccordionToMarkdown uses link title when description is absent", () => {
+  it("faqAccordionToMarkdown uses link title when description is absent", () => {
     const result = faqAccordionToMarkdown(
       {
         categories: category([{ richText: para("A"), title: "Q" }]),
@@ -128,7 +128,7 @@ describe(faqAccordionToMarkdown, () => {
     expect(result).toContain("[More](/faq)");
   });
 
-  test("faqAccordionToMarkdown renders link as plain text when href is '#'", () => {
+  it("faqAccordionToMarkdown renders link as plain text when href is '#'", () => {
     const result = faqAccordionToMarkdown(
       {
         categories: category([{ richText: para("A"), title: "Q" }]),
@@ -141,7 +141,7 @@ describe(faqAccordionToMarkdown, () => {
     expect(result).not.toContain("(#)");
   });
 
-  test("faqAccordionToMarkdown emits no HTML or JSX tags", () => {
+  it("faqAccordionToMarkdown emits no HTML or JSX tags", () => {
     const result = faqAccordionToMarkdown(
       {
         categories: category([{ richText: para("Answer text."), title: "Q?" }]),

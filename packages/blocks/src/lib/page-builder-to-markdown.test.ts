@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { pageBuilderToMarkdown } from "./page-builder-to-markdown";
 import type { MarkdownBlock } from "./page-builder-to-markdown";
@@ -8,7 +8,7 @@ const para = (text: string) => [
 ];
 
 describe(pageBuilderToMarkdown, () => {
-  test("returns empty string for missing input", () => {
+  it("returns empty string for missing input", () => {
     expect(pageBuilderToMarkdown()).toBe("");
     expect(pageBuilderToMarkdown(null)).toBe("");
     expect(pageBuilderToMarkdown([])).toBe("");
@@ -39,7 +39,7 @@ describe(pageBuilderToMarkdown, () => {
     },
   ]);
 
-  test.each([
+  it.each([
     "**FAQ**",
     "## Questions",
     "Helpful answers",
@@ -50,11 +50,11 @@ describe(pageBuilderToMarkdown, () => {
     expect(faqMarkdown).toContain(text);
   });
 
-  test("serializes an FAQ block without component tags", () => {
+  it("serializes an FAQ block without component tags", () => {
     expect(faqMarkdown).not.toMatch(/<[A-Za-z]/u);
   });
 
-  test("serializes hero with buttons as markdown links", () => {
+  it("serializes hero with buttons as markdown links", () => {
     const md = pageBuilderToMarkdown([
       {
         _type: "hero",
@@ -74,7 +74,7 @@ describe(pageBuilderToMarkdown, () => {
     expect(md).toContain("- Broken");
   });
 
-  test("serializes feature cards as nested headings", () => {
+  it("serializes feature cards as nested headings", () => {
     const md = pageBuilderToMarkdown([
       {
         _type: "featureCardsIcon",
@@ -96,7 +96,7 @@ describe(pageBuilderToMarkdown, () => {
     expect(md).not.toContain("bolt");
   });
 
-  test("serializes subscribe newsletter without form markup", () => {
+  it("serializes subscribe newsletter without form markup", () => {
     const md = pageBuilderToMarkdown([
       {
         _type: "subscribeNewsletter",
@@ -113,7 +113,7 @@ describe(pageBuilderToMarkdown, () => {
     expect(md).not.toMatch(/<(?:form|input|button)/iu);
   });
 
-  test("unknown blocks contribute nothing", () => {
+  it("unknown blocks contribute nothing", () => {
     const md = pageBuilderToMarkdown([
       { _type: "someFutureBlock", title: "Ignore me" } as MarkdownBlock,
       { _type: "richTextBlock", richText: para("Body."), title: "Kept" },
@@ -124,7 +124,7 @@ describe(pageBuilderToMarkdown, () => {
     expect(md).toContain("Body.");
   });
 
-  test("treats '#' href as no link (plain text fallback)", () => {
+  it("treats '#' href as no link (plain text fallback)", () => {
     const faq = pageBuilderToMarkdown([
       {
         _type: "faqAccordion",
@@ -143,7 +143,7 @@ describe(pageBuilderToMarkdown, () => {
     expect(faq).not.toContain("(#)");
   });
 
-  test("keeps no-href links as plain text instead of dropping them", () => {
+  it("keeps no-href links as plain text instead of dropping them", () => {
     const faq = pageBuilderToMarkdown([
       {
         _type: "faqAccordion",
@@ -162,7 +162,7 @@ describe(pageBuilderToMarkdown, () => {
     expect(faq).not.toContain("](");
   });
 
-  test("separates blocks with a blank line", () => {
+  it("separates blocks with a blank line", () => {
     const md = pageBuilderToMarkdown([
       { _type: "richTextBlock", title: "One" },
       { _type: "richTextBlock", title: "Two" },

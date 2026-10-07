@@ -1,13 +1,13 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { showcaseGridToMarkdown } from "./markdown";
 
 describe(showcaseGridToMarkdown, () => {
-  test("showcaseGridToMarkdown returns empty string for a fully empty block", () => {
+  it("showcaseGridToMarkdown returns empty string for a fully empty block", () => {
     expect(showcaseGridToMarkdown({}, {})).toBe("");
   });
 
-  test("showcaseGridToMarkdown renders the title and description", () => {
+  it("showcaseGridToMarkdown renders the title and description", () => {
     const result = showcaseGridToMarkdown(
       {
         description: "Every site here started from the same template.",
@@ -19,7 +19,7 @@ describe(showcaseGridToMarkdown, () => {
     expect(result).toContain("Every site here started from the same template.");
   });
 
-  test("showcaseGridToMarkdown renders items as a linked list", () => {
+  it("showcaseGridToMarkdown renders items as a linked list", () => {
     const result = showcaseGridToMarkdown(
       {
         items: [
@@ -34,7 +34,7 @@ describe(showcaseGridToMarkdown, () => {
     expect(result).not.toContain("No Link Site](");
   });
 
-  test("showcaseGridToMarkdown links the site name and skips nameless items", () => {
+  it("showcaseGridToMarkdown links the site name and skips nameless items", () => {
     const result = showcaseGridToMarkdown(
       {
         items: [
@@ -52,7 +52,7 @@ describe(showcaseGridToMarkdown, () => {
     expect(result).not.toContain("nameless.example.com");
   });
 
-  test("showcaseGridToMarkdown appends the category after the link", () => {
+  it("showcaseGridToMarkdown appends the category after the link", () => {
     const result = showcaseGridToMarkdown(
       {
         items: [
@@ -74,7 +74,7 @@ describe(showcaseGridToMarkdown, () => {
     expect(result).not.toContain("Plain Site —");
   });
 
-  test("showcaseGridToMarkdown emits no HTML or JSX tags", () => {
+  it("showcaseGridToMarkdown emits no HTML or JSX tags", () => {
     const result = showcaseGridToMarkdown(
       {
         description: "Built with the template.",

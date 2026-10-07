@@ -1,10 +1,10 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { LogoCloud } from "./logo-cloud";
 
 describe(LogoCloud, () => {
-  test("LogoCloud renders the logos", () => {
+  it("LogoCloud renders the logos", () => {
     const html = renderToStaticMarkup(
       <LogoCloud
         logos={[
@@ -23,7 +23,7 @@ describe(LogoCloud, () => {
     expect(html).toContain('target="_blank"');
   });
 
-  test("LogoCloud renders logos without a link", () => {
+  it("LogoCloud renders logos without a link", () => {
     const html = renderToStaticMarkup(
       <LogoCloud
         logos={[
@@ -39,7 +39,7 @@ describe(LogoCloud, () => {
     expect(html).not.toContain("<a ");
   });
 
-  test("LogoCloud renders nothing when there are no logos", () => {
+  it("LogoCloud renders nothing when there are no logos", () => {
     const html = renderToStaticMarkup(<LogoCloud />);
 
     expect(html).toBe("");

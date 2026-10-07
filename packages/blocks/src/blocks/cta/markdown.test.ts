@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { ctaToMarkdown } from "./markdown";
 
@@ -11,11 +11,11 @@ const para = (text: string) => [
 ];
 
 describe(ctaToMarkdown, () => {
-  test("ctaToMarkdown returns empty string for a fully empty block", () => {
+  it("ctaToMarkdown returns empty string for a fully empty block", () => {
     expect(ctaToMarkdown({}, {})).toBe("");
   });
 
-  test("ctaToMarkdown renders eyebrow, title, and richText joined by blank lines", () => {
+  it("ctaToMarkdown renders eyebrow, title, and richText joined by blank lines", () => {
     const result = ctaToMarkdown(
       {
         eyebrow: "New",
@@ -27,17 +27,17 @@ describe(ctaToMarkdown, () => {
     expect(result).toBe("**New**\n\n## Launch\n\nGet started today.");
   });
 
-  test("ctaToMarkdown escapes markdown chars in eyebrow", () => {
+  it("ctaToMarkdown escapes markdown chars in eyebrow", () => {
     const result = ctaToMarkdown({ eyebrow: "#1 _Pick_" }, {});
     expect(result).toBe("**\\#1 \\_Pick\\_**");
   });
 
-  test("ctaToMarkdown escapes markdown chars in title", () => {
+  it("ctaToMarkdown escapes markdown chars in title", () => {
     const result = ctaToMarkdown({ title: "user_name & [more]" }, {});
     expect(result).toBe("## user\\_name & \\[more\\]");
   });
 
-  test("ctaToMarkdown renders buttons as a Markdown list", () => {
+  it("ctaToMarkdown renders buttons as a Markdown list", () => {
     const result = ctaToMarkdown(
       {
         buttons: [
@@ -53,13 +53,13 @@ describe(ctaToMarkdown, () => {
     expect(result).not.toContain("(#)");
   });
 
-  test("ctaToMarkdown handles undefined richText without throwing", () => {
+  it("ctaToMarkdown handles undefined richText without throwing", () => {
     expect(() =>
       ctaToMarkdown({ richText: undefined, title: "T" }, {})
     ).not.toThrow();
   });
 
-  test("ctaToMarkdown emits no HTML or JSX tags", () => {
+  it("ctaToMarkdown emits no HTML or JSX tags", () => {
     const result = ctaToMarkdown(
       { eyebrow: "E", richText: para("Body."), title: "T" },
       {}

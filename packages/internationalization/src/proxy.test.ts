@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import {
   canonicalHostRedirect,
@@ -11,7 +11,7 @@ const request = (url: string, host: string) =>
   new NextRequest(url, { headers: { host } });
 
 describe("src/proxy", () => {
-  test("the site comes from the Host header, not the server URL", () => {
+  it("the site comes from the Host header, not the server URL", () => {
     expect(
       resolveSite(request("http://localhost:3000/", "brand-b.example")).key
     ).toBe("brand-b");
@@ -26,14 +26,14 @@ describe("src/proxy", () => {
     ).toBe("brand-b");
   });
 
-  test("x-forwarded-host wins behind a proxy", () => {
+  it("x-forwarded-host wins behind a proxy", () => {
     const req = new NextRequest("http://localhost:3000/", {
       headers: { host: "internal:3000", "x-forwarded-host": "brand-b.example" },
     });
     expect(resolveSite(req).key).toBe("brand-b");
   });
 
-  test("a conflicting x-forwarded-host takes precedence over Host", () => {
+  it("a conflicting x-forwarded-host takes precedence over Host", () => {
     const req = new NextRequest("http://localhost:3000/", {
       headers: {
         host: "brand-a.example",
@@ -43,7 +43,7 @@ describe("src/proxy", () => {
     expect(resolveSite(req).key).toBe("brand-b");
   });
 
-  test("the www twin of a production host redirects to the canonical host", () => {
+  it("the www twin of a production host redirects to the canonical host", () => {
     const req = new NextRequest("http://www.brand-a.example/de/ueber-uns?x=1", {
       headers: { host: "www.brand-a.example" },
     });
@@ -54,7 +54,7 @@ describe("src/proxy", () => {
     );
   });
 
-  test("the redirect target never carries the origin server's port", () => {
+  it("the redirect target never carries the origin server's port", () => {
     const req = new NextRequest("http://127.0.0.1:3000/about", {
       headers: {
         host: "127.0.0.1:3000",
@@ -66,14 +66,14 @@ describe("src/proxy", () => {
     ).toBe("https://brand-a.example/about");
   });
 
-  test("canonical and development hosts are not redirected", () => {
+  it("canonical and development hosts are not redirected", () => {
     for (const host of ["brand-a.example", "brand-a.localhost:3000"]) {
       const req = request(`http://${host}/about`, host);
       expect(canonicalHostRedirect(req, resolveSite(req))).toBeNull();
     }
   });
 
-  test("public paths are rewritten to the internal site + locale route", () => {
+  it("public paths are rewritten to the internal site + locale route", () => {
     const site = resolveSite(
       request("http://brand-a.example/about?ref=1", "brand-a.example")
     );
@@ -87,7 +87,7 @@ describe("src/proxy", () => {
     );
   });
 
-  test("localized paths keep their locale and the root maps cleanly", () => {
+  it("localized paths keep their locale and the root maps cleanly", () => {
     const site = resolveSite(
       request("http://brand-a.example/", "brand-a.example")
     );
@@ -105,7 +105,7 @@ describe("src/proxy", () => {
     ).toBe("http://brand-a.example/brand-a/fr");
   });
 
-  test("an explicit default-locale prefix redirects to the clean URL", () => {
+  it("an explicit default-locale prefix redirects to the clean URL", () => {
     const site = resolveSite(
       request("http://brand-a.example/", "brand-a.example")
     );
@@ -119,7 +119,7 @@ describe("src/proxy", () => {
     );
   });
 
-  test("a locale the site does not serve is left for the page to 404", () => {
+  it("a locale the site does not serve is left for the page to 404", () => {
     const site = resolveSite(
       request("http://brand-b.example/", "brand-b.example")
     );

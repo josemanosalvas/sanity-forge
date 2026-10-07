@@ -1,10 +1,10 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { CTABlock } from "./cta";
 
 describe(CTABlock, () => {
-  test("CTABlock renders primary content", () => {
+  it("CTABlock renders primary content", () => {
     const html = renderToStaticMarkup(
       <CTABlock
         eyebrow="Contact"
@@ -17,7 +17,7 @@ describe(CTABlock, () => {
     expect(html).toMatch(/Contact us/u);
   });
 
-  test("CTABlock renders no empty heading without a title", () => {
+  it("CTABlock renders no empty heading without a title", () => {
     const html = renderToStaticMarkup(<CTABlock eyebrow="Contact" />);
 
     expect(html).not.toMatch(/<h2/u);

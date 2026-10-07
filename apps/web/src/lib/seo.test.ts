@@ -3,7 +3,7 @@ import { pageMetadataQuery, pageQuery } from "@repo/sanity/queries";
 import type { SettingsQueryResult } from "@repo/sanity/types";
 import { evaluate, parse } from "groq-js";
 import type { Metadata } from "next";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import type { PageDocument, SiteContext } from "@/types";
 
@@ -80,7 +80,7 @@ const ogUrl = (metadata: Metadata) =>
   (metadata.openGraph?.images as { url: string }[] | undefined)?.[0]?.url;
 
 describe(pageMetadata, () => {
-  test("the hotspot moves the card's crop off centre", () => {
+  it("the hotspot moves the card's crop off centre", () => {
     const centred = ogUrl(
       pageMetadata(context, page({ ogImage: ogImage() }), settings())
     );
@@ -97,7 +97,7 @@ describe(pageMetadata, () => {
     expect(low).toContain("h=630");
   });
 
-  test("the editor's crop bounds the card before it is sized", () => {
+  it("the editor's crop bounds the card before it is sized", () => {
     const url = ogUrl(
       pageMetadata(
         context,
@@ -112,7 +112,7 @@ describe(pageMetadata, () => {
     expect(url).toContain("rect=157,225,1286,675");
   });
 
-  test.each(["jpg", "webp", "avif"])(
+  it.each(["jpg", "webp", "avif"])(
     "social images use JPEG for a %s source",
     (format) => {
       const url = ogUrl(
@@ -130,7 +130,7 @@ describe(pageMetadata, () => {
     }
   );
 
-  test("the site default fills in, alt text included, for a page with no image", () => {
+  it("the site default fills in, alt text included, for a page with no image", () => {
     const metadata = pageMetadata(
       context,
       page(),
@@ -146,7 +146,7 @@ describe(pageMetadata, () => {
     ]);
   });
 
-  test("an unusable asset ref degrades to the summary card, never a throw", () => {
+  it("an unusable asset ref degrades to the summary card, never a throw", () => {
     const metadata = pageMetadata(
       context,
       page({ ogImage: ogImage({ id: "image-not-a-real-ref" }) }),
@@ -156,7 +156,7 @@ describe(pageMetadata, () => {
     expect(metadata.twitter).toMatchObject({ card: "summary" });
   });
 
-  test.each([null, "image-not-a-real-ref"])(
+  it.each([null, "image-not-a-real-ref"])(
     "an unusable page asset (%s) falls back to the site image and its alt text",
     (id) => {
       const metadata = pageMetadata(
@@ -176,7 +176,7 @@ describe(pageMetadata, () => {
     }
   );
 
-  test.each([
+  it.each([
     ["https://x.com/acme", "@acme"],
     ["https://x.com/acme/", "@acme"],
     ["https://x.com/acme?lang=en", "@acme"],
@@ -195,7 +195,7 @@ describe(pageMetadata, () => {
 });
 
 describe(siteMetadata, () => {
-  test("the site default image is cropped around its own hotspot", () => {
+  it("the site default image is cropped around its own hotspot", () => {
     const metadata = siteMetadata(
       context,
       settings({ ogImage: ogImage({ hotspot: { x: 0.5, y: 0.8 } }) })
@@ -236,7 +236,7 @@ describe.each([
     return result.get();
   };
 
-  test.each([
+  it.each([
     { name: "framing without an asset", seoImage: { crop: { top: 0.25 } } },
     { name: "empty asset", seoImage: { asset: {} } },
     {
@@ -248,7 +248,7 @@ describe.each([
     expect(result.ogImage).toMatchObject({ alt: "Main image", id: ASSET_ID });
   });
 
-  test("a resolved override preserves its framing and takes priority", async () => {
+  it("a resolved override preserves its framing and takes priority", async () => {
     const crop = { bottom: 0, left: 0, right: 0, top: 0.25 };
     const hotspot = { x: 0.3, y: 0.7 };
     const result = await project({
@@ -262,7 +262,7 @@ describe.each([
     });
   });
 
-  test("unresolved page assets leave the site image available", async () => {
+  it("unresolved page assets leave the site image available", async () => {
     const result = await project({
       image: { asset: { _ref: "image-deleted-1600x900-jpg" } },
       seoImage: { asset: {} },
@@ -278,7 +278,7 @@ describe.each([
 });
 
 describe(siteTranslations, () => {
-  test("keeps only this site's translations in the locales it serves", () =>
+  it("keeps only this site's translations in the locales it serves", () =>
     expect(
       siteTranslations(
         [

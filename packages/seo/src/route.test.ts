@@ -1,5 +1,5 @@
 import { getSite } from "@repo/internationalization/sites";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { canonicalUrl, languageAlternates } from "./route";
 
@@ -7,7 +7,7 @@ describe("src/route", () => {
   const brandA = getSite("brand-a");
   const brandB = getSite("brand-b");
 
-  test("canonical URLs use the production origin and clean default-locale paths", () => {
+  it("canonical URLs use the production origin and clean default-locale paths", () => {
     expect(canonicalUrl({ locale: "en", path: "/about", site: brandA })).toBe(
       "https://brand-a.example/about"
     );
@@ -19,7 +19,7 @@ describe("src/route", () => {
     );
   });
 
-  test("hreflang alternates follow CMS-driven localized slugs and add x-default", () => {
+  it("hreflang alternates follow CMS-driven localized slugs and add x-default", () => {
     expect(
       languageAlternates({
         alternates: [
@@ -39,7 +39,7 @@ describe("src/route", () => {
     });
   });
 
-  test("alternates never advertise locales the site does not serve", () => {
+  it("alternates never advertise locales the site does not serve", () => {
     expect(
       languageAlternates({
         alternates: [
@@ -56,7 +56,7 @@ describe("src/route", () => {
     });
   });
 
-  test("the current route is always part of its own alternates", () => {
+  it("the current route is always part of its own alternates", () => {
     expect(
       languageAlternates({ locale: "de", path: "/preise", site: brandB })
     ).toStrictEqual({

@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import {
   hostMatcher,
@@ -7,7 +7,7 @@ import {
 } from "./redirects";
 
 describe("redirect paths", () => {
-  test.each(["/", "/old-page", "/de/alte-seite", "/files/report-2024.pdf"])(
+  it.each(["/", "/old-page", "/de/alte-seite", "/files/report-2024.pdf"])(
     "accepts the plain public path %s",
     (path) => {
       expect(isRedirectSource(path)).toBeTruthy();
@@ -15,7 +15,7 @@ describe("redirect paths", () => {
     }
   );
 
-  test.each([
+  it.each([
     "/pricing(old)",
     "/blog/:year",
     "/docs/*",
@@ -31,7 +31,7 @@ describe("redirect paths", () => {
     expect(isRedirectSource(path)).toBeFalsy();
   });
 
-  test("a destination may carry a query string but no path-to-regexp syntax", () => {
+  it("a destination may carry a query string but no path-to-regexp syntax", () => {
     expect(
       isRedirectDestination("/new-page?ref=old&utm_source=x")
     ).toBeTruthy();
@@ -39,7 +39,7 @@ describe("redirect paths", () => {
     expect(isRedirectDestination("/new/:slug")).toBeFalsy();
   });
 
-  test("hosts are escaped for Next's regex matching", () => {
+  it("hosts are escaped for Next's regex matching", () => {
     expect(hostMatcher("brand-a.example")).toBe(String.raw`brand-a\.example`);
     expect(
       new RegExp(`^${hostMatcher("brand-a.example")}$`, "u").test(

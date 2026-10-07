@@ -1,10 +1,10 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { FaqAccordion } from "./faq-accordion";
 
 describe(FaqAccordion, () => {
-  test("FaqAccordion renders questions and optional link", () => {
+  it("FaqAccordion renders questions and optional link", () => {
     const html = renderToStaticMarkup(
       <FaqAccordion
         title="FAQs"
@@ -33,7 +33,7 @@ describe(FaqAccordion, () => {
   });
 
   // oxlint-disable-next-line no-script-url -- the unsafe scheme is the input under test
-  test("FaqAccordion drops a contact link with a javascript: url", () => {
+  it("FaqAccordion drops a contact link with a javascript: url", () => {
     const html = renderToStaticMarkup(
       <FaqAccordion
         // oxlint-disable-next-line no-script-url -- the unsafe scheme is the input under test
@@ -47,7 +47,7 @@ describe(FaqAccordion, () => {
     expect(html).not.toMatch(/All questions/u);
   });
 
-  test("FaqAccordion renders subtitle and faq trigger titles", () => {
+  it("FaqAccordion renders subtitle and faq trigger titles", () => {
     const html = renderToStaticMarkup(
       <FaqAccordion
         subtitle="Helpful answers"
@@ -97,19 +97,19 @@ describe(FaqAccordion, () => {
     />
   );
 
-  test("FaqAccordion lists every category tab with the first one active", () => {
+  it("FaqAccordion lists every category tab with the first one active", () => {
     expect(twoCategories).toMatch(/First Category/u);
     expect(twoCategories).toMatch(/Second Category/u);
     expect(twoCategories).toMatch(/aria-pressed="true"/u);
     expect(twoCategories).toMatch(/aria-pressed="false"/u);
   });
 
-  test("FaqAccordion shows only the first category's questions", () => {
+  it("FaqAccordion shows only the first category's questions", () => {
     expect(twoCategories).toMatch(/First question/u);
     expect(twoCategories).not.toMatch(/Second question/u);
   });
 
-  test("FaqAccordion renders with no categories", () => {
+  it("FaqAccordion renders with no categories", () => {
     const html = renderToStaticMarkup(<FaqAccordion title="No items yet" />);
 
     expect(html).toMatch(/No items yet/u);

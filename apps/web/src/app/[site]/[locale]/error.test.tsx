@@ -3,7 +3,7 @@ import { SiteProvider } from "@repo/internationalization/navigation";
 import { getSite } from "@repo/internationalization/sites";
 import { NextIntlClientProvider } from "next-intl";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, test, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 vi.mock(import("@repo/observability/client"), () => ({
   captureException: vi.fn<() => string>(() => "event-1"),
@@ -23,7 +23,7 @@ const render = (error: Error & { digest?: string }) =>
   );
 
 describe("error boundary", () => {
-  test("shows the translated copy and the digest, never the message", () => {
+  it("shows the translated copy and the digest, never the message", () => {
     const html = render(Object.assign(new Error("boom"), { digest: "d1g3st" }));
     expect(html).toContain(en.error.title);
     expect(html).toContain(en.error.body);
@@ -31,13 +31,13 @@ describe("error boundary", () => {
     expect(html).not.toContain("boom");
   });
 
-  test("offers a retry and a way home", () => {
+  it("offers a retry and a way home", () => {
     const html = render(new Error("boom"));
     expect(html).toContain(en.error.retry);
     expect(html).toMatch(/<a[^>]*href="\/"/u);
   });
 
-  test("renders without an identifier when the error has no digest", () => {
+  it("renders without an identifier when the error has no digest", () => {
     const html = render(new Error("boom"));
     expect(html).not.toContain(en.error.errorId);
     expect(html).toContain(en.error.title);

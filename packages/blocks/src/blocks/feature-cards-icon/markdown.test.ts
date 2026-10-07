@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { featureCardsIconToMarkdown } from "./markdown";
 
@@ -11,17 +11,17 @@ const para = (text: string) => [
 ];
 
 describe(featureCardsIconToMarkdown, () => {
-  test("featureCardsIconToMarkdown returns empty string for a fully empty block", () => {
+  it("featureCardsIconToMarkdown returns empty string for a fully empty block", () => {
     expect(featureCardsIconToMarkdown({}, {})).toBe("");
   });
 
-  test("featureCardsIconToMarkdown renders a section title alone", () => {
+  it("featureCardsIconToMarkdown renders a section title alone", () => {
     expect(featureCardsIconToMarkdown({ title: "Features" }, {})).toBe(
       "## Features"
     );
   });
 
-  test("featureCardsIconToMarkdown renders eyebrow above the title", () => {
+  it("featureCardsIconToMarkdown renders eyebrow above the title", () => {
     const result = featureCardsIconToMarkdown(
       { eyebrow: "Why us", title: "Features" },
       {}
@@ -29,7 +29,7 @@ describe(featureCardsIconToMarkdown, () => {
     expect(result).toBe("**Why us**\n\n## Features");
   });
 
-  test("featureCardsIconToMarkdown renders each card as an h3 section", () => {
+  it("featureCardsIconToMarkdown renders each card as an h3 section", () => {
     const result = featureCardsIconToMarkdown(
       {
         cards: [
@@ -46,7 +46,7 @@ describe(featureCardsIconToMarkdown, () => {
     expect(result).toContain("Very secure.");
   });
 
-  test("featureCardsIconToMarkdown drops the icon field from output", () => {
+  it("featureCardsIconToMarkdown drops the icon field from output", () => {
     const result = featureCardsIconToMarkdown(
       {
         cards: [{ _key: "c1", icon: "bolt", title: "Card" }],
@@ -56,7 +56,7 @@ describe(featureCardsIconToMarkdown, () => {
     expect(result).not.toContain("bolt");
   });
 
-  test("featureCardsIconToMarkdown still renders richText for a card with no title", () => {
+  it("featureCardsIconToMarkdown still renders richText for a card with no title", () => {
     const result = featureCardsIconToMarkdown(
       {
         cards: [{ _key: "c1", richText: para("Body without heading.") }],
@@ -66,13 +66,13 @@ describe(featureCardsIconToMarkdown, () => {
     expect(result).toContain("Body without heading.");
   });
 
-  test("featureCardsIconToMarkdown handles null cards without throwing", () => {
+  it("featureCardsIconToMarkdown handles null cards without throwing", () => {
     expect(() =>
       featureCardsIconToMarkdown({ cards: null, title: "T" }, {})
     ).not.toThrow();
   });
 
-  test("featureCardsIconToMarkdown escapes markdown chars in card title", () => {
+  it("featureCardsIconToMarkdown escapes markdown chars in card title", () => {
     const result = featureCardsIconToMarkdown(
       {
         cards: [{ _key: "c1", title: "user_name [feature]" }],
@@ -82,7 +82,7 @@ describe(featureCardsIconToMarkdown, () => {
     expect(result).toContain("### user\\_name \\[feature\\]");
   });
 
-  test("featureCardsIconToMarkdown emits no HTML or JSX tags", () => {
+  it("featureCardsIconToMarkdown emits no HTML or JSX tags", () => {
     const result = featureCardsIconToMarkdown(
       {
         cards: [{ _key: "c1", richText: para("Body."), title: "Card" }],

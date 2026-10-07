@@ -1,5 +1,5 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { BlockLabelsProvider, defaultBlockLabels } from "./block-labels";
 import { RichText } from "./rich-text";
@@ -28,7 +28,7 @@ const richText = [
 ] as RichTextValue;
 
 describe(RichText, () => {
-  test("renders its own strings in English without a provider", () => {
+  it("renders its own strings in English without a provider", () => {
     const html = renderToStaticMarkup(<RichText richText={richText} />);
 
     expect(html).toContain("(opens in a new tab)");
@@ -36,7 +36,7 @@ describe(RichText, () => {
     expect(html).toContain('aria-label="Copy code to clipboard"');
   });
 
-  test("renders them in the labels the site provides", () => {
+  it("renders them in the labels the site provides", () => {
     const html = renderToStaticMarkup(
       <BlockLabelsProvider
         labels={{

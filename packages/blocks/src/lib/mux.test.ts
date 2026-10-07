@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { muxVideoToMarkdown } from "./markdown";
 import {
@@ -16,31 +16,31 @@ describe("lib/mux", () => {
     status: "ready",
   };
 
-  test("muxPlaybackId returns the id for a ready public asset", () => {
+  it("muxPlaybackId returns the id for a ready public asset", () => {
     expect(muxPlaybackId(ready)).toBe("abc123");
   });
 
-  test("muxPlaybackId withholds the id when the encode errored", () => {
+  it("muxPlaybackId withholds the id when the encode errored", () => {
     expect(muxPlaybackId({ ...ready, status: "errored" })).toBeNull();
   });
 
-  test("muxPlaybackId returns the id while the asset is still preparing", () => {
+  it("muxPlaybackId returns the id while the asset is still preparing", () => {
     expect(muxPlaybackId({ ...ready, status: "preparing" })).toBe("abc123");
   });
 
-  test("muxPlaybackId withholds a signed id", () => {
+  it("muxPlaybackId withholds a signed id", () => {
     expect(muxPlaybackId({ ...ready, policy: "signed" })).toBeNull();
   });
 
-  test("muxPlaybackId withholds a drm id", () => {
+  it("muxPlaybackId withholds a drm id", () => {
     expect(muxPlaybackId({ ...ready, policy: "drm" })).toBeNull();
   });
 
-  test("muxPlaybackId withholds an id with no policy", () => {
+  it("muxPlaybackId withholds an id with no policy", () => {
     expect(muxPlaybackId({ playbackId: "abc123", status: "ready" })).toBeNull();
   });
 
-  test("muxPlaybackId handles a dangling asset reference", () => {
+  it("muxPlaybackId handles a dangling asset reference", () => {
     expect(
       muxPlaybackId({
         aspectRatio: null,
@@ -53,33 +53,33 @@ describe("lib/mux", () => {
     ).toBeNull();
   });
 
-  test("muxPlaybackId handles a missing video", () => {
+  it("muxPlaybackId handles a missing video", () => {
     expect(muxPlaybackId(null)).toBeNull();
     expect(muxPlaybackId()).toBeNull();
   });
 
-  test("muxAspectRatio converts Mux's colon form to CSS", () => {
+  it("muxAspectRatio converts Mux's colon form to CSS", () => {
     expect(muxAspectRatio({ aspectRatio: "16:9" })).toBe("16/9");
     expect(muxAspectRatio({ aspectRatio: "9:16" })).toBe("9/16");
   });
 
-  test("muxAspectRatio falls back to 16/9 on an empty string", () => {
+  it("muxAspectRatio falls back to 16/9 on an empty string", () => {
     expect(muxAspectRatio({ aspectRatio: "" })).toBe("16/9");
   });
 
-  test("muxAspectRatio falls back to 16/9 when the ratio is missing", () => {
+  it("muxAspectRatio falls back to 16/9 when the ratio is missing", () => {
     expect(muxAspectRatio({})).toBe("16/9");
     expect(muxAspectRatio({ aspectRatio: null })).toBe("16/9");
     expect(muxAspectRatio(null)).toBe("16/9");
   });
 
-  test("muxThumbnailUrl pins the frame when thumbTime is zero", () => {
+  it("muxThumbnailUrl pins the frame when thumbTime is zero", () => {
     expect(muxThumbnailUrl("abc123", 0)).toBe(
       "https://image.mux.com/abc123/thumbnail.webp?time=0"
     );
   });
 
-  test("muxThumbnailUrl omits the time when no frame was picked", () => {
+  it("muxThumbnailUrl omits the time when no frame was picked", () => {
     expect(muxThumbnailUrl("abc123")).toBe(
       "https://image.mux.com/abc123/thumbnail.webp"
     );
@@ -88,25 +88,25 @@ describe("lib/mux", () => {
     );
   });
 
-  test("muxThumbnailSrcSet lists one candidate per width with the frame pinned", () => {
+  it("muxThumbnailSrcSet lists one candidate per width with the frame pinned", () => {
     expect(muxThumbnailSrcSet("abc123", 4)).toBe(
       "https://image.mux.com/abc123/thumbnail.webp?time=4&width=640 640w, https://image.mux.com/abc123/thumbnail.webp?time=4&width=960 960w, https://image.mux.com/abc123/thumbnail.webp?time=4&width=1440 1440w, https://image.mux.com/abc123/thumbnail.webp?time=4&width=1920 1920w"
     );
     expect(muxThumbnailSrcSet(null)).toBeUndefined();
   });
 
-  test("muxThumbnailUrl returns undefined without a playback id", () => {
+  it("muxThumbnailUrl returns undefined without a playback id", () => {
     expect(muxThumbnailUrl(null)).toBeUndefined();
     expect(muxThumbnailUrl("")).toBeUndefined();
   });
 
-  test("muxVideoToMarkdown renders the generated still", () => {
+  it("muxVideoToMarkdown renders the generated still", () => {
     expect(muxVideoToMarkdown({ ...ready, thumbTime: 12 }, "A demo")).toBe(
       "![A demo](https://image.mux.com/abc123/thumbnail.webp?time=12&width=1200)"
     );
   });
 
-  test("muxVideoToMarkdown returns empty string without a usable id", () => {
+  it("muxVideoToMarkdown returns empty string without a usable id", () => {
     expect(muxVideoToMarkdown({ ...ready, policy: "signed" }, "A demo")).toBe(
       ""
     );

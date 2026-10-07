@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { localizePath, parsePathname } from "./routing";
 import { getSite } from "./sites";
@@ -7,7 +7,7 @@ describe("src/routing", () => {
   const brandA = getSite("brand-a");
   const brandB = getSite("brand-b");
 
-  test("default-locale paths stay clean and other locales are prefixed", () => {
+  it("default-locale paths stay clean and other locales are prefixed", () => {
     expect(localizePath(brandA, "en", "/about")).toBe("/about");
     expect(localizePath(brandA, "de", "/ueber-uns")).toBe("/de/ueber-uns");
     expect(localizePath(brandA, "fr", "/")).toBe("/fr");
@@ -19,7 +19,7 @@ describe("src/routing", () => {
     );
   });
 
-  test("pathnames are parsed against the site's own locales", () => {
+  it("pathnames are parsed against the site's own locales", () => {
     expect(parsePathname(brandA, "/de/ueber-uns")).toStrictEqual({
       hadPrefix: true,
       locale: "de",
@@ -37,7 +37,7 @@ describe("src/routing", () => {
     });
   });
 
-  test("a locale another site serves is rejected rather than adopted", () => {
+  it("a locale another site serves is rejected rather than adopted", () => {
     expect(parsePathname(brandB, "/fr/a-propos")).toStrictEqual({
       hadPrefix: false,
       locale: "en",

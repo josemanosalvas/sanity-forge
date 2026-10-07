@@ -1,5 +1,5 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { SocialGrid } from "./social-grid";
 
@@ -27,13 +27,13 @@ describe(SocialGrid, () => {
     />
   );
 
-  test("SocialGrid renders the header", () => {
+  it("SocialGrid renders the header", () => {
     expect(twoSocials).toMatch(/Socials/u);
     expect(twoSocials).toMatch(/Join our community/u);
     expect(twoSocials).toMatch(/Join our community today and stay updated\./u);
   });
 
-  test("SocialGrid renders a linked card per social", () => {
+  it("SocialGrid renders a linked card per social", () => {
     expect(twoSocials).toMatch(/Reddit/u);
     expect(twoSocials).toMatch(/GitHub/u);
     expect(twoSocials).toMatch(/href="https:\/\/reddit\.com\/r\/example"/u);
@@ -41,7 +41,7 @@ describe(SocialGrid, () => {
     expect(twoSocials).toContain("bg-highlight");
   });
 
-  test("SocialGrid renders a card without a link", () => {
+  it("SocialGrid renders a card without a link", () => {
     const html = renderToStaticMarkup(
       <SocialGrid
         socials={[{ _key: "s1", label: "YouTube", platform: "youtube" }]}
@@ -53,7 +53,7 @@ describe(SocialGrid, () => {
     expect(html).not.toContain("<a ");
   });
 
-  test("SocialGrid renders nothing when there are no socials", () => {
+  it("SocialGrid renders nothing when there are no socials", () => {
     const html = renderToStaticMarkup(
       <SocialGrid title="Join our community" />
     );

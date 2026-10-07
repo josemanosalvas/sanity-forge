@@ -1,5 +1,5 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import {
   BlockLabelsProvider,
@@ -8,14 +8,14 @@ import {
 import { SubscribeNewsletter } from "./subscribe-newsletter";
 
 describe(SubscribeNewsletter, () => {
-  test("does not submit visitors' emails to the current page when no handler is configured", () => {
+  it("does not submit visitors' emails to the current page when no handler is configured", () => {
     const html = renderToStaticMarkup(<SubscribeNewsletter title="News" />);
     expect(html).toContain("News");
     expect(html).not.toContain("<form");
     expect(html).not.toContain('name="email"');
   });
 
-  test("SubscribeNewsletter renders text sections", () => {
+  it("SubscribeNewsletter renders text sections", () => {
     const html = renderToStaticMarkup(
       <SubscribeNewsletter
         action="/api/subscribe"
@@ -45,7 +45,7 @@ describe(SubscribeNewsletter, () => {
     expect(html).toMatch(/No spam, ever/u);
   });
 
-  test("renders the form controls in the labels the site provides", () => {
+  it("renders the form controls in the labels the site provides", () => {
     const html = renderToStaticMarkup(
       <BlockLabelsProvider
         labels={{

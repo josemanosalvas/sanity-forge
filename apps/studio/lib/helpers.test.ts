@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import {
   capitalize,
@@ -20,7 +20,7 @@ const textBlock = (text: string) => ({
 });
 
 describe(isValidUrl, () => {
-  test.each([
+  it.each([
     "https://example.com",
     "http://example.com/about",
     "mailto:hello@example.com",
@@ -31,7 +31,7 @@ describe(isValidUrl, () => {
     "?q=cloud",
   ])("accepts %s", (url) => expect(isValidUrl(url)).toBeTruthy());
 
-  test.each([
+  it.each([
     // oxlint-disable-next-line no-script-url -- the unsafe scheme is the input under test
     "javascript:alert(1)",
     // oxlint-disable-next-line no-script-url -- the URL parser lower-cases the protocol, so casing cannot slip past the allowlist
@@ -44,7 +44,7 @@ describe(isValidUrl, () => {
     "",
   ])("rejects %s", (url) => expect(isValidUrl(url)).toBeFalsy());
 
-  test("accepts a protocol-relative address as if it were a path", () => {
+  it("accepts a protocol-relative address as if it were a path", () => {
     // `//host` fails to parse without a base, so the relative branch takes it.
     // Rendering is where it is caught: `sanitizeHref` in @repo/blocks drops it.
     expect(isValidUrl("//evil.com")).toBeTruthy();
@@ -52,21 +52,21 @@ describe(isValidUrl, () => {
 });
 
 describe(capitalize, () => {
-  test("upper-cases the first character only", () =>
+  it("upper-cases the first character only", () =>
     expect(capitalize("brand a")).toBe("Brand a"));
 
-  test("leaves an empty string alone", () => expect(capitalize("")).toBe(""));
+  it("leaves an empty string alone", () => expect(capitalize("")).toBe(""));
 });
 
 describe(getTitleCase, () => {
-  test("splits a camelCase field name into words", () =>
+  it("splits a camelCase field name into words", () =>
     expect(getTitleCase("openInNewTab")).toBe("Open In New Tab"));
 
-  test("leaves an empty string alone", () => expect(getTitleCase("")).toBe(""));
+  it("leaves an empty string alone", () => expect(getTitleCase("")).toBe(""));
 });
 
 describe(createRadioListLayout, () => {
-  test("title-cases bare values and keeps explicit entries", () => {
+  it("title-cases bare values and keeps explicit entries", () => {
     expect(
       createRadioListLayout(["internal", { title: "Shared", value: "faq" }])
     ).toStrictEqual({
@@ -78,7 +78,7 @@ describe(createRadioListLayout, () => {
     });
   });
 
-  test("lets options override the radio default", () =>
+  it("lets options override the radio default", () =>
     expect(
       createRadioListLayout(["internal"], { layout: "dropdown" })
     ).toStrictEqual({
@@ -88,7 +88,7 @@ describe(createRadioListLayout, () => {
 });
 
 describe(linkPreviewTarget, () => {
-  test("shows where an external or internal link points", () => {
+  it("shows where an external or internal link points", () => {
     expect(
       linkPreviewTarget({
         externalUrl: "https://example.com",
@@ -100,7 +100,7 @@ describe(linkPreviewTarget, () => {
     ).toBe("/about");
   });
 
-  test("marks a new tab and shortens long addresses", () =>
+  it("marks a new tab and shortens long addresses", () =>
     expect(
       linkPreviewTarget({
         externalUrl: "https://example.com/a/very/long/path",
@@ -109,25 +109,25 @@ describe(linkPreviewTarget, () => {
       })
     ).toBe("https://example.com/a/very/lon... ↗"));
 
-  test("names a missing target instead of printing undefined", () =>
+  it("names a missing target instead of printing undefined", () =>
     expect(linkPreviewTarget({ urlType: "internal" })).toBe("No link"));
 });
 
 describe(linkPreviewSubtitle, () => {
-  test("prefixes the link type", () =>
+  it("prefixes the link type", () =>
     expect(
       linkPreviewSubtitle({ internalUrl: "/about", urlType: "internal" })
     ).toBe("Internal • /about"));
 });
 
 describe(columnPreview, () => {
-  test("counts the column's links", () =>
+  it("counts the column's links", () =>
     expect(columnPreview({ links: [{}], title: "About" })).toStrictEqual({
       subtitle: "1 link",
       title: "About",
     }));
 
-  test("names an empty, untitled column", () =>
+  it("names an empty, untitled column", () =>
     expect(columnPreview({})).toStrictEqual({
       subtitle: "0 links",
       title: "Untitled Column",
@@ -135,26 +135,26 @@ describe(columnPreview, () => {
 });
 
 describe(parseRichTextToString, () => {
-  test("joins the text of every block", () =>
+  it("joins the text of every block", () =>
     expect(
       parseRichTextToString([textBlock("Hello"), textBlock("world")])
     ).toBe("Hello world"));
 
-  test("truncates to the requested word count", () =>
+  it("truncates to the requested word count", () =>
     expect(parseRichTextToString([textBlock("one two three")], 2)).toBe(
       "one two..."
     ));
 
-  test("adds no ellipsis to text within the word count", () =>
+  it("adds no ellipsis to text within the word count", () =>
     expect(parseRichTextToString([textBlock("one two")], 2)).toBe("one two"));
 
-  test("contributes nothing for a block that holds no text", () =>
+  it("contributes nothing for a block that holds no text", () =>
     // A non-text block joins as an empty string, hence the leading separator.
     expect(
       parseRichTextToString([{ _type: "image" }, textBlock("Hello")])
     ).toBe(" Hello"));
 
-  test.each([undefined, null, "already a string", {}])(
+  it.each([undefined, null, "already a string", {}])(
     "reports missing content for %o",
     (value) => expect(parseRichTextToString(value)).toBe("No Content")
   );
