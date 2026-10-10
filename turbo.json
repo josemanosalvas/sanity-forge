@@ -92,6 +92,14 @@
       "inputs": ["$TURBO_DEFAULT$"],
       "outputs": []
     },
+    "@repo/sanity#test": {
+      "dependsOn": ["transit"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/apps/studio/seed/dataset.ndjson"
+      ],
+      "outputs": []
+    },
     "test:e2e": {
       "dependsOn": ["build"],
       "cache": false,

@@ -40,10 +40,8 @@ export const keys = () =>
       /** Viewer token, required at runtime by `src/token.ts`. */
       SANITY_API_READ_TOKEN: z.string().min(1).optional(),
       /** Opt-in: send each query as compiled by groq-compiler (see `src/compiled-queries.ts`). */
-      SANITY_COMPILED_QUERIES: z
-        .enum(["true", "false"])
-        .default("false")
-        .transform((value) => value === "true"),
+      // Keep this a string: SKIP_ENV_VALIDATION bypasses schema transforms.
+      SANITY_COMPILED_QUERIES: z.enum(["true", "false"]).default("false"),
       /** Logs every Sanity read that runs, i.e. every cache miss. */
       SANITY_LOG_READS: z.stringbool().default(false),
       SANITY_REVALIDATE_SECRET: z.string().min(1).optional(),

@@ -15,7 +15,7 @@ import { contentTags, SYNC_TAG_PREFIX } from "./tags";
 import { token } from "./token";
 
 // Equivalent text proven with groq-js at `pnpm typegen`; result types stay keyed by the original query.
-const useCompiledQueries = keys().SANITY_COMPILED_QUERIES;
+const useCompiledQueries = keys().SANITY_COMPILED_QUERIES === "true";
 
 const live = defineLive({
   // Shared with the browser only for validated Draft Mode sessions.
