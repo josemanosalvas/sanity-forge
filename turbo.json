@@ -48,7 +48,7 @@
       "outputs": ["schema.json"]
     },
     "typegen": {
-      "description": "Generates typed GROQ results from the extracted schema and every defineQuery in the repo.",
+      "description": "Generates typed GROQ results from the extracted schema and every defineQuery in the repo, names repeated result shapes, and compiles every query with groq-compiler.",
       "dependsOn": ["studio#schema:extract"],
       "inputs": [
         "$TURBO_DEFAULT$",
@@ -56,7 +56,7 @@
         "$TURBO_ROOT$/packages/blocks/src/**",
         "$TURBO_ROOT$/apps/web/src/**"
       ],
-      "outputs": ["src/sanity.types.ts"]
+      "outputs": ["src/sanity.types.ts", "src/compiled-queries.ts"]
     },
     "build": {
       "dependsOn": ["^build", "^typegen"],
@@ -90,6 +90,14 @@
     "test": {
       "dependsOn": ["transit"],
       "inputs": ["$TURBO_DEFAULT$"],
+      "outputs": []
+    },
+    "@repo/sanity#test": {
+      "dependsOn": ["transit"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/apps/studio/seed/dataset.ndjson"
+      ],
       "outputs": []
     },
     "test:e2e": {

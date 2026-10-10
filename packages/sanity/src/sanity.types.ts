@@ -36,26 +36,32 @@ export type Link = {
   url?: CustomUrl;
 };
 
+type SpanShape = {
+  marks?: Array<string>;
+  text?: string;
+  _type: "span";
+  _key: string;
+};
+
+type CustomLinkShape = {
+  customLink?: CustomUrl;
+  _type: "customLink";
+  _key: string;
+};
+
+type BlockShape = {
+  children?: Array<SpanShape>;
+  style?: "normal" | "h2" | "h3" | "h4" | "h5" | "h6" | "inline";
+  listItem?: "number" | "bullet";
+  markDefs?: Array<CustomLinkShape>;
+  level?: number;
+  _type: "block";
+  _key: string;
+};
+
 export type Testimonial = {
   eyebrow?: string;
-  quote?: Array<{
-    children?: Array<{
-      marks?: Array<string>;
-      text?: string;
-      _type: "span";
-      _key: string;
-    }>;
-    style?: "normal" | "h2" | "h3" | "h4" | "h5" | "h6" | "inline";
-    listItem?: "number" | "bullet";
-    markDefs?: Array<{
-      customLink?: CustomUrl;
-      _type: "customLink";
-      _key: string;
-    }>;
-    level?: number;
-    _type: "block";
-    _key: string;
-  }>;
+  quote?: Array<BlockShape>;
   authorName?: string;
   authorRole?: string;
   authorImage?: AuthorImage;
@@ -209,24 +215,7 @@ export type VideoFeature = {
   _type: "videoFeature";
   eyebrow?: string;
   title?: string;
-  richText?: Array<{
-    children?: Array<{
-      marks?: Array<string>;
-      text?: string;
-      _type: "span";
-      _key: string;
-    }>;
-    style?: "normal" | "h2" | "h3" | "h4" | "h5" | "h6" | "inline";
-    listItem?: "number" | "bullet";
-    markDefs?: Array<{
-      customLink?: CustomUrl;
-      _type: "customLink";
-      _key: string;
-    }>;
-    level?: number;
-    _type: "block";
-    _key: string;
-  }>;
+  richText?: Array<BlockShape>;
   video: VideoFeatureVideo;
   caption?: string;
 };
@@ -234,43 +223,43 @@ export type VideoFeature = {
 export type SubscribeNewsletter = {
   _type: "subscribeNewsletter";
   title?: string;
-  subTitle?: Array<{
-    children?: Array<{
-      marks?: Array<string>;
-      text?: string;
-      _type: "span";
-      _key: string;
-    }>;
-    style?: "normal" | "h2" | "h3" | "h4" | "h5" | "h6" | "inline";
-    listItem?: "number" | "bullet";
-    markDefs?: Array<{
-      customLink?: CustomUrl;
-      _type: "customLink";
-      _key: string;
-    }>;
-    level?: number;
-    _type: "block";
-    _key: string;
-  }>;
-  helperText?: Array<{
-    children?: Array<{
-      marks?: Array<string>;
-      text?: string;
-      _type: "span";
-      _key: string;
-    }>;
-    style?: "normal" | "h2" | "h3" | "h4" | "h5" | "h6" | "inline";
-    listItem?: "number" | "bullet";
-    markDefs?: Array<{
-      customLink?: CustomUrl;
-      _type: "customLink";
-      _key: string;
-    }>;
-    level?: number;
-    _type: "block";
-    _key: string;
-  }>;
+  subTitle?: Array<BlockShape>;
+  helperText?: Array<BlockShape>;
   testimonial?: Testimonial;
+};
+
+type ImageShape = {
+  asset?: SanityImageAssetReference;
+  media?: unknown;
+  hotspot?: SanityImageHotspot;
+  crop?: SanityImageCrop;
+  alt?: string;
+  caption?: string;
+  _type: "image";
+  _key: string;
+};
+
+type TableShape = {
+  headerRows?: number;
+  rows?: Array<{
+    cells?: Array<{
+      value?: Array<{
+        children?: Array<SpanShape>;
+        style?: "normal";
+        listItem?: "bullet" | "number";
+        markDefs?: Array<CustomLinkShape>;
+        level?: number;
+        _type: "block";
+        _key: string;
+      }>;
+      _type: "cell";
+      _key: string;
+    }>;
+    _type: "row";
+    _key: string;
+  }>;
+  _type: "table";
+  _key: string;
 };
 
 export type RichTextBlock = {
@@ -278,65 +267,9 @@ export type RichTextBlock = {
   eyebrow?: string;
   title?: string;
   richText?: Array<
-    | {
-        children?: Array<{
-          marks?: Array<string>;
-          text?: string;
-          _type: "span";
-          _key: string;
-        }>;
-        style?: "normal" | "h2" | "h3" | "h4" | "h5" | "h6" | "inline";
-        listItem?: "number" | "bullet";
-        markDefs?: Array<{
-          customLink?: CustomUrl;
-          _type: "customLink";
-          _key: string;
-        }>;
-        level?: number;
-        _type: "block";
-        _key: string;
-      }
-    | {
-        asset?: SanityImageAssetReference;
-        media?: unknown;
-        hotspot?: SanityImageHotspot;
-        crop?: SanityImageCrop;
-        alt?: string;
-        caption?: string;
-        _type: "image";
-        _key: string;
-      }
-    | {
-        headerRows?: number;
-        rows?: Array<{
-          cells?: Array<{
-            value?: Array<{
-              children?: Array<{
-                marks?: Array<string>;
-                text?: string;
-                _type: "span";
-                _key: string;
-              }>;
-              style?: "normal";
-              listItem?: "bullet" | "number";
-              markDefs?: Array<{
-                customLink?: CustomUrl;
-                _type: "customLink";
-                _key: string;
-              }>;
-              level?: number;
-              _type: "block";
-              _key: string;
-            }>;
-            _type: "cell";
-            _key: string;
-          }>;
-          _type: "row";
-          _key: string;
-        }>;
-        _type: "table";
-        _key: string;
-      }
+    | BlockShape
+    | ImageShape
+    | TableShape
   >;
 };
 
@@ -418,45 +351,11 @@ export type FeatureCardsIcon = {
   _type: "featureCardsIcon";
   eyebrow?: string;
   title?: string;
-  richText?: Array<{
-    children?: Array<{
-      marks?: Array<string>;
-      text?: string;
-      _type: "span";
-      _key: string;
-    }>;
-    style?: "normal" | "h2" | "h3" | "h4" | "h5" | "h6" | "inline";
-    listItem?: "number" | "bullet";
-    markDefs?: Array<{
-      customLink?: CustomUrl;
-      _type: "customLink";
-      _key: string;
-    }>;
-    level?: number;
-    _type: "block";
-    _key: string;
-  }>;
+  richText?: Array<BlockShape>;
   cards?: Array<{
     icon?: LucideIcon;
     title?: string;
-    richText?: Array<{
-      children?: Array<{
-        marks?: Array<string>;
-        text?: string;
-        _type: "span";
-        _key: string;
-      }>;
-      style?: "normal" | "h2" | "h3" | "h4" | "h5" | "h6" | "inline";
-      listItem?: "number" | "bullet";
-      markDefs?: Array<{
-        customLink?: CustomUrl;
-        _type: "customLink";
-        _key: string;
-      }>;
-      level?: number;
-      _type: "block";
-      _key: string;
-    }>;
+    richText?: Array<BlockShape>;
     _type: "featureCardIcon";
     _key: string;
   }>;
@@ -466,24 +365,7 @@ export type Cta = {
   _type: "cta";
   eyebrow?: string;
   title?: string;
-  richText?: Array<{
-    children?: Array<{
-      marks?: Array<string>;
-      text?: string;
-      _type: "span";
-      _key: string;
-    }>;
-    style?: "normal" | "h2" | "h3" | "h4" | "h5" | "h6" | "inline";
-    listItem?: "number" | "bullet";
-    markDefs?: Array<{
-      customLink?: CustomUrl;
-      _type: "customLink";
-      _key: string;
-    }>;
-    level?: number;
-    _type: "block";
-    _key: string;
-  }>;
+  richText?: Array<BlockShape>;
   buttons?: Array<
     {
       _key: string;
@@ -496,24 +378,7 @@ export type Hero = {
   _type: "hero";
   badge?: string;
   title?: string;
-  richText?: Array<{
-    children?: Array<{
-      marks?: Array<string>;
-      text?: string;
-      _type: "span";
-      _key: string;
-    }>;
-    style?: "normal" | "h2" | "h3" | "h4" | "h5" | "h6" | "inline";
-    listItem?: "number" | "bullet";
-    markDefs?: Array<{
-      customLink?: CustomUrl;
-      _type: "customLink";
-      _key: string;
-    }>;
-    level?: number;
-    _type: "block";
-    _key: string;
-  }>;
+  richText?: Array<BlockShape>;
   video?: Video;
   buttons?: Array<
     {
@@ -563,34 +428,8 @@ export type Button = {
 };
 
 export type RichText = Array<
-  | {
-      children?: Array<{
-        marks?: Array<string>;
-        text?: string;
-        _type: "span";
-        _key: string;
-      }>;
-      style?: "normal" | "h2" | "h3" | "h4" | "h5" | "h6" | "inline";
-      listItem?: "number" | "bullet";
-      markDefs?: Array<{
-        customLink?: CustomUrl;
-        _type: "customLink";
-        _key: string;
-      }>;
-      level?: number;
-      _type: "block";
-      _key: string;
-    }
-  | {
-      asset?: SanityImageAssetReference;
-      media?: unknown;
-      hotspot?: SanityImageHotspot;
-      crop?: SanityImageCrop;
-      alt?: string;
-      caption?: string;
-      _type: "image";
-      _key: string;
-    }
+  | BlockShape
+  | ImageShape
   | {
       code: string;
       language?: "ts" | "tsx" | "js" | "groq" | "bash" | "json" | "css";
@@ -598,37 +437,7 @@ export type RichText = Array<
       _type: "code";
       _key: string;
     }
-  | {
-      headerRows?: number;
-      rows?: Array<{
-        cells?: Array<{
-          value?: Array<{
-            children?: Array<{
-              marks?: Array<string>;
-              text?: string;
-              _type: "span";
-              _key: string;
-            }>;
-            style?: "normal";
-            listItem?: "bullet" | "number";
-            markDefs?: Array<{
-              customLink?: CustomUrl;
-              _type: "customLink";
-              _key: string;
-            }>;
-            level?: number;
-            _type: "block";
-            _key: string;
-          }>;
-          _type: "cell";
-          _key: string;
-        }>;
-        _type: "row";
-        _key: string;
-      }>;
-      _type: "table";
-      _key: string;
-    }
+  | TableShape
 >;
 
 export type PageReference = {
@@ -676,50 +485,15 @@ export type Settings = {
   siteTitle: InternationalizedArrayString;
   siteDescription?: InternationalizedArrayText;
   logos?: {
-    logo?: {
-      asset?: SanityImageAssetReference;
-      media?: unknown;
-      hotspot?: SanityImageHotspot;
-      crop?: SanityImageCrop;
-      alt?: string;
-      _type: "image";
-    };
-    logoDark?: {
-      asset?: SanityImageAssetReference;
-      media?: unknown;
-      hotspot?: SanityImageHotspot;
-      crop?: SanityImageCrop;
-      _type: "image";
-    };
-    footerLogo?: {
-      asset?: SanityImageAssetReference;
-      media?: unknown;
-      hotspot?: SanityImageHotspot;
-      crop?: SanityImageCrop;
-      _type: "image";
-    };
+    logo?: UsedByTeamsLogoImage;
+    logoDark?: Poster;
+    footerLogo?: Poster;
   };
   favicon?: {
-    svg?: {
-      asset?: SanityImageAssetReference;
-      media?: unknown;
-      hotspot?: SanityImageHotspot;
-      crop?: SanityImageCrop;
-      _type: "image";
-    };
-    ico?: {
-      asset?: SanityFileAssetReference;
-      media?: unknown;
-      _type: "file";
-    };
+    svg?: Poster;
+    ico?: Webm;
   };
-  ogImage?: {
-    asset?: SanityImageAssetReference;
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: "image";
-  };
+  ogImage?: Poster;
   contactEmail?: string;
   socialLinks?: {
     linkedin?: string;
@@ -782,14 +556,7 @@ export type Footer = {
   copyright?: string;
   credits?: Array<{
     label?: string;
-    logo?: {
-      asset?: SanityImageAssetReference;
-      media?: unknown;
-      hotspot?: SanityImageHotspot;
-      crop?: SanityImageCrop;
-      alt?: string;
-      _type: "image";
-    };
+    logo?: UsedByTeamsLogoImage;
     url?: string;
     _type: "footerCredit";
     _key: string;
@@ -890,12 +657,7 @@ export type AssistInstructionContext = {
   _rev: string;
   title?: string;
   context?: Array<{
-    children?: Array<{
-      marks?: Array<string>;
-      text?: string;
-      _type: "span";
-      _key: string;
-    }>;
+    children?: Array<SpanShape>;
     style?: "normal";
     listItem?: never;
     markDefs?: null;
@@ -913,12 +675,7 @@ export type SanityAssistInstructionUserInput = {
 
 export type SanityAssistInstructionPrompt = Array<{
   children?: Array<
-    | {
-        marks?: Array<string>;
-        text?: string;
-        _type: "span";
-        _key: string;
-      }
+    | SpanShape
     | ({
         _key: string;
       } & SanityAssistInstructionFieldRef)
@@ -1149,24 +906,7 @@ export type Faq = {
   _rev: string;
   language?: string;
   title: string;
-  richText?: Array<{
-    children?: Array<{
-      marks?: Array<string>;
-      text?: string;
-      _type: "span";
-      _key: string;
-    }>;
-    style?: "normal" | "h2" | "h3" | "h4" | "h5" | "h6" | "inline";
-    listItem?: "number" | "bullet";
-    markDefs?: Array<{
-      customLink?: CustomUrl;
-      _type: "customLink";
-      _key: string;
-    }>;
-    level?: number;
-    _type: "block";
-    _key: string;
-  }>;
+  richText?: Array<BlockShape>;
 };
 
 export type Page = {
@@ -1180,24 +920,11 @@ export type Page = {
   title: string;
   description?: string;
   slug?: Slug;
-  image?: {
-    asset?: SanityImageAssetReference;
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    alt?: string;
-    _type: "image";
-  };
+  image?: UsedByTeamsLogoImage;
   pageBuilder?: PageBuilder;
   seoTitle?: string;
   seoDescription?: string;
-  seoImage?: {
-    asset?: SanityImageAssetReference;
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: "image";
-  };
+  seoImage?: Poster;
   seoNoIndex?: boolean;
   ogTitle?: string;
   ogDescription?: string;
@@ -1391,6 +1118,78 @@ export type AllSanitySchemaTypes =
   | SanityImageAsset
   | Geopoint;
 
+type CropShape = {
+  bottom: number;
+  left: number;
+  right: number;
+  top: number;
+};
+
+type PageQueryResultImageShape = {
+  id: string | null;
+  preview: string | null;
+  alt: string | null;
+  hotspot: {
+    x: number;
+    y: number;
+  } | null;
+  crop: CropShape | null;
+};
+
+type RichTextMarkDefsCustomLinkShape = {
+  customLink?: CustomUrl;
+  _type: "customLink";
+  _key: string;
+  openInNewTab: boolean | null;
+  href: "#" | null | string;
+};
+
+type RichTextBlockShape = {
+  children?: Array<SpanShape>;
+  style?: "h2" | "h3" | "h4" | "h5" | "h6" | "inline" | "normal";
+  listItem?: "bullet" | "number";
+  markDefs: Array<
+    | RichTextMarkDefsCustomLinkShape
+    | CustomLinkShape
+  > | null;
+  level?: number;
+  _type: "block";
+  _key: string;
+};
+
+type ButtonShape = {
+  text: string | null;
+  variant: "default" | "link" | "outline" | "secondary" | null;
+  _key: string;
+  _type: "button";
+  openInNewTab: boolean | null;
+  href: null | string;
+};
+
+type MuxShape = {
+  playbackId: string | null;
+  policy: string | null;
+  aspectRatio: string | null;
+  status: string | null;
+  thumbTime: number | null;
+  title: string | null;
+};
+
+type LightShape = {
+  mediaType: "mux-mp4" | "mux" | "sanity";
+  mux: MuxShape | null;
+  webm: string | null;
+  hevc: string | null;
+  mobileWebm: string | null;
+  poster: PageQueryResultImageShape | null;
+};
+
+type TranslationsShape = {
+  language: string;
+  site: null | "brand-a" | "brand-b";
+  slug: string | null;
+};
+
 // Source: src/queries.ts
 // Variable: pageQuery
 // Query: *[_type == "page" && site == $site && language == $locale && slug.current == $path][0]{    _id,    _type,    _updatedAt,    site,    language,    title,    description,    "slug": slug.current,      image {      "id": asset._ref,  "preview": asset->metadata.lqip,  "alt": coalesce(alt, asset->altText, caption),  hotspot {    x,    y  },  crop {    bottom,    left,    right,    top  }  },      seoTitle,  seoDescription,  seoNoIndex,  ogTitle,  ogDescription,  "ogImage": select(    defined(seoImage.asset->url) => seoImage,    defined(image.asset->url) => image,    null  ){      "id": asset._ref,  "preview": asset->metadata.lqip,  "alt": coalesce(alt, asset->altText, caption),  hotspot {    x,    y  },  crop {    bottom,    left,    right,    top  }  },      pageBuilder[]{    ...,    _type,      _type == "cta" => {    ...,      richText[]{    ...,    _type == "block" => {      ...,        markDefs[]{    ...,      ...customLink{    openInNewTab,    "href": select(      type == "internal" => select(  internal->site != $site => null,  internal->language == $defaultLocale => internal->slug.current,  internal->slug.current == "/" => "/" + internal->language,  "/" + internal->language + internal->slug.current),      type == "external" => external,      "#"    ),  }  }    },    _type == "image" => {        "id": asset._ref,  "preview": asset->metadata.lqip,  "alt": coalesce(alt, asset->altText, caption),  hotspot {    x,    y  },  crop {    bottom,    left,    right,    top  },      "caption": caption    },    _type == "table" => {      ...,      rows[]{        ...,        cells[]{          ...,          value[]{            ...,            _type == "block" => {              ...,                markDefs[]{    ...,      ...customLink{    openInNewTab,    "href": select(      type == "internal" => select(  internal->site != $site => null,  internal->language == $defaultLocale => internal->slug.current,  internal->slug.current == "/" => "/" + internal->language,  "/" + internal->language + internal->slug.current),      type == "external" => external,      "#"    ),  }  }            }          }        }      }    }  },      buttons[]{    text,    variant,    _key,    _type,      "openInNewTab": url.openInNewTab,  "href": select(    url.type == "internal" => select(  url.internal->site != $site => null,  url.internal->language == $defaultLocale => url.internal->slug.current,  url.internal->slug.current == "/" => "/" + url.internal->language,  "/" + url.internal->language + url.internal->slug.current),    url.type == "external" => url.external,    url.href  )  },    usedByTeams {      ...,      "logos": array::compact(logos[]{        ...,          "openInNewTab": url.openInNewTab,  "href": select(    url.type == "internal" => select(  url.internal->site != $site => null,  url.internal->language == $defaultLocale => url.internal->slug.current,  url.internal->slug.current == "/" => "/" + url.internal->language,  "/" + url.internal->language + url.internal->slug.current),    url.type == "external" => url.external,    url.href  ),          image {      "id": asset._ref,  "preview": asset->metadata.lqip,  "alt": coalesce(alt, asset->altText, caption),  hotspot {    x,    y  },  crop {    bottom,    left,    right,    top  }  },      })    },  },      _type == "hero" => {    ...,      video {    light {        mediaType,  mux {      "playbackId": asset->playbackId,  "policy": asset->data.playback_ids[0].policy,  "aspectRatio": asset->data.aspect_ratio,  "status": asset->status,  "thumbTime": asset->thumbTime,  "title": asset->filename  },  "webm": webm.asset->url,  "hevc": hevc.asset->url,  "mobileWebm": mobileWebm.asset->url,  poster {      "id": asset._ref,  "preview": asset->metadata.lqip,  "alt": coalesce(alt, asset->altText, caption),  hotspot {    x,    y  },  crop {    bottom,    left,    right,    top  }  }    },    dark {        mediaType,  mux {      "playbackId": asset->playbackId,  "policy": asset->data.playback_ids[0].policy,  "aspectRatio": asset->data.aspect_ratio,  "status": asset->status,  "thumbTime": asset->thumbTime,  "title": asset->filename  },  "webm": webm.asset->url,  "hevc": hevc.asset->url,  "mobileWebm": mobileWebm.asset->url,  poster {      "id": asset._ref,  "preview": asset->metadata.lqip,  "alt": coalesce(alt, asset->altText, caption),  hotspot {    x,    y  },  crop {    bottom,    left,    right,    top  }  }    }  },      buttons[]{    text,    variant,    _key,    _type,      "openInNewTab": url.openInNewTab,  "href": select(    url.type == "internal" => select(  url.internal->site != $site => null,  url.internal->language == $defaultLocale => url.internal->slug.current,  url.internal->slug.current == "/" => "/" + url.internal->language,  "/" + url.internal->language + url.internal->slug.current),    url.type == "external" => url.external,    url.href  )  },      richText[]{    ...,    _type == "block" => {      ...,        markDefs[]{    ...,      ...customLink{    openInNewTab,    "href": select(      type == "internal" => select(  internal->site != $site => null,  internal->language == $defaultLocale => internal->slug.current,  internal->slug.current == "/" => "/" + internal->language,  "/" + internal->language + internal->slug.current),      type == "external" => external,      "#"    ),  }  }    },    _type == "image" => {        "id": asset._ref,  "preview": asset->metadata.lqip,  "alt": coalesce(alt, asset->altText, caption),  hotspot {    x,    y  },  crop {    bottom,    left,    right,    top  },      "caption": caption    },    _type == "table" => {      ...,      rows[]{        ...,        cells[]{          ...,          value[]{            ...,            _type == "block" => {              ...,                markDefs[]{    ...,      ...customLink{    openInNewTab,    "href": select(      type == "internal" => select(  internal->site != $site => null,  internal->language == $defaultLocale => internal->slug.current,  internal->slug.current == "/" => "/" + internal->language,  "/" + internal->language + internal->slug.current),      type == "external" => external,      "#"    ),  }  }            }          }        }      }    }  }  },      _type == "faqAccordion" => {    ...,    "eyebrow": coalesce(eyebrow, null),    "categories": categories[]{      _key,      title,      "faqs": array::compact(faqs[]->{        title,        _id,        _type,          richText[]{    ...,    _type == "block" => {      ...,        markDefs[]{    ...,      ...customLink{    openInNewTab,    "href": select(      type == "internal" => select(  internal->site != $site => null,  internal->language == $defaultLocale => internal->slug.current,  internal->slug.current == "/" => "/" + internal->language,  "/" + internal->language + internal->slug.current),      type == "external" => external,      "#"    ),  }  }    },    _type == "image" => {        "id": asset._ref,  "preview": asset->metadata.lqip,  "alt": coalesce(alt, asset->altText, caption),  hotspot {    x,    y  },  crop {    bottom,    left,    right,    top  },      "caption": caption    },    _type == "table" => {      ...,      rows[]{        ...,        cells[]{          ...,          value[]{            ...,            _type == "block" => {              ...,                markDefs[]{    ...,      ...customLink{    openInNewTab,    "href": select(      type == "internal" => select(  internal->site != $site => null,  internal->language == $defaultLocale => internal->slug.current,  internal->slug.current == "/" => "/" + internal->language,  "/" + internal->language + internal->slug.current),      type == "external" => external,      "#"    ),  }  }            }          }        }      }    }  }      })    },    link{      ...,        "openInNewTab": url.openInNewTab,  "href": select(    url.type == "internal" => select(  url.internal->site != $site => null,  url.internal->language == $defaultLocale => url.internal->slug.current,  url.internal->slug.current == "/" => "/" + url.internal->language,  "/" + url.internal->language + url.internal->slug.current),    url.type == "external" => url.external,    url.href  )    }  },      _type == "featureCardsIcon" => {    ...,      richText[]{    ...,    _type == "block" => {      ...,        markDefs[]{    ...,      ...customLink{    openInNewTab,    "href": select(      type == "internal" => select(  internal->site != $site => null,  internal->language == $defaultLocale => internal->slug.current,  internal->slug.current == "/" => "/" + internal->language,  "/" + internal->language + internal->slug.current),      type == "external" => external,      "#"    ),  }  }    },    _type == "image" => {        "id": asset._ref,  "preview": asset->metadata.lqip,  "alt": coalesce(alt, asset->altText, caption),  hotspot {    x,    y  },  crop {    bottom,    left,    right,    top  },      "caption": caption    },    _type == "table" => {      ...,      rows[]{        ...,        cells[]{          ...,          value[]{            ...,            _type == "block" => {              ...,                markDefs[]{    ...,      ...customLink{    openInNewTab,    "href": select(      type == "internal" => select(  internal->site != $site => null,  internal->language == $defaultLocale => internal->slug.current,  internal->slug.current == "/" => "/" + internal->language,  "/" + internal->language + internal->slug.current),      type == "external" => external,      "#"    ),  }  }            }          }        }      }    }  },    "cards": array::compact(cards[]{      ...,        richText[]{    ...,    _type == "block" => {      ...,        markDefs[]{    ...,      ...customLink{    openInNewTab,    "href": select(      type == "internal" => select(  internal->site != $site => null,  internal->language == $defaultLocale => internal->slug.current,  internal->slug.current == "/" => "/" + internal->language,  "/" + internal->language + internal->slug.current),      type == "external" => external,      "#"    ),  }  }    },    _type == "image" => {        "id": asset._ref,  "preview": asset->metadata.lqip,  "alt": coalesce(alt, asset->altText, caption),  hotspot {    x,    y  },  crop {    bottom,    left,    right,    top  },      "caption": caption    },    _type == "table" => {      ...,      rows[]{        ...,        cells[]{          ...,          value[]{            ...,            _type == "block" => {              ...,                markDefs[]{    ...,      ...customLink{    openInNewTab,    "href": select(      type == "internal" => select(  internal->site != $site => null,  internal->language == $defaultLocale => internal->slug.current,  internal->slug.current == "/" => "/" + internal->language,  "/" + internal->language + internal->slug.current),      type == "external" => external,      "#"    ),  }  }            }          }        }      }    }  },    })  },      _type == "subscribeNewsletter" => {    _type,    _key,    title,    "subTitle": subTitle[]{      ...,        markDefs[]{    ...,      ...customLink{    openInNewTab,    "href": select(      type == "internal" => select(  internal->site != $site => null,  internal->language == $defaultLocale => internal->slug.current,  internal->slug.current == "/" => "/" + internal->language,  "/" + internal->language + internal->slug.current),      type == "external" => external,      "#"    ),  }  }    },    "helperText": helperText[]{      ...,        markDefs[]{    ...,      ...customLink{    openInNewTab,    "href": select(      type == "internal" => select(  internal->site != $site => null,  internal->language == $defaultLocale => internal->slug.current,  internal->slug.current == "/" => "/" + internal->language,  "/" + internal->language + internal->slug.current),      type == "external" => external,      "#"    ),  }  }    },    "testimonial": testimonial{      eyebrow,      authorName,      authorRole,      "quote": quote[]{        ...,          markDefs[]{    ...,      ...customLink{    openInNewTab,    "href": select(      type == "internal" => select(  internal->site != $site => null,  internal->language == $defaultLocale => internal->slug.current,  internal->slug.current == "/" => "/" + internal->language,  "/" + internal->language + internal->slug.current),      type == "external" => external,      "#"    ),  }  }      },      "authorImage": authorImage{          "id": asset._ref,  "preview": asset->metadata.lqip,  "alt": coalesce(alt, asset->altText, caption),  hotspot {    x,    y  },  crop {    bottom,    left,    right,    top  }      }    }  },      _type == "logoCloud" => {    ...,    "logos": array::compact(logos[]{      ...,        "openInNewTab": url.openInNewTab,  "href": select(    url.type == "internal" => select(  url.internal->site != $site => null,  url.internal->language == $defaultLocale => url.internal->slug.current,  url.internal->slug.current == "/" => "/" + url.internal->language,  "/" + url.internal->language + url.internal->slug.current),    url.type == "external" => url.external,    url.href  ),        image {      "id": asset._ref,  "preview": asset->metadata.lqip,  "alt": coalesce(alt, asset->altText, caption),  hotspot {    x,    y  },  crop {    bottom,    left,    right,    top  }  },    })  },      _type == "socialGrid" => {    ...,    "socials": array::compact(socials[]{      ...,        "openInNewTab": url.openInNewTab,  "href": select(    url.type == "internal" => select(  url.internal->site != $site => null,  url.internal->language == $defaultLocale => url.internal->slug.current,  url.internal->slug.current == "/" => "/" + url.internal->language,  "/" + url.internal->language + url.internal->slug.current),    url.type == "external" => url.external,    url.href  ),      "logo": logo{          "id": asset._ref,  "preview": asset->metadata.lqip,  "alt": coalesce(alt, asset->altText, caption),  hotspot {    x,    y  },  crop {    bottom,    left,    right,    top  }      }    })  },      _type == "showcaseGrid" => {    ...,    "items": array::compact(items[]{      _key,      siteName,      url,      category,      "screenshot": screenshot{          "id": asset._ref,  "preview": asset->metadata.lqip,  "alt": coalesce(alt, asset->altText, caption),  hotspot {    x,    y  },  crop {    bottom,    left,    right,    top  }      },      "attributionLogo": attributionLogo{          "id": asset._ref,  "preview": asset->metadata.lqip,  "alt": coalesce(alt, asset->altText, caption),  hotspot {    x,    y  },  crop {    bottom,    left,    right,    top  }      },      featured    })  },      _type == "richTextBlock" => {    ...,      richText[]{    ...,    _type == "block" => {      ...,        markDefs[]{    ...,      ...customLink{    openInNewTab,    "href": select(      type == "internal" => select(  internal->site != $site => null,  internal->language == $defaultLocale => internal->slug.current,  internal->slug.current == "/" => "/" + internal->language,  "/" + internal->language + internal->slug.current),      type == "external" => external,      "#"    ),  }  }    },    _type == "image" => {        "id": asset._ref,  "preview": asset->metadata.lqip,  "alt": coalesce(alt, asset->altText, caption),  hotspot {    x,    y  },  crop {    bottom,    left,    right,    top  },      "caption": caption    },    _type == "table" => {      ...,      rows[]{        ...,        cells[]{          ...,          value[]{            ...,            _type == "block" => {              ...,                markDefs[]{    ...,      ...customLink{    openInNewTab,    "href": select(      type == "internal" => select(  internal->site != $site => null,  internal->language == $defaultLocale => internal->slug.current,  internal->slug.current == "/" => "/" + internal->language,  "/" + internal->language + internal->slug.current),      type == "external" => external,      "#"    ),  }  }            }          }        }      }    }  }  },      _type == "videoFeature" => {    ...,      richText[]{    ...,    _type == "block" => {      ...,        markDefs[]{    ...,      ...customLink{    openInNewTab,    "href": select(      type == "internal" => select(  internal->site != $site => null,  internal->language == $defaultLocale => internal->slug.current,  internal->slug.current == "/" => "/" + internal->language,  "/" + internal->language + internal->slug.current),      type == "external" => external,      "#"    ),  }  }    },    _type == "image" => {        "id": asset._ref,  "preview": asset->metadata.lqip,  "alt": coalesce(alt, asset->altText, caption),  hotspot {    x,    y  },  crop {    bottom,    left,    right,    top  },      "caption": caption    },    _type == "table" => {      ...,      rows[]{        ...,        cells[]{          ...,          value[]{            ...,            _type == "block" => {              ...,                markDefs[]{    ...,      ...customLink{    openInNewTab,    "href": select(      type == "internal" => select(  internal->site != $site => null,  internal->language == $defaultLocale => internal->slug.current,  internal->slug.current == "/" => "/" + internal->language,  "/" + internal->language + internal->slug.current),      type == "external" => external,      "#"    ),  }  }            }          }        }      }    }  },    video {        asset {      "playbackId": asset->playbackId,  "policy": asset->data.playback_ids[0].policy,  "aspectRatio": asset->data.aspect_ratio,  "status": asset->status,  "thumbTime": asset->thumbTime,  "title": asset->filename  },  autoPlay,  loop    },  }  },      "translations": *[_type == "translation.metadata" && references(^._id)][0]    .translations[defined(value)]{      language,      "site": value->site,      "slug": value->slug.current    }  }
@@ -1403,117 +1202,28 @@ export type PageQueryResult = {
   title: string;
   description: string | null;
   slug: string | null;
-  image: {
-    id: string | null;
-    preview: string | null;
-    alt: string | null;
-    hotspot: {
-      x: number;
-      y: number;
-    } | null;
-    crop: {
-      bottom: number;
-      left: number;
-      right: number;
-      top: number;
-    } | null;
-  } | null;
+  image: PageQueryResultImageShape | null;
   seoTitle: string | null;
   seoDescription: string | null;
   seoNoIndex: boolean | null;
   ogTitle: string | null;
   ogDescription: string | null;
   ogImage:
-    | {
-        id: string | null;
-        preview: string | null;
-        alt: string | null;
-        hotspot: {
-          x: number;
-          y: number;
-        } | null;
-        crop: {
-          bottom: number;
-          left: number;
-          right: number;
-          top: number;
-        } | null;
-      }
+    | PageQueryResultImageShape
     | null
-    | {
-        id: string | null;
-        preview: string | null;
-        alt: string | null;
-        hotspot: {
-          x: number;
-          y: number;
-        } | null;
-        crop: {
-          bottom: number;
-          left: number;
-          right: number;
-          top: number;
-        } | null;
-      };
+    | PageQueryResultImageShape;
   pageBuilder: Array<
     | {
         _key: string;
         _type: "cta";
         eyebrow?: string;
         title?: string;
-        richText: Array<{
-          children?: Array<{
-            marks?: Array<string>;
-            text?: string;
-            _type: "span";
-            _key: string;
-          }>;
-          style?: "h2" | "h3" | "h4" | "h5" | "h6" | "inline" | "normal";
-          listItem?: "bullet" | "number";
-          markDefs: Array<
-            | {
-                customLink?: CustomUrl;
-                _type: "customLink";
-                _key: string;
-                openInNewTab: boolean | null;
-                href: "#" | null | string;
-              }
-            | {
-                customLink?: CustomUrl;
-                _type: "customLink";
-                _key: string;
-              }
-          > | null;
-          level?: number;
-          _type: "block";
-          _key: string;
-        }> | null;
-        buttons: Array<{
-          text: string | null;
-          variant: "default" | "link" | "outline" | "secondary" | null;
-          _key: string;
-          _type: "button";
-          openInNewTab: boolean | null;
-          href: null | string;
-        }> | null;
+        richText: Array<RichTextBlockShape> | null;
+        buttons: Array<ButtonShape> | null;
         usedByTeams: {
           title?: string;
           logos: Array<{
-            image: {
-              id: string | null;
-              preview: string | null;
-              alt: string | null;
-              hotspot: {
-                x: number;
-                y: number;
-              } | null;
-              crop: {
-                bottom: number;
-                left: number;
-                right: number;
-                top: number;
-              } | null;
-            } | null;
+            image: PageQueryResultImageShape | null;
             url?: CustomUrl;
             _type: "usedByTeamsLogo";
             _key: string;
@@ -1542,33 +1252,7 @@ export type PageQueryResult = {
             title: string;
             _id: string;
             _type: "faq";
-            richText: Array<{
-              children?: Array<{
-                marks?: Array<string>;
-                text?: string;
-                _type: "span";
-                _key: string;
-              }>;
-              style?: "h2" | "h3" | "h4" | "h5" | "h6" | "inline" | "normal";
-              listItem?: "bullet" | "number";
-              markDefs: Array<
-                | {
-                    customLink?: CustomUrl;
-                    _type: "customLink";
-                    _key: string;
-                    openInNewTab: boolean | null;
-                    href: "#" | null | string;
-                  }
-                | {
-                    customLink?: CustomUrl;
-                    _type: "customLink";
-                    _key: string;
-                  }
-              > | null;
-              level?: number;
-              _type: "block";
-              _key: string;
-            }> | null;
+            richText: Array<RichTextBlockShape> | null;
           }>;
         }> | null;
       }
@@ -1577,63 +1261,11 @@ export type PageQueryResult = {
         _type: "featureCardsIcon";
         eyebrow?: string;
         title?: string;
-        richText: Array<{
-          children?: Array<{
-            marks?: Array<string>;
-            text?: string;
-            _type: "span";
-            _key: string;
-          }>;
-          style?: "h2" | "h3" | "h4" | "h5" | "h6" | "inline" | "normal";
-          listItem?: "bullet" | "number";
-          markDefs: Array<
-            | {
-                customLink?: CustomUrl;
-                _type: "customLink";
-                _key: string;
-                openInNewTab: boolean | null;
-                href: "#" | null | string;
-              }
-            | {
-                customLink?: CustomUrl;
-                _type: "customLink";
-                _key: string;
-              }
-          > | null;
-          level?: number;
-          _type: "block";
-          _key: string;
-        }> | null;
+        richText: Array<RichTextBlockShape> | null;
         cards: Array<{
           icon?: LucideIcon;
           title?: string;
-          richText: Array<{
-            children?: Array<{
-              marks?: Array<string>;
-              text?: string;
-              _type: "span";
-              _key: string;
-            }>;
-            style?: "h2" | "h3" | "h4" | "h5" | "h6" | "inline" | "normal";
-            listItem?: "bullet" | "number";
-            markDefs: Array<
-              | {
-                  customLink?: CustomUrl;
-                  _type: "customLink";
-                  _key: string;
-                  openInNewTab: boolean | null;
-                  href: "#" | null | string;
-                }
-              | {
-                  customLink?: CustomUrl;
-                  _type: "customLink";
-                  _key: string;
-                }
-            > | null;
-            level?: number;
-            _type: "block";
-            _key: string;
-          }> | null;
+          richText: Array<RichTextBlockShape> | null;
           _type: "featureCardIcon";
           _key: string;
         }> | null;
@@ -1643,121 +1275,18 @@ export type PageQueryResult = {
         _type: "hero";
         badge?: string;
         title?: string;
-        richText: Array<{
-          children?: Array<{
-            marks?: Array<string>;
-            text?: string;
-            _type: "span";
-            _key: string;
-          }>;
-          style?: "h2" | "h3" | "h4" | "h5" | "h6" | "inline" | "normal";
-          listItem?: "bullet" | "number";
-          markDefs: Array<
-            | {
-                customLink?: CustomUrl;
-                _type: "customLink";
-                _key: string;
-                openInNewTab: boolean | null;
-                href: "#" | null | string;
-              }
-            | {
-                customLink?: CustomUrl;
-                _type: "customLink";
-                _key: string;
-              }
-          > | null;
-          level?: number;
-          _type: "block";
-          _key: string;
-        }> | null;
+        richText: Array<RichTextBlockShape> | null;
         video: {
-          light: {
-            mediaType: "mux-mp4" | "mux" | "sanity";
-            mux: {
-              playbackId: string | null;
-              policy: string | null;
-              aspectRatio: string | null;
-              status: string | null;
-              thumbTime: number | null;
-              title: string | null;
-            } | null;
-            webm: string | null;
-            hevc: string | null;
-            mobileWebm: string | null;
-            poster: {
-              id: string | null;
-              preview: string | null;
-              alt: string | null;
-              hotspot: {
-                x: number;
-                y: number;
-              } | null;
-              crop: {
-                bottom: number;
-                left: number;
-                right: number;
-                top: number;
-              } | null;
-            } | null;
-          } | null;
-          dark: {
-            mediaType: "mux-mp4" | "mux" | "sanity";
-            mux: {
-              playbackId: string | null;
-              policy: string | null;
-              aspectRatio: string | null;
-              status: string | null;
-              thumbTime: number | null;
-              title: string | null;
-            } | null;
-            webm: string | null;
-            hevc: string | null;
-            mobileWebm: string | null;
-            poster: {
-              id: string | null;
-              preview: string | null;
-              alt: string | null;
-              hotspot: {
-                x: number;
-                y: number;
-              } | null;
-              crop: {
-                bottom: number;
-                left: number;
-                right: number;
-                top: number;
-              } | null;
-            } | null;
-          } | null;
+          light: LightShape | null;
+          dark: LightShape | null;
         } | null;
-        buttons: Array<{
-          text: string | null;
-          variant: "default" | "link" | "outline" | "secondary" | null;
-          _key: string;
-          _type: "button";
-          openInNewTab: boolean | null;
-          href: null | string;
-        }> | null;
+        buttons: Array<ButtonShape> | null;
       }
     | {
         _key: string;
         _type: "logoCloud";
         logos: Array<{
-          image: {
-            id: string | null;
-            preview: string | null;
-            alt: string | null;
-            hotspot: {
-              x: number;
-              y: number;
-            } | null;
-            crop: {
-              bottom: number;
-              left: number;
-              right: number;
-              top: number;
-            } | null;
-          } | null;
+          image: PageQueryResultImageShape | null;
           url?: CustomUrl;
           _type: "logoCloudItem";
           _key: string;
@@ -1771,33 +1300,7 @@ export type PageQueryResult = {
         eyebrow?: string;
         title?: string;
         richText: Array<
-          | {
-              children?: Array<{
-                marks?: Array<string>;
-                text?: string;
-                _type: "span";
-                _key: string;
-              }>;
-              style?: "h2" | "h3" | "h4" | "h5" | "h6" | "inline" | "normal";
-              listItem?: "bullet" | "number";
-              markDefs: Array<
-                | {
-                    customLink?: CustomUrl;
-                    _type: "customLink";
-                    _key: string;
-                    openInNewTab: boolean | null;
-                    href: "#" | null | string;
-                  }
-                | {
-                    customLink?: CustomUrl;
-                    _type: "customLink";
-                    _key: string;
-                  }
-              > | null;
-              level?: number;
-              _type: "block";
-              _key: string;
-            }
+          | RichTextBlockShape
           | {
               asset?: SanityImageAssetReference;
               media?: unknown;
@@ -1805,12 +1308,7 @@ export type PageQueryResult = {
                 x: number;
                 y: number;
               } | null;
-              crop: {
-                bottom: number;
-                left: number;
-                right: number;
-                top: number;
-              } | null;
+              crop: CropShape | null;
               alt: string | null;
               caption: string | null;
               _type: "image";
@@ -1823,27 +1321,12 @@ export type PageQueryResult = {
               rows: Array<{
                 cells: Array<{
                   value: Array<{
-                    children?: Array<{
-                      marks?: Array<string>;
-                      text?: string;
-                      _type: "span";
-                      _key: string;
-                    }>;
+                    children?: Array<SpanShape>;
                     style?: "normal";
                     listItem?: "bullet" | "number";
                     markDefs: Array<
-                      | {
-                          customLink?: CustomUrl;
-                          _type: "customLink";
-                          _key: string;
-                          openInNewTab: boolean | null;
-                          href: "#" | null | string;
-                        }
-                      | {
-                          customLink?: CustomUrl;
-                          _type: "customLink";
-                          _key: string;
-                        }
+                      | RichTextMarkDefsCustomLinkShape
+                      | CustomLinkShape
                     > | null;
                     level?: number;
                     _type: "block";
@@ -1870,36 +1353,8 @@ export type PageQueryResult = {
           siteName: string;
           url: string | null;
           category: string | null;
-          screenshot: {
-            id: string | null;
-            preview: string | null;
-            alt: string | null;
-            hotspot: {
-              x: number;
-              y: number;
-            } | null;
-            crop: {
-              bottom: number;
-              left: number;
-              right: number;
-              top: number;
-            } | null;
-          } | null;
-          attributionLogo: {
-            id: string | null;
-            preview: string | null;
-            alt: string | null;
-            hotspot: {
-              x: number;
-              y: number;
-            } | null;
-            crop: {
-              bottom: number;
-              left: number;
-              right: number;
-              top: number;
-            } | null;
-          } | null;
+          screenshot: PageQueryResultImageShape | null;
+          attributionLogo: PageQueryResultImageShape | null;
           featured: boolean | null;
         }> | null;
       }
@@ -1920,21 +1375,7 @@ export type PageQueryResult = {
             | "x"
             | "youtube";
           label: string;
-          logo: {
-            id: string | null;
-            preview: string | null;
-            alt: string | null;
-            hotspot: {
-              x: number;
-              y: number;
-            } | null;
-            crop: {
-              bottom: number;
-              left: number;
-              right: number;
-              top: number;
-            } | null;
-          } | null;
+          logo: PageQueryResultImageShape | null;
           url?: CustomUrl;
           _type: "socialGridItem";
           _key: string;
@@ -1946,106 +1387,14 @@ export type PageQueryResult = {
         _key: string;
         _type: "subscribeNewsletter";
         title: string | null;
-        subTitle: Array<{
-          children?: Array<{
-            marks?: Array<string>;
-            text?: string;
-            _type: "span";
-            _key: string;
-          }>;
-          style?: "h2" | "h3" | "h4" | "h5" | "h6" | "inline" | "normal";
-          listItem?: "bullet" | "number";
-          markDefs: Array<
-            | {
-                customLink?: CustomUrl;
-                _type: "customLink";
-                _key: string;
-                openInNewTab: boolean | null;
-                href: "#" | null | string;
-              }
-            | {
-                customLink?: CustomUrl;
-                _type: "customLink";
-                _key: string;
-              }
-          > | null;
-          level?: number;
-          _type: "block";
-          _key: string;
-        }> | null;
-        helperText: Array<{
-          children?: Array<{
-            marks?: Array<string>;
-            text?: string;
-            _type: "span";
-            _key: string;
-          }>;
-          style?: "h2" | "h3" | "h4" | "h5" | "h6" | "inline" | "normal";
-          listItem?: "bullet" | "number";
-          markDefs: Array<
-            | {
-                customLink?: CustomUrl;
-                _type: "customLink";
-                _key: string;
-                openInNewTab: boolean | null;
-                href: "#" | null | string;
-              }
-            | {
-                customLink?: CustomUrl;
-                _type: "customLink";
-                _key: string;
-              }
-          > | null;
-          level?: number;
-          _type: "block";
-          _key: string;
-        }> | null;
+        subTitle: Array<RichTextBlockShape> | null;
+        helperText: Array<RichTextBlockShape> | null;
         testimonial: {
           eyebrow: string | null;
           authorName: string | null;
           authorRole: string | null;
-          quote: Array<{
-            children?: Array<{
-              marks?: Array<string>;
-              text?: string;
-              _type: "span";
-              _key: string;
-            }>;
-            style?: "h2" | "h3" | "h4" | "h5" | "h6" | "inline" | "normal";
-            listItem?: "bullet" | "number";
-            markDefs: Array<
-              | {
-                  customLink?: CustomUrl;
-                  _type: "customLink";
-                  _key: string;
-                  openInNewTab: boolean | null;
-                  href: "#" | null | string;
-                }
-              | {
-                  customLink?: CustomUrl;
-                  _type: "customLink";
-                  _key: string;
-                }
-            > | null;
-            level?: number;
-            _type: "block";
-            _key: string;
-          }> | null;
-          authorImage: {
-            id: string | null;
-            preview: string | null;
-            alt: string | null;
-            hotspot: {
-              x: number;
-              y: number;
-            } | null;
-            crop: {
-              bottom: number;
-              left: number;
-              right: number;
-              top: number;
-            } | null;
-          } | null;
+          quote: Array<RichTextBlockShape> | null;
+          authorImage: PageQueryResultImageShape | null;
         } | null;
       }
     | {
@@ -2053,53 +1402,16 @@ export type PageQueryResult = {
         _type: "videoFeature";
         eyebrow?: string;
         title?: string;
-        richText: Array<{
-          children?: Array<{
-            marks?: Array<string>;
-            text?: string;
-            _type: "span";
-            _key: string;
-          }>;
-          style?: "h2" | "h3" | "h4" | "h5" | "h6" | "inline" | "normal";
-          listItem?: "bullet" | "number";
-          markDefs: Array<
-            | {
-                customLink?: CustomUrl;
-                _type: "customLink";
-                _key: string;
-                openInNewTab: boolean | null;
-                href: "#" | null | string;
-              }
-            | {
-                customLink?: CustomUrl;
-                _type: "customLink";
-                _key: string;
-              }
-          > | null;
-          level?: number;
-          _type: "block";
-          _key: string;
-        }> | null;
+        richText: Array<RichTextBlockShape> | null;
         video: {
-          asset: {
-            playbackId: string | null;
-            policy: string | null;
-            aspectRatio: string | null;
-            status: string | null;
-            thumbTime: number | null;
-            title: string | null;
-          };
+          asset: MuxShape;
           autoPlay: boolean | null;
           loop: boolean | null;
         };
         caption?: string;
       }
   > | null;
-  translations: Array<{
-    language: string;
-    site: null | "brand-a" | "brand-b";
-    slug: string | null;
-  }> | null;
+  translations: Array<TranslationsShape> | null;
 } | null;
 
 // Source: src/queries.ts
@@ -2119,42 +1431,10 @@ export type PageMetadataQueryResult = {
   ogTitle: string | null;
   ogDescription: string | null;
   ogImage:
-    | {
-        id: string | null;
-        preview: string | null;
-        alt: string | null;
-        hotspot: {
-          x: number;
-          y: number;
-        } | null;
-        crop: {
-          bottom: number;
-          left: number;
-          right: number;
-          top: number;
-        } | null;
-      }
+    | PageQueryResultImageShape
     | null
-    | {
-        id: string | null;
-        preview: string | null;
-        alt: string | null;
-        hotspot: {
-          x: number;
-          y: number;
-        } | null;
-        crop: {
-          bottom: number;
-          left: number;
-          right: number;
-          top: number;
-        } | null;
-      };
-  translations: Array<{
-    language: string;
-    site: null | "brand-a" | "brand-b";
-    slug: string | null;
-  }> | null;
+    | PageQueryResultImageShape;
+  translations: Array<TranslationsShape> | null;
 } | null;
 
 // Source: src/queries.ts
@@ -2173,11 +1453,7 @@ export type SitemapQueryResult = Array<{
   language: string | null;
   slug: string | null;
   lastModified: string;
-  translations: Array<{
-    language: string;
-    site: null | "brand-a" | "brand-b";
-    slug: string | null;
-  }> | null;
+  translations: Array<TranslationsShape> | null;
 }>;
 
 // Source: src/queries.ts
@@ -2207,14 +1483,7 @@ export type NavigationQueryResult = {
         }>;
       }
   > | null;
-  buttons: Array<{
-    text: string | null;
-    variant: "default" | "link" | "outline" | "secondary" | null;
-    _key: string;
-    _type: "button";
-    openInNewTab: boolean | null;
-    href: null | string;
-  }> | null;
+  buttons: Array<ButtonShape> | null;
 } | null;
 
 // Source: src/queries.ts
@@ -2238,21 +1507,7 @@ export type FooterQueryResult = {
     _key: string;
     label: string | null;
     url: string | null;
-    logo: {
-      id: string | null;
-      preview: string | null;
-      alt: string | null;
-      hotspot: {
-        x: number;
-        y: number;
-      } | null;
-      crop: {
-        bottom: number;
-        left: number;
-        right: number;
-        top: number;
-      } | null;
-    } | null;
+    logo: PageQueryResultImageShape | null;
   }> | null;
 } | null;
 
@@ -2266,71 +1521,15 @@ export type SettingsQueryResult = {
   siteTitle: string | null;
   siteDescription: string | null;
   logos: {
-    logo: {
-      id: string | null;
-      preview: string | null;
-      alt: string | null;
-      hotspot: {
-        x: number;
-        y: number;
-      } | null;
-      crop: {
-        bottom: number;
-        left: number;
-        right: number;
-        top: number;
-      } | null;
-    } | null;
-    logoDark: {
-      id: string | null;
-      preview: string | null;
-      alt: string | null;
-      hotspot: {
-        x: number;
-        y: number;
-      } | null;
-      crop: {
-        bottom: number;
-        left: number;
-        right: number;
-        top: number;
-      } | null;
-    } | null;
-    footerLogo: {
-      id: string | null;
-      preview: string | null;
-      alt: string | null;
-      hotspot: {
-        x: number;
-        y: number;
-      } | null;
-      crop: {
-        bottom: number;
-        left: number;
-        right: number;
-        top: number;
-      } | null;
-    } | null;
+    logo: PageQueryResultImageShape | null;
+    logoDark: PageQueryResultImageShape | null;
+    footerLogo: PageQueryResultImageShape | null;
   } | null;
   favicon: {
     svg: string | null;
     ico: string | null;
   } | null;
-  ogImage: {
-    id: string | null;
-    preview: string | null;
-    alt: string | null;
-    hotspot: {
-      x: number;
-      y: number;
-    } | null;
-    crop: {
-      bottom: number;
-      left: number;
-      right: number;
-      top: number;
-    } | null;
-  } | null;
+  ogImage: PageQueryResultImageShape | null;
   contactEmail: string | null;
   socialLinks: {
     linkedin: string | null;

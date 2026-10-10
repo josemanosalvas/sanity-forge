@@ -10,6 +10,7 @@ export default defineConfig({
     ...core.ignorePatterns,
     "**/.sanity",
     "**/sanity.types.ts",
+    "**/compiled-queries.ts",
     "**/schema.json",
     "**/playwright-report",
     "**/test-results",
