@@ -12,14 +12,14 @@ const meta = {
           {
             _id: "faq-1",
             richText: paragraph(
-              "As many as you register. Each site is a key in the host registry and gets its own Studio workspace."
+              "Each entry in sites.ts defines a site and creates a Studio workspace. The example configuration has two sites."
             ),
             title: "How many sites can one project serve?",
           },
           {
             _id: "faq-2",
             richText: paragraph(
-              "Yes. Locales are orthogonal to sites; the default locale is unprefixed and the rest carry a prefix."
+              "Yes. Each site selects its languages in sites.ts. Its default language has no URL prefix. Other languages use a locale prefix."
             ),
             title: "Can two sites share a locale?",
           },
@@ -42,14 +42,13 @@ const meta = {
     ],
     eyebrow: "FAQ",
     link: {
-      description: "The full setup guide lives in the README.",
+      description: "The README lists the local setup steps.",
       href: "https://github.com",
       openInNewTab: true,
       title: "Read the docs",
     },
-    subtitle:
-      "Everything editors and developers ask before their first deploy.",
-    title: "Questions, answered",
+    subtitle: "How sites, languages, and previews work in this template.",
+    title: "Common setup questions",
   },
   component: FaqAccordion,
   parameters: { layout: "fullscreen" },

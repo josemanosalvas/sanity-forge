@@ -49,9 +49,8 @@ const sitemap = async ({
       ];
     });
   } catch (error) {
-    // A build shipping a sitemap it could not read is a broken deploy, so it
-    // still fails loudly; a crawler hitting a cold cache gets an empty but
-    // valid sitemap instead of a 500.
+    // Fail the build if the sitemap query fails. At runtime, return an empty
+    // sitemap so a temporary query failure does not produce HTTP 500.
     if (process.env.NEXT_PHASE === "phase-production-build") {
       throw error;
     }

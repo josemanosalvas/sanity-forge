@@ -6,8 +6,7 @@ import { imageWithAltField } from "../../lib/schema-fields";
 const showcaseItem = defineArrayMember({
   fields: [
     defineField({
-      description:
-        "The name of the site, shown as the label beneath its screenshot (for example: 'Acme Store').",
+      description: "Site name displayed below the screenshot.",
       name: "siteName",
       title: "Site Name",
       type: "string",
@@ -15,21 +14,21 @@ const showcaseItem = defineArrayMember({
     }),
     defineField({
       description:
-        "The live site's full web address, including https://. When set, the whole card links out to it (opens in a new tab). Leave empty for a display-only card.",
+        "Full site URL, including https://. The card opens it in a new tab. Leave empty for a card without a link.",
       name: "url",
       title: "URL",
       type: "url",
     }),
     defineField({
       description:
-        "A short label shown on the right of the card (for example: 'Real Estate', 'Portfolio', 'Intelligence Software').",
+        "Short label on the right of the card, such as the site category.",
       name: "category",
       title: "Category",
       type: "string",
     }),
     imageWithAltField({
       description:
-        "A screenshot of the site's homepage — the main image on the card. Use a 16:9 image for the cleanest crop.",
+        "Main card image. Use a 16:9 screenshot to match the card dimensions.",
       name: "screenshot",
       title: "Screenshot",
     }),
@@ -41,7 +40,7 @@ const showcaseItem = defineArrayMember({
     }),
     defineField({
       description:
-        "Show this site as a large banner at the top of the section. Each site marked here becomes its own banner.",
+        "Display this item as a large banner. The first banner appears above the grid, and later banners appear below it.",
       initialValue: false,
       name: "featured",
       title: "Featured",
@@ -67,18 +66,16 @@ const showcaseItem = defineArrayMember({
 
 export const showcaseGridSchema = defineType({
   description:
-    "A section that shows off real websites built with the template. Add the sites as items below — each one marked 'Featured' gets a large banner.",
+    "A grid of linked images with names and categories. Featured items appear as large banners.",
   fields: [
     defineField({
-      description:
-        "The large heading at the top of the section (for example: 'Sites built with this starter').",
+      description: "Heading above the grid.",
       name: "title",
       title: "Title",
       type: "string",
     }),
     defineField({
-      description:
-        "The short paragraph under the title that sets up what the showcase is about.",
+      description: "Paragraph below the title.",
       name: "description",
       rows: 3,
       title: "Description",
@@ -86,7 +83,7 @@ export const showcaseGridSchema = defineType({
     }),
     defineField({
       description:
-        "The sites shown in the grid. Drag to reorder — visitors see them in this order. Featured items get large banners: the first at the top, any others after the grid. If you don't mark any, the first item gets the banner automatically. Add a URL to make a card link out to its live site.",
+        "Drag to change item order. Featured items become banners, with the first above the grid and the rest below. Without a featured item, the first item becomes the banner. Items with a URL link to that address.",
       name: "items",
       of: [showcaseItem],
       title: "Showcase Items",

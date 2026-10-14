@@ -31,7 +31,7 @@
   },
   "tasks": {
     "transit": {
-      "description": "Phantom task that threads dependency hashes into no-emit checks without serializing them.",
+      "description": "Includes dependency hashes in checks while allowing those checks to run in parallel.",
       "dependsOn": ["^transit"]
     },
     "schema:extract": {

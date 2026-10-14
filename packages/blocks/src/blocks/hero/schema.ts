@@ -42,21 +42,21 @@ const showFor =
 const videoVariantFields = () => [
   defineField({
     description:
-      "Where this background is served from. Mux encodes one upload for every device. Sanity serves the files you upload below, exactly as encoded.",
+      "Choose the video provider. Mux encodes the uploaded video. Sanity serves the encoded files you upload below.",
     initialValue: "sanity",
     name: "mediaType",
     options: {
       layout: "radio",
       list: [
         {
-          title: "Mux — one upload, adapts to the connection",
+          title: "Mux adaptive streaming",
           value: "mux",
         },
         {
-          title: "Mux as a single file — lighter, does not adapt",
+          title: "Mux MP4 file",
           value: "mux-mp4",
         },
-        { title: "Sanity — your own encoded files", value: "sanity" },
+        { title: "Sanity uploaded files", value: "sanity" },
       ],
     },
     title: "Video Source",
@@ -70,7 +70,7 @@ const videoVariantFields = () => [
   }),
   defineField({
     description:
-      "The .webm file, encoded as AV1. Most people see this one. The AV1 codec is declared to the browser so Safari skips it and takes the .mp4 instead — upload a VP9 .webm here and this hero may fall back to the .mp4 or just the poster image.",
+      "Upload an AV1-encoded .webm file. The player declares AV1 to the browser. A VP9 file may fail to play, leaving the MP4 fallback or poster visible.",
     hidden: showFor("sanity"),
     name: "webm",
     options: { accept: "video/webm" },
@@ -78,7 +78,7 @@ const videoVariantFields = () => [
     type: "file",
   }),
   defineField({
-    description: "The .mp4 file. Macs, iPhones and iPads need this one.",
+    description: "Upload an HEVC-encoded .mp4 file for Safari playback.",
     hidden: showFor("sanity"),
     name: "hevc",
     options: { accept: "video/mp4" },
@@ -87,7 +87,7 @@ const videoVariantFields = () => [
   }),
   defineField({
     description:
-      "A smaller .webm, so phones do not have to download the big file. AV1, like the one above.",
+      "Upload a smaller AV1-encoded .webm file for narrow screens and slow connections.",
     hidden: showFor("sanity"),
     name: "mobileWebm",
     options: { accept: "video/webm" },
@@ -187,22 +187,19 @@ export const heroVideoField = defineField({
 export const heroSchema = defineType({
   fields: [
     defineField({
-      description:
-        "Optional badge text displayed above the title, useful for highlighting new features or promotions",
+      description: "Optional badge above the title.",
       name: "badge",
       title: "Badge",
       type: "string",
     }),
     defineField({
-      description:
-        "The main heading text for the hero section that captures attention",
+      description: "Main heading for the hero section.",
       name: "title",
       title: "Title",
       type: "string",
     }),
     definePortableTextField(["block"], {
-      description:
-        "The supporting paragraph shown beneath the title, introducing the page in a sentence or two",
+      description: "Page introduction below the title.",
       name: "richText",
     }),
     heroVideoField,

@@ -1,6 +1,6 @@
 # Third-party notices
 
-Sanity Forge is distributed under the MIT License; see [LICENSE](LICENSE). It incorporates code adapted from the MIT-licensed projects below. Their copyright notices are reproduced here as the MIT License requires, and the permission and warranty text in LICENSE applies to those portions in full.
+Sanity Forge uses the [MIT License](LICENSE) and includes code adapted from the projects below. Their copyright notices follow. The permission and warranty text in LICENSE applies to these portions.
 
 ## turbo-start-sanity
 

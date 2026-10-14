@@ -11,13 +11,13 @@ import { documentSlugField } from "../fields/slug";
 
 export const page = defineType({
   description:
-    "A page of a site, like 'About us' or the home page (slug '/'). Each language is its own document, linked through the Translations menu, so it can have its own slug and be published independently.",
+    "A page in one site's language. Use slug '/' for the home page. The Translations menu links separate documents, each with its own slug and publishing status.",
   fields: [
     { ...siteField, group: GROUP.MAIN_CONTENT },
     languageField,
     defineField({
       description:
-        "The main heading that appears at the top of your page and in browser tabs",
+        "Default title for browser tabs and search results. Also shown as the page heading when no blocks render. Otherwise, set headings in the blocks.",
       group: GROUP.MAIN_CONTENT,
       name: "title",
       title: "Title",
@@ -26,7 +26,7 @@ export const page = defineType({
     }),
     defineField({
       description:
-        "A brief summary of what this page is about. This text helps search engines understand your page and may appear in search results.",
+        "Page summary used as the default meta description. Search engines may show it in results.",
       group: GROUP.MAIN_CONTENT,
       name: "description",
       rows: 3,
@@ -36,12 +36,12 @@ export const page = defineType({
         rule
           .min(140)
           .warning(
-            "The meta description should be at least 140 characters for optimal SEO visibility in search results"
+            "This description is shorter than the suggested 140 characters."
           ),
         rule
           .max(160)
           .warning(
-            "The meta description should not exceed 160 characters as it will be truncated in search results"
+            "This description exceeds the suggested 160 characters. Search engines may shorten it."
           ),
       ],
     }),
@@ -49,8 +49,7 @@ export const page = defineType({
       group: GROUP.MAIN_CONTENT,
     }),
     imageWithAltField({
-      description:
-        "A main picture for this page that can be used when sharing on social media or in search results",
+      description: "Default image for social sharing and search results.",
       group: GROUP.MAIN_CONTENT,
       title: "Image",
     }),
@@ -64,11 +63,12 @@ export const page = defineType({
   preview: {
     prepare: ({ title, slug, media, noIndex, blocks, language, site }) => {
       const noIndexLabel = noIndex ? " · noindex" : "";
-      const builderEmoji = blocks?.length ? `🧱 ${blocks.length}` : "🏗️";
+      const blockCount = blocks?.length ?? 0;
+      const blockLabel = `${blockCount} ${blockCount === 1 ? "block" : "blocks"}`;
 
       return {
         media,
-        subtitle: `${site ?? "no site"} · ${(language ?? "??").toUpperCase()}${noIndexLabel} · ${builderEmoji} · ${slug || "no-slug"}`,
+        subtitle: `${site ?? "no site"} · ${(language ?? "??").toUpperCase()}${noIndexLabel} · ${blockLabel} · ${slug || "no-slug"}`,
         title: `${title || "Untitled Page"}`,
       };
     },

@@ -19,7 +19,7 @@ export const customUrl = defineType({
   fields: [
     defineField({
       description:
-        "Internal points at a page of this site. External is any address: a full https:// URL, or a path such as /about. Shared content (FAQs) uses External only, because it is shown on more than one site.",
+        "Internal links select a page on this site. External links accept a full URL or a path such as /about. Shared FAQs use External links.",
       initialValue: "external",
       name: "type",
       options: createRadioListLayout(["internal", "external"]),

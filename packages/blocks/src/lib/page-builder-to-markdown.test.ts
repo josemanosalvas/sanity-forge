@@ -26,7 +26,7 @@ describe(pageBuilderToMarkdown, () => {
               richText: para("An answer."),
               title: "What is this?",
             },
-            // skipped — no title
+            // The serializer skips entries without a title.
             { _id: "2", title: "" },
           ],
           title: "General",
@@ -82,8 +82,8 @@ describe(pageBuilderToMarkdown, () => {
           {
             _key: "c1",
             icon: "bolt",
-            richText: para("Very fast."),
-            title: "Fast",
+            richText: para("Supports German."),
+            title: "Languages",
           },
         ],
         title: "Features",
@@ -91,8 +91,8 @@ describe(pageBuilderToMarkdown, () => {
     ]);
 
     expect(md).toContain("## Features");
-    expect(md).toContain("### Fast");
-    expect(md).toContain("Very fast.");
+    expect(md).toContain("### Languages");
+    expect(md).toContain("Supports German.");
     expect(md).not.toContain("bolt");
   });
 
@@ -100,16 +100,16 @@ describe(pageBuilderToMarkdown, () => {
     const md = pageBuilderToMarkdown([
       {
         _type: "subscribeNewsletter",
-        helperText: para("No spam."),
+        helperText: para("Unsubscribe by email."),
         subTitle: para("Subscribe for updates."),
-        title: "Stay in the loop",
+        title: "Release notes",
       },
     ]);
 
-    expect(md).toContain("## Stay in the loop");
+    expect(md).toContain("## Release notes");
     expect(md).toContain("Subscribe for updates.");
     // The form's small print is omitted, like the rendered block without a handler.
-    expect(md).not.toContain("No spam.");
+    expect(md).not.toContain("Unsubscribe by email.");
     expect(md).not.toMatch(/<(?:form|input|button)/iu);
   });
 

@@ -17,9 +17,9 @@ export const subscribeNewsletterSchema = defineType({
     }),
     definePortableTextField(["block"], {
       description:
-        "The short paragraph beneath the title, telling visitors what they will receive",
+        "Paragraph below the title. Describe what subscribers receive.",
       name: "subTitle",
-      title: "SubTitle",
+      title: "Subtitle",
     }),
     definePortableTextField(["block"], {
       description:
@@ -29,7 +29,7 @@ export const subscribeNewsletterSchema = defineType({
     }),
     defineField({
       description:
-        "An optional customer testimonial shown in a panel beside the newsletter copy. Leave every field empty to hide the panel entirely.",
+        "Optional testimonial beside the newsletter text. Leave all fields empty to hide the panel.",
       fields: [
         defineField({
           description:
@@ -40,7 +40,7 @@ export const subscribeNewsletterSchema = defineType({
         }),
         definePortableTextField(["block"], {
           description:
-            "The testimonial quote. Use the Strong style to emphasize the sentences that should stand out brightly; the rest of the text appears muted.",
+            "Testimonial text. Strong text uses a higher contrast color than the rest of the quote.",
           name: "quote",
           title: "Quote",
         }),
@@ -59,8 +59,7 @@ export const subscribeNewsletterSchema = defineType({
           type: "string",
         }),
         imageWithAltField({
-          description:
-            "A photo of the person giving the testimonial, shown as a small rounded avatar. Remember to add alt text.",
+          description: "Author photo, shown as a rounded avatar. Add alt text.",
           name: "authorImage",
           title: "Author Image",
         }),

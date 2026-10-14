@@ -14,7 +14,7 @@ export const showcaseGridToMarkdown = (
       }
       const link = mdLink(name, item.url, options);
       const category = (item.category ?? "").trim();
-      return category ? `- ${link} — ${escapeMarkdown(category)}` : `- ${link}`;
+      return category ? `- ${link}. ${escapeMarkdown(category)}` : `- ${link}`;
     })
     .filter(Boolean);
 

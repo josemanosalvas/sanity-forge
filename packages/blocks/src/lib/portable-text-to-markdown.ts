@@ -204,7 +204,7 @@ export const portableTextToMarkdown = (
       },
       em: ({ children }) => wrapEmphasis(children, "_"),
       strong: ({ children }) => wrapEmphasis(children, "**"),
-      // Underline has no Markdown equivalent — emit plain text, not `<u>`.
+      // Markdown has no underline syntax, so emit plain text.
       underline: ({ children }) => children,
     },
     types: {

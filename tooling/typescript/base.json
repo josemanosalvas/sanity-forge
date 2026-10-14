@@ -15,7 +15,7 @@
     /** TypeScript 7 no longer auto-includes installed @types; list the globals we rely on */
     "types": ["node"],
 
-    /** Keep tsc performant in monorepos */
+    /** Reuse typecheck results from the previous run. */
     "incremental": true,
     "tsBuildInfoFile": "${configDir}/.cache/tsbuildinfo.json",
 

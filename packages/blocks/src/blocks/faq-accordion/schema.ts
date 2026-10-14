@@ -4,27 +4,26 @@ import { defineArrayMember, defineField, defineType } from "sanity";
 export const faqAccordionSchema = defineType({
   fields: [
     defineField({
-      description:
-        "The smaller text that sits above the title to provide context",
+      description: "Short label above the title.",
       name: "eyebrow",
       title: "Eyebrow",
       type: "string",
     }),
     defineField({
-      description: "The large text that is the primary focus of the block",
+      description: "Main heading for the block.",
       name: "title",
       title: "Title",
       type: "string",
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      description: "Additional context below the main title",
+      description: "Paragraph below the title.",
       name: "subtitle",
       title: "Subtitle",
       type: "string",
     }),
     defineField({
-      description: "Optional link for additional content or actions",
+      description: "Optional link below the questions.",
       fields: [
         defineField({
           description: "The text to display for the link",

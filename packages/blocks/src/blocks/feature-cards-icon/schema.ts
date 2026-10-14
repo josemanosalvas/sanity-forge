@@ -49,8 +49,7 @@ export const featureCardsIconSchema = defineType({
       type: "string",
     }),
     definePortableTextField(["block"], {
-      description:
-        "The supporting paragraph shown beneath the title, introducing the cards below",
+      description: "Paragraph above the cards.",
       name: "richText",
     }),
     defineField({

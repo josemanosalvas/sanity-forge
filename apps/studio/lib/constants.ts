@@ -27,11 +27,9 @@ export const GROUPS: FieldGroupDefinition[] = [
 ];
 
 /**
- * Document types the document-internationalization plugin manages. Navigation
- * and footer are localized too, but as singletons: the Structure opens one
- * fixed document per language, so the plugin's "create translation", which
- * makes a new document under a random ID the site would never read, must not
- * apply to them.
+ * The translation plugin manages pages and FAQs. Navigation and footer use
+ * fixed singleton IDs. Exclude them because the plugin creates random IDs
+ * that the site would never query.
  */
 export const TRANSLATED_TYPES = ["page", "faq"] as const;
 

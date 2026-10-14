@@ -51,7 +51,7 @@ export const muxThumbnailUrl = (
   if (typeof thumbTime === "number") {
     params.set("time", String(thumbTime));
   }
-  // Unasked, Mux serves the still at the source resolution — 4K for a poster.
+  // Set width to avoid downloading the poster at the video's source resolution.
   if (width) {
     params.set("width", String(width));
   }

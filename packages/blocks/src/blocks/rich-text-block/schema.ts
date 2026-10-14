@@ -6,14 +6,13 @@ import { definePortableTextField } from "../../lib/schema-fields";
 export const richTextBlockSchema = defineType({
   fields: [
     defineField({
-      description:
-        "The smaller text that sits above the title to provide context",
+      description: "Short label above the title.",
       name: "eyebrow",
       title: "Eyebrow",
       type: "string",
     }),
     defineField({
-      description: "The large text that is the primary focus of the block",
+      description: "Main heading for the block.",
       name: "title",
       title: "Title",
       type: "string",

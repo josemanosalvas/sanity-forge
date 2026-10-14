@@ -10,7 +10,7 @@ const meta = {
         _key: "card-1",
         icon: "globe",
         richText: paragraph(
-          "Clean public URLs per site and locale, resolved in the proxy without a CMS round trip."
+          "The proxy selects the site from the hostname and the locale from the URL path without querying Sanity."
         ),
         title: "Host-based routing",
       },
@@ -18,7 +18,7 @@ const meta = {
         _key: "card-2",
         icon: "languages",
         richText: paragraph(
-          "Localized slugs, translation metadata and hreflang alternates out of the box."
+          "Each translated page has its own slug. Page metadata includes hreflang links to its translations."
         ),
         title: "Document-level localization",
       },
@@ -26,14 +26,14 @@ const meta = {
         _key: "card-3",
         icon: "shield-check",
         richText: paragraph(
-          "Security headers, observability hooks and analytics you can swap out."
+          "The app sets security headers and includes configurable Sentry, Google Analytics, and Vercel analytics integrations."
         ),
-        title: "Production defaults",
+        title: "Headers and monitoring",
       },
     ],
-    eyebrow: "Why the Forge",
-    richText: paragraph("Three things every site gets on day one."),
-    title: "Built for teams that run more than one site",
+    eyebrow: "Configuration",
+    richText: paragraph("Each site uses the same routing and rendering code."),
+    title: "How the sites share one app",
   },
   component: FeatureCardsWithIcon,
   parameters: { layout: "fullscreen" },

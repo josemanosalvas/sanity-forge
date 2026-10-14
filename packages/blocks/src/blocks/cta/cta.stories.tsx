@@ -6,11 +6,11 @@ import { CTABlock } from "./cta";
 const meta = {
   args: {
     buttons,
-    eyebrow: "Ready when you are",
+    eyebrow: "Setup",
     richText: paragraph(
-      "Clone the template, point it at a Sanity project and add a site to the registry. Everything else is already wired."
+      "Set the Sanity project and dataset in the environment files, then configure the site domains in sites.ts."
     ),
-    title: "Launch your next site on the Forge",
+    title: "Configure your first site",
   },
   component: CTABlock,
   parameters: { layout: "fullscreen" },
@@ -36,7 +36,7 @@ export const WithLogos: Story = {
           width: 240,
         }),
       })),
-      title: "Trusted by teams shipping every week",
+      title: "Example partner logos",
     },
   },
 };

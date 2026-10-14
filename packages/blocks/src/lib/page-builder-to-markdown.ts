@@ -1,5 +1,7 @@
-/** Thin dispatcher: each block's Markdown serializer is co-located in its block
- * directory (add a `case` + `markdown.ts` for new blocks). Unknown types return "". */
+/**
+ * Calls each block's Markdown serializer. Add a case and a markdown.ts file
+ * in the block directory for new types. Unknown types return an empty string.
+ */
 
 import { ctaToMarkdown } from "../blocks/cta/markdown";
 import { faqAccordionToMarkdown } from "../blocks/faq-accordion/markdown";

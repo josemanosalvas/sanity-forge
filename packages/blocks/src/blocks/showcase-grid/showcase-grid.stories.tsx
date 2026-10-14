@@ -5,7 +5,7 @@ import { ShowcaseGrid } from "./showcase-grid";
 
 const meta = {
   args: {
-    description: "Sites shipped from this template.",
+    description: "Example cards with placeholder images and links.",
     items: [
       { category: "Marketing", featured: true, siteName: "Brand A" },
       { category: "Product", siteName: "Brand B" },
@@ -27,7 +27,7 @@ const meta = {
       url: "https://example.com",
       ...item,
     })),
-    title: "Built on the Forge",
+    title: "Example sites",
   },
   component: ShowcaseGrid,
   parameters: { layout: "fullscreen" },

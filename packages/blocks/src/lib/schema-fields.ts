@@ -12,16 +12,14 @@ import type {
 export { definePortableTextField } from "./sanity-rich-text";
 
 export const buttonsField = defineField({
-  description:
-    "Add one or more clickable buttons that visitors can use to navigate your website",
+  description: "Links displayed as buttons.",
   name: "buttons",
   of: [defineArrayMember({ type: "button" })],
   type: "array",
 });
 
 export const iconField = defineField({
-  description:
-    "Choose a small picture symbol to represent this item, like a home icon or shopping cart",
+  description: "Choose an icon for this item.",
   name: "icon",
   title: "Icon",
   type: "lucide-icon",
@@ -75,7 +73,7 @@ export const logoLinkItem = (name: string) =>
     fields: [
       imageWithAltField({
         description:
-          "The partner or brand logo to display. Use a transparent PNG or SVG for the cleanest result",
+          "Logo image. Use a transparent PNG or SVG to avoid a background rectangle.",
         title: "Logo",
       }),
       defineField({
@@ -119,7 +117,7 @@ export const muxVideoField = ({
 }: {
   description?: string;
   group?: string;
-  /** For blocks that offer a choice of delivery — see the hero's `mediaType`. */
+  /** For blocks with a video source selector, such as the hero's `mediaType`. */
   hidden?: ConditionalProperty;
   name?: string;
   title?: string;

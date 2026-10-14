@@ -22,7 +22,7 @@ export interface HeroVideoVariant {
   mux?: MuxVideoData | null;
   /** Full-resolution HEVC for Safari, which decodes AV1 only on recent chips. */
   hevc?: string | null;
-  /** Phone-sized clips. Optional — the desktop set is used when absent. */
+  /** Optional smaller clips. Falls back to the desktop files. */
   mobileWebm?: string | null;
   poster?: SanityImageData | null;
   webm?: string | null;
