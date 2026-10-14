@@ -31,10 +31,9 @@ const meta = {
       <SheetTrigger render={<Button variant="outline" />}>Open</SheetTrigger>
       <SheetContent {...args}>
         <SheetHeader>
-          <SheetTitle>Are you absolutely sure?</SheetTitle>
+          <SheetTitle>Delete this account?</SheetTitle>
           <SheetDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
+            Deleting your account removes its data permanently.
           </SheetDescription>
         </SheetHeader>
         <SheetFooter>

@@ -5,7 +5,7 @@ import { GROUP } from "../../lib/constants";
 export const seoFields = [
   defineField({
     description:
-      "This will override the meta title. If left blank it will inherit the page title.",
+      "Override the page title in metadata. Leave blank to use the page title.",
     group: GROUP.SEO,
     name: "seoTitle",
     title: "SEO Meta Title Override",
@@ -13,7 +13,7 @@ export const seoFields = [
   }),
   defineField({
     description:
-      "This will override the meta description. If left blank it will inherit the description from the page description.",
+      "Override the meta description. Leave blank to use the page description.",
     group: GROUP.SEO,
     name: "seoDescription",
     rows: 2,
@@ -23,7 +23,7 @@ export const seoFields = [
   }),
   defineField({
     description:
-      "This will override the image shown when the page is shared. If left blank it will inherit the main image.",
+      "Override the social sharing image. Leave blank to use the page image.",
     group: GROUP.SEO,
     name: "seoImage",
     options: {
@@ -33,7 +33,8 @@ export const seoFields = [
     type: "image",
   }),
   defineField({
-    description: "If checked, this content won't be indexed by search engines.",
+    description:
+      "Ask search engines not to index this page and omit it from the sitemap.",
     group: GROUP.SEO,
     initialValue: false,
     name: "seoNoIndex",
@@ -45,7 +46,7 @@ export const seoFields = [
 export const ogFields = [
   defineField({
     description:
-      "This will override the open graph title. If left blank it will inherit the page title.",
+      "Override the Open Graph title. Leave blank to use the SEO title or page title.",
     group: GROUP.OG,
     name: "ogTitle",
     title: "Open Graph Title Override",
@@ -53,7 +54,7 @@ export const ogFields = [
   }),
   defineField({
     description:
-      "This will override the open graph description. If left blank it will inherit the meta description.",
+      "Override the Open Graph description. Leave blank to use the meta description.",
     group: GROUP.OG,
     name: "ogDescription",
     rows: 2,

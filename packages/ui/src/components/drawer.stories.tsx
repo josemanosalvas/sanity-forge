@@ -23,8 +23,10 @@ const meta = {
       <DrawerTrigger render={<Button variant="outline" />}>Open</DrawerTrigger>
       <DrawerContent>
         <DrawerHeader>
-          <DrawerTitle>Are you absolutely sure?</DrawerTitle>
-          <DrawerDescription>This action cannot be undone.</DrawerDescription>
+          <DrawerTitle>Delete this account?</DrawerTitle>
+          <DrawerDescription>
+            Deleting your account removes its data permanently.
+          </DrawerDescription>
         </DrawerHeader>
         <DrawerFooter>
           <Button>Submit</Button>

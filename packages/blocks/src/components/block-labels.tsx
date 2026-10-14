@@ -4,11 +4,9 @@ import { createContext, useContext } from "react";
 import type { ReactNode } from "react";
 
 /**
- * The strings the blocks render on their own — control names, live-region
- * announcements and fallbacks — as opposed to editorial content from Sanity.
- * The site supplies them in the visitor's language through
- * `BlockLabelsProvider`; without one the English defaults apply, which is what
- * Storybook and the tests render.
+ * Interface text for block controls, announcements, and fallbacks.
+ * `BlockLabelsProvider` supplies translations for the visitor's language.
+ * Without a provider, Storybook and tests use the English defaults.
  */
 export interface BlockLabels {
   /** Announced after a code block's copy button succeeds. */

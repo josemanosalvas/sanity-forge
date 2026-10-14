@@ -5,11 +5,11 @@ import { HeroBlock } from "./hero";
 
 const meta = {
   args: {
-    badge: "New in v0.1",
+    badge: "Sanity Forge",
     buttons,
     isFirst: true,
     richText: paragraph(
-      "One codebase, one Studio, any number of sites and locales. Every block you see here is shared between Storybook, the Studio preview and the site."
+      "Brand A serves English, German, and French. Brand B serves English and German. Both use the same page blocks and Sanity dataset."
     ),
     title: "Multi-site, multilingual Sanity + Next.js",
   },

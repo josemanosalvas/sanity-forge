@@ -5,12 +5,10 @@ import { VideoFeature } from "./video-feature";
 
 const meta = {
   args: {
-    caption: "Recorded on the demo dataset.",
-    eyebrow: "Watch",
-    richText: paragraph(
-      "Click any block on the site to jump to its field in the Studio."
-    ),
-    title: "Editing a page in Presentation",
+    caption: "Public sample clip from Mux.",
+    eyebrow: "Video example",
+    richText: paragraph("Select the play button to load the Mux player."),
+    title: "Mux video playback",
     video: { asset: MUX_SAMPLE, autoPlay: false, loop: false },
   },
   component: VideoFeature,

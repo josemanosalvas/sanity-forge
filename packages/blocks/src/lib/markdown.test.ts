@@ -1,8 +1,4 @@
 import { describe, expect, it } from "vitest";
-/**
- * The helpers in ./markdown.ts back every per-block serializer, so correctness
- * here protects the entire pipeline.
- */
 
 import {
   buttonsToMarkdown,

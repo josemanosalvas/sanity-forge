@@ -12,7 +12,7 @@ const navigationLink = defineArrayMember({
   description: "Individual navigation link with name and URL",
   fields: [
     defineField({
-      description: "The text that will be displayed for this navigation link",
+      description: "Text displayed for this navigation link.",
       name: "name",
       title: "Link Text",
       type: "string",
@@ -48,7 +48,7 @@ const navigationColumnLink = defineArrayMember({
   fields: [
     iconField,
     defineField({
-      description: "The text that will be displayed for this navigation link",
+      description: "Text displayed for this navigation link.",
       name: "name",
       title: "Link Text",
       type: "string",
@@ -129,8 +129,7 @@ export const navigation = defineType({
     siteField,
     languageField,
     defineField({
-      description:
-        "Build your navigation menu using columns and links. Add either a column of links or individual links.",
+      description: "Add individual links or columns of links to the menu.",
       name: "columns",
       of: [navigationColumn, navigationLink],
       title: "Navigation Structure",

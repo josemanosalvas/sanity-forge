@@ -68,10 +68,10 @@ describe(showcaseGridToMarkdown, () => {
       {}
     );
     expect(result).toContain(
-      "- [Opera Group](https://opera.example.com) — Real Estate"
+      "- [Opera Group](https://opera.example.com). Real Estate"
     );
     expect(result).toContain("- Plain Site");
-    expect(result).not.toContain("Plain Site —");
+    expect(result).not.toContain("Plain Site.");
   });
 
   it("showcaseGridToMarkdown emits no HTML or JSX tags", () => {

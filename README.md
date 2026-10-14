@@ -1,192 +1,81 @@
 # Sanity Forge
 
-A Next.js + Sanity template for multilingual content sites. One deployment and Sanity dataset serve multiple domains, with a Studio workspace per site, localized pages, shared page-builder blocks, live previews and per-site SEO.
+Sanity Forge is a Next.js and Sanity template for sites that share a codebase and content dataset. The request hostname selects the site. Each site has its own Studio workspace, pages, navigation, and languages.
 
-Use it for sites managed by one team. Workspace filters organize editing; they do not enforce tenant permissions. Independently operated clients need a separate access-control or dataset strategy.
+The example configuration has two sites. Brand A serves English, German, and French. Brand B serves English and German. Both use the blocks in `packages/blocks`.
 
-Public datasets expose all published documents through the Sanity API, across every site. Studio workspace filters and editor roles do not restrict that access. To make a dataset private, run `pnpm --filter studio exec sanity dataset visibility set <dataset> private`. Server reads use the configured Viewer token ([`client.ts`](packages/sanity/src/client.ts)).
+Studio workspaces filter the editing interface. They do not restrict access to documents in the dataset. Use this setup for sites managed by one team. Public datasets expose all published documents through the Sanity API.
 
-## Setup
+## Run locally
 
-Requires pnpm 12 and a Sanity project with a dataset. pnpm provisions Node 24 from `devEngines.runtime`. If Corepack runs pnpm for you, it must be version 0.34.5 or newer (bundled with Node 24.12+); older versions fail to start pnpm 12 with `Cannot find module …/bin/pnpm.cjs`.
+Use pnpm 12.9.1, the version pinned in `package.json`. pnpm downloads Node 24 for the workspace. If you use Corepack to start pnpm, use Corepack 0.34.5 or newer.
 
-```bash
-pnpm install
-cp apps/studio/.env.example apps/studio/.env
-cp apps/web/.env.example apps/web/.env
-```
+1. Install dependencies and copy the environment examples.
 
-Fill in the project ID and dataset in both files. Set `SANITY_API_READ_TOKEN` to a Viewer token from the project's API settings; Sanity Live and previews require it. Both examples default to the `production` dataset: give local development one of its own (`pnpm --filter studio exec sanity dataset create development`, or the `demo` dataset below) and name it in both files.
+   ```sh
+   pnpm install
+   cp apps/studio/.env.example apps/studio/.env
+   cp apps/web/.env.example apps/web/.env
+   ```
 
-For a Vercel-linked web app, run `vercel env pull apps/web/.env.local`; `.env.local` takes precedence over `.env`. Configure Studio separately in `apps/studio/.env`.
+2. Set the Sanity project ID and dataset in both files. The examples use `production`. Use a separate dataset for development.
 
-```bash
-pnpm typegen
-pnpm dev
-```
+   To create one in your configured project, run:
 
-Web runs on port 3000, Studio on 3333 and Storybook on 6006. Use `brand-a.localhost:3000` or `brand-b.localhost:3000`; plain `localhost:3000` serves `DEFAULT_SITE`.
+   ```sh
+   pnpm --filter studio exec sanity login
+   pnpm --filter studio exec sanity dataset create development
+   ```
 
-### CORS origins
+   Set `SANITY_STUDIO_DATASET=development` in the Studio file and `NEXT_PUBLIC_SANITY_DATASET=development` in the web file.
 
-Register web and Studio origins under Manage → API → CORS origins with credentials allowed. Server rendering can succeed without CORS, while browser requests for live updates, Draft Mode and Studio authentication fail.
+3. Create a Viewer token in the Sanity project's API settings. Set `SANITY_API_READ_TOKEN` in `apps/web/.env`. The web app requires this token for Sanity Live and previews. Authenticated Draft Mode sessions receive it in the browser, so use a Viewer token.
 
-| Origin | Source |
+4. Add the local origins to the Sanity project's CORS configuration with credentials enabled.
+
+   ```sh
+   pnpm --filter studio exec sanity cors add http://localhost:3333 --credentials
+   pnpm --filter studio exec sanity cors add http://localhost:3000 --credentials
+   pnpm --filter studio exec sanity cors add http://brand-a.localhost:3000 --credentials
+   pnpm --filter studio exec sanity cors add http://brand-b.localhost:3000 --credentials
+   ```
+
+5. Generate types and start the apps.
+
+   ```sh
+   pnpm typegen
+   pnpm dev
+   ```
+
+Open [Brand A](http://brand-a.localhost:3000), [Brand B](http://brand-b.localhost:3000), [Studio](http://localhost:3333), or [Storybook](http://localhost:6006). Plain `localhost:3000` serves `DEFAULT_SITE`, which defaults to Brand A.
+
+An empty dataset shows the site's 404 page. Create and publish a page with slug `/` in Studio, or [import the demo content](docs/development.md#import-demo-content).
+
+For a Vercel-linked app, `vercel env pull apps/web/.env.local` downloads the web environment. Values in `.env.local` override `.env`. Configure Studio separately.
+
+## Work on the project
+
+Run commands from the repository root.
+
+| Command | Result |
 | --- | --- |
-| `http://localhost:3333` | Studio in development |
-| `http://localhost:3000`, `http://brand-a.localhost:3000`, `http://brand-b.localhost:3000` | `DEFAULT_SITE` and each site's development domain |
-| `https://brand-a.example`, `https://brand-b.example` | each site's production domain |
-| the deployed Studio origin | `NEXT_PUBLIC_SANITY_STUDIO_URL` |
-| preview deployments | one per deployment; a wildcard entry covers them |
+| `pnpm dev:web` | Start the frontend |
+| `pnpm dev:studio` | Start Studio |
+| `pnpm dev:storybook` | Start Storybook |
+| `pnpm verify` | Check formatting, lint, workspace dependencies, package boundaries, unit tests, and types |
+| `pnpm fix` | Apply formatting and lint fixes |
+| `pnpm typegen` | Extract the Studio schema and generate GROQ result types |
+| `pnpm build` | Build the apps that define a build script. The web build reads Sanity content. |
+| `pnpm test:e2e` | Build the web app and run Playwright against its production server |
 
-`getAllSiteOrigins()` in [`sites.ts`](packages/internationalization/src/sites.ts) returns each site's production and development origin, so a site added there needs both registered here too. From the CLI:
+The guides cover the remaining workflows:
 
-```bash
-pnpm --filter studio exec sanity cors add https://brand-a.example --credentials
-```
-
-Presentation's `allowOrigins` ([`presentation/index.ts`](apps/studio/presentation/index.ts)) controls preview origins separately from API CORS. Configure both.
-
-### Agent tooling
-
-Optional: use `npx sanity@latest mcp configure` to configure the Sanity MCP server, or `npx skills add sanity-io/agent-toolkit` to install Sanity's agent skills.
-
-## Sites and content
-
-Configure domains and locales in [`sites.ts`](packages/internationalization/src/sites.ts). To add a site, add a registry entry and create its settings in Studio. New locales also need messages in `packages/internationalization/messages/` and a loader in `src/request.ts`.
-
-Public URLs have no site prefix. The default locale is unprefixed (`/pricing`); other locales are prefixed (`/de/preise`). CMS slugs are localized per document.
-
-| Document | Scope |
-| --- | --- |
-| `page` | Site and locale; slug `/` is the home page |
-| `navigation`, `footer` | One per site and locale, at `navigation-<site>-<locale>` and `footer-<site>-<locale>` |
-| `settings` | One per site, at `settings-<site>`, with localized string fields |
-| `faq` | Localized per document, shared across sites; links by address, never to one site's page |
-| `redirect` | Site; applied at build time |
-
-GROQ-projected links already include the destination locale: render them with `next/link`. Use `@repo/internationalization/navigation`'s `Link` for app-authored paths without locale prefixes.
-
-Navigation, footer and settings are singletons: their IDs derive from the site and locale (`@repo/blocks/lib/singletons`), the Studio opens those documents directly instead of listing them, the queries read them by ID, the duplicate action is off, and a document under any other ID fails validation and appears under "Not shown on the site".
-
-Links never cross sites. The Studio offers a document only its own site's pages, and a reference that still points at another site's page (a page moved after it was linked) projects as `null` and renders as a broken link. Shared content (FAQs) is shown on several sites, so it links by address instead: a path such as `/about` opens on whichever site shows it, a full URL pins one site.
-
-## Development
-
-- `apps/web`: Next.js App Router frontend.
-- `apps/studio`: Sanity schemas, editing structure and Presentation configuration.
-- `apps/storybook`: UI and block stories.
-- `apps/blueprint`: Sanity Blueprint with the Function that invalidates the web cache on publish.
-- `packages/blocks`: each `src/blocks/<name>/` contains its renderer, schema, query, Markdown serializer, tests and stories. Shared components, hooks and helpers sit alongside `blocks/` under `src/`.
-- `packages/ui`: shadcn primitives, styles and theme provider.
-- Other packages provide Sanity access, internationalization, SEO, security, analytics and observability. `tooling/` holds shared configuration.
-
-Import concrete modules through package exports, such as `@repo/blocks/hero` or `@repo/seo/route`. Repository contracts and verification requirements are in [AGENTS.md](AGENTS.md).
-
-| Command | Purpose |
-| --- | --- |
-| `pnpm dev` | Run all apps |
-| `pnpm build` | Build all apps; web needs working Sanity credentials |
-| `pnpm verify` | Formatting, lint, workspace and dependency boundaries, tests, typecheck |
-| `pnpm fix` | Apply lint and format fixes |
-| `pnpm typegen` | Extract schemas and regenerate GROQ result types |
-| `pnpm --filter <package> test` | Focused Vitest tests for one package, e.g. `web` or `@repo/blocks` |
-| `pnpm test:e2e` | Playwright against the production web server |
-| `pnpm turbo gen block` | Scaffold and register a block; add its web renderer and behavior tests |
-| `pnpm turbo gen package` | Scaffold a workspace package |
-
-### Blocks
-
-The newsletter block needs an `action` or `onSubmit` handler to render a subscription form. The strings blocks render themselves (form labels, the copy and play buttons, screen-reader text) come from the `blocks` namespace of `packages/internationalization/messages/` through `BlockLabelsProvider` (`@repo/blocks/components/block-labels`), which the layout mounts; without a provider, as in Storybook, the English defaults apply. Markdown serializers are available per block; there is no Markdown HTTP route.
-
-### Third-party scripts
-
-Keys live in `apps/web/.env` locally (see `.env.example`) and in the deployment's environment settings.
-
-| Provider | Origins | Purpose | Loading | Key |
-| --- | --- | --- | --- | --- |
-| Vercel Web Analytics | own origin (`/_vercel/insights`) | page views, custom events | `@vercel/analytics/next`, after hydration | `NEXT_PUBLIC_VERCEL_ANALYTICS` (on) |
-| Vercel Speed Insights | own origin (`/_vercel/speed-insights`) | real-user LCP, INP, CLS | `@vercel/speed-insights/next`, after hydration | `NEXT_PUBLIC_VERCEL_SPEED_INSIGHTS` (on) |
-| Google Analytics | `googletagmanager.com`, `google-analytics.com` | page views | `@next/third-parties/google`, after hydration | `NEXT_PUBLIC_GA_MEASUREMENT_ID` (off) |
-| Sentry | `*.ingest.sentry.io` through the `/monitoring` tunnel | errors, traces; Session Replay opt-in | `instrumentation-client.ts`, before hydration | `NEXT_PUBLIC_SENTRY_DSN` (off) |
-| Mux | `stream.mux.com`, `image.mux.com` | video playback and stills | dynamic import on play; Mux Data off | per block |
-| Sanity Live | `*.api.sanity.io` | content updates | `next-sanity/live`, every page | always |
-
-Performance targets: LCP under 2.5 s, INP under 200 ms, and CLS under 0.1 at the 75th percentile. Measure mobile and desktop separately in Speed Insights.
-
-## Caching and previews
-
-Sanity reads run inside `use cache`. Resolve preview cookies outside the cache and pass `perspective`, `stega` and `variant` through to the cached layer. Shared fetch helpers live in [`content.ts`](apps/web/src/lib/content.ts); preview resolution and Live integration live in [`live.ts`](packages/sanity/src/live.ts). The layering and names follow Sanity's official Next.js template.
-
-Draft Mode exits through the preview bar's Server Action; `POST /api/draft-mode/disable?to=/path` is the equivalent endpoint for tooling outside the site.
-
-Sanity Live revalidates only while a browser has the site open. For publishes nobody is watching, the `invalidate-tags` Sanity Function in [`apps/blueprint`](apps/blueprint) receives each publish's sync tags and posts them to `/api/revalidate`, which invalidates exactly the cached reads that depend on the changed content. The next request for an affected read still receives stale content while the cache refreshes. Redirect edits require a rebuild.
-
-Deploy it once per dataset; Sanity allows one sync tag Function per dataset. Copy `apps/blueprint/.env.example` to `apps/blueprint/.env` and set the project and dataset, then log in (`pnpm --filter blueprint exec sanity login`) with a role that can deploy Studios:
-
-```sh
-pnpm --filter blueprint exec sanity blueprints init --project-id <project-id> --stack-name production
-pnpm --filter blueprint exec sanity blueprints plan
-pnpm --filter blueprint exec sanity blueprints deploy
-pnpm --filter blueprint exec sanity functions env add invalidate-tags REVALIDATE_URL https://your-site/api/revalidate
-pnpm --filter blueprint exec sanity functions env add invalidate-tags SANITY_REVALIDATE_SECRET <same value as the web app>
-pnpm --filter blueprint exec sanity functions logs invalidate-tags
-```
-
-A delivery that fails is logged by the Function and never acknowledged to Sanity. If an earlier setup has a GROQ-powered webhook pointing at `/api/revalidate`, delete it: the route no longer accepts signed webhook payloads.
-
-To recover from missed invalidations, an operator can purge every read, or one site's reads, with the same secret:
-
-```sh
-curl -X POST https://your-site/api/revalidate \
-  -H "Authorization: Bearer $SANITY_REVALIDATE_SECRET" \
-  -d '{"purge": true, "site": "brand-a"}'
-```
-
-Omit `site` to purge every site. Set `SANITY_LOG_READS=true` on the web server to log one line per Sanity read that runs, that is, per cache miss, with its parameters and sync tags.
-
-## Deployment
-
-One Vercel project serves every hostname in `sites.ts`; attach all production domains to it and `DEFAULT_SITE` answers preview URLs. Settings:
-
-| Setting | Value |
-| --- | --- |
-| Root Directory | repository root (empty): the web build runs the Studio's schema extraction through Turborepo |
-| Install Command | `pnpm install --frozen-lockfile` |
-| Build Command | `pnpm turbo run build --filter=web` |
-| Output Directory | `apps/web/.next` |
-| Node.js | `engines.node` in `package.json` (`>=24`) |
-
-Environment variables: everything in `apps/web/.env.example` marked required, plus `SANITY_STUDIO_PROJECT_ID` and `SANITY_STUDIO_DATASET` for the build, `NEXT_PUBLIC_SANITY_STUDIO_URL` set to the deployed Studio origin (a loopback value is dropped from the frame-ancestors policy), and `SANITY_REVALIDATE_SECRET` (at least 32 characters; shorter values are refused by the route) if the invalidation Function is deployed. After 30 unauthorized revalidation requests or 20 failed Draft Mode handshakes per minute, that address receives HTTP 429 until its window resets. Successful requests do not consume the budget, but an exhausted address is blocked before authentication. Limits apply per server instance. `SANITY_API_READ_TOKEN` must be a Viewer token: validated Draft Mode sessions receive it in the browser for Sanity Live. Reverse proxies must overwrite `x-forwarded-host` for site selection and `x-forwarded-for` for rate limiting. Requests on a site's `www.`/apex twin are redirected to the production hostname with a 308.
-
-Every deployed hostname also has to be a CORS origin with credentials: the production domains, the preview URLs and the Studio. See [CORS origins](#cors-origins).
-
-## Demo content
-
-`pnpm seed` fills a dataset with open-licensed content for both sites: Brand A in English, German and French about Post-Impressionism with a Vincent van Gogh page, and Brand B in English and German about ukiyo-e with a Hokusai page, each with navigation, footer, settings, translation links and images. Artworks and images come from The Met's Open Access collection (CC0); prose is the unmodified introduction of the matching Wikipedia article in each language (CC BY-SA 4.0), credited on every page and in every footer. The documents are committed as [`apps/studio/seed/dataset.ndjson`](apps/studio/seed/dataset.ndjson), which is what the import reads; it uploads the images from The Met.
-
-Once, create the dataset. The CLI reads the project ID from `apps/studio/.env`; log in with `pnpm --filter studio exec sanity login`, or set `SANITY_IMPORT_TOKEN` to a token with write access.
-
-```bash
-pnpm --filter studio exec sanity dataset create demo --visibility public
-```
-
-Populate it:
-
-```bash
-pnpm seed
-```
-
-The import replaces the seeded published documents by ID. Drafts, documents you added and documents no longer in the seed are left alone, so edits made in the Studio stay visible after a reseed. Set `SANITY_STUDIO_SEED_DATASET` to target another dataset. Point the apps at it with `SANITY_STUDIO_DATASET=demo` and `NEXT_PUBLIC_SANITY_DATASET=demo`; the web build then prerenders every page, and `E2E_HAS_CONTENT=true pnpm test:e2e` runs the content tests.
-
-To change the selection, edit [`apps/studio/seed/manifest.ts`](apps/studio/seed/manifest.ts) (Met object IDs, Wikipedia titles per language with their Wikidata item, and the few interface labels) and run `pnpm seed:build`. It fetches the current Met records and Wikipedia introductions, refuses any artwork The Met does not mark public domain and any article that resolves to a different Wikidata item, and rewrites the NDJSON. Its output changes when those sources change, so commit the regenerated file; the committed file is what makes `pnpm seed` repeatable.
-
-## CI and verification
-
-[CI](.github/workflows/ci.yml) runs static checks, unit tests, TypeGen freshness, schema validation, and Studio/Storybook builds using a placeholder project. Set repository variables `SANITY_PROJECT_ID`, `SANITY_DATASET` and secret `SANITY_API_READ_TOKEN` to enable the web build and Playwright tests; that job checks CMS prerendering and scans the build output for the Viewer token. Fork PRs run checks that need no secrets.
-
-The smoke suite covers site shells, locales, 404s, robots and sitemaps with an empty dataset. Set `E2E_HAS_CONTENT=true` to require published home pages too. Check Presentation and release previews manually in an authenticated Studio session.
+- [Development](docs/development.md) covers adding sites and blocks, importing demo content, and running checks.
+- [Content and rendering](docs/content-model.md) describes document scope, localized links, previews, caching, and browser integrations.
+- [Deployment](docs/deployment.md) covers Vercel, Studio, publish invalidation, and CI configuration.
+- [Documentation inventory](docs/documentation.md) lists the documentation and prose sources in the repository.
+- [AGENTS.md](AGENTS.md) contains the repository's coding and validation rules.
 
 ## License
 
-MIT. See [LICENSE](LICENSE). Portions are adapted from [turbo-start-sanity](https://github.com/robotostudio/turbo-start-sanity), [next-forge](https://github.com/vercel/next-forge) and [create-t3-turbo](https://github.com/t3-oss/create-t3-turbo); their notices are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+The code uses the [MIT License](LICENSE). [Third-party notices](THIRD_PARTY_NOTICES.md) credit the projects it adapts. The demo dataset includes separately licensed Wikipedia text and Met images, with attribution in the content.

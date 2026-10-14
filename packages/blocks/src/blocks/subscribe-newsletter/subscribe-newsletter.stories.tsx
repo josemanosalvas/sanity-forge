@@ -5,12 +5,12 @@ import { SubscribeNewsletter } from "./subscribe-newsletter";
 
 const meta = {
   args: {
-    helperText: paragraph("We only use your address to send the newsletter."),
-    onSubmit: (event) => event.preventDefault(),
-    subTitle: paragraph(
-      "One email per release. No tracking pixels, unsubscribe any time."
+    helperText: paragraph(
+      "This example form does not send your email address."
     ),
-    title: "Get the changelog in your inbox",
+    onSubmit: (event) => event.preventDefault(),
+    subTitle: paragraph("Receive an email when a new release is available."),
+    title: "Subscribe to release notes",
   },
   component: SubscribeNewsletter,
   parameters: { layout: "fullscreen" },
@@ -33,9 +33,9 @@ export const WithTestimonial: Story = {
         width: 96,
       }),
       authorName: "Alex Rivera",
-      authorRole: "Engineering lead",
-      eyebrow: "From a reader",
-      quote: paragraph("The only template newsletter I actually open."),
+      authorRole: "Example author",
+      eyebrow: "Example testimonial",
+      quote: paragraph("This is sample text for the testimonial layout."),
     },
   },
 };

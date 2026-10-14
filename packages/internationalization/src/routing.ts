@@ -3,9 +3,8 @@ import { getDefaultLocale, siteSupportsLocale } from "./sites";
 import type { Site } from "./sites";
 
 /**
- * The request context every site-aware read needs. `site` and `locale` are
- * orthogonal: the site is resolved from the host first, then the locale is
- * resolved from the path against that site's supported locales.
+ * Request context for site-specific reads. Resolve the site from the host,
+ * then resolve the locale from the path using that site's supported locales.
  */
 export interface SiteContext {
   readonly site: Site["key"];

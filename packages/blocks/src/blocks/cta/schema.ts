@@ -12,31 +12,27 @@ const usedByTeamsLogo = logoLinkItem("usedByTeamsLogo");
 export const ctaSchema = defineType({
   fields: [
     defineField({
-      description:
-        "The smaller text that sits above the title to provide context",
+      description: "Short label above the title.",
       name: "eyebrow",
       title: "Eyebrow",
       type: "string",
     }),
     defineField({
-      description: "The large text that is the primary focus of the block",
+      description: "Main heading for the block.",
       name: "title",
       title: "Title",
       type: "string",
     }),
     definePortableTextField(["block"], {
-      description:
-        "The supporting paragraph shown beneath the title, explaining what visitors get if they act",
+      description: "Paragraph below the title.",
       name: "richText",
     }),
     buttonsField,
     defineField({
-      description:
-        "Optional logo grid shown to the side of the heading, highlighting the teams or brands that use the product",
+      description: "Optional logo grid beside the heading.",
       fields: [
         defineField({
-          description:
-            'Short label displayed above the logo grid, for example "Trusted by teams at leading companies"',
+          description: 'Label above the logo grid, for example "Partners".',
           name: "title",
           title: "Title",
           type: "string",

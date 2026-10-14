@@ -8,8 +8,8 @@ const meta = {
     eyebrow: "Guide",
     richText: [
       ...(paragraphs(
-        "Register the site in the host registry, add a Studio workspace and deploy. The proxy maps the hostname to the site key on every request.",
-        "Locales live next to the site, so a site can serve any subset of the app's languages."
+        "Add the site to sites.ts. Studio creates a workspace from that entry, and the proxy maps its hostname to the site key.",
+        "The locales array selects which languages the site serves. Its first entry is the default language."
       ) ?? []),
       ...(paragraph("Checklist", "h3") ?? []),
       ...(paragraph("Add the site key, name, locales and production domain.") ??

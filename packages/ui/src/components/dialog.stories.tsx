@@ -23,10 +23,9 @@ const meta = {
       <DialogTrigger render={<Button variant="outline" />}>Open</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Are you absolutely sure?</DialogTitle>
+          <DialogTitle>Delete this account?</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
+            Deleting your account removes its data permanently.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

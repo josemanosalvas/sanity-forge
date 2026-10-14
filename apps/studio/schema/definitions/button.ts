@@ -13,7 +13,7 @@ export const button = defineType({
   fields: [
     defineField({
       description:
-        "Choose the button's visual style - default is solid, secondary is the accent color, outline has a border, and link looks like regular text",
+        "Choose a style. Default is solid, secondary uses the accent color, outline adds a border, and link uses text only.",
       initialValue: "default",
       name: "variant",
       options: createRadioListLayout(buttonVariants, {
@@ -29,8 +29,7 @@ export const button = defineType({
       type: "string",
     }),
     defineField({
-      description:
-        "Where the button links to - can be an internal page or external website",
+      description: "Select a page or enter a web address.",
       name: "url",
       title: "URL",
       type: "customUrl",

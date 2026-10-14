@@ -37,8 +37,7 @@ const TABLE_CELL_BLOCK_STYLES = [{ title: "Normal", value: "normal" }];
 const customLinkAnnotation = {
   fields: [
     defineField({
-      description:
-        "Where the highlighted text takes visitors — pick a page on this site or paste a web address",
+      description: "Select a page on this site or enter a web address.",
       name: "customLink",
       type: "customUrl",
     }),

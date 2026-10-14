@@ -21,13 +21,11 @@ export const imageFragment = `
 ` as const;
 
 /**
- * Public href for an internal page reference at `ref` (e.g. `url.internal`).
- * Links never cross sites: a page of another site — a shared FAQ's legacy
- * link, or a page moved after it was linked — yields null, which renders as a
- * broken link rather than a path that resolves against the wrong host. Pages
- * are localized per document, so the referenced page carries its own
- * language; the site's default locale stays unprefixed, others get `/{lang}`.
- * Queries using it must pass `$site` and `$defaultLocale`.
+ * Public href for an internal reference, such as `url.internal`.
+ * References to another site's page return null. This also handles legacy
+ * links in shared FAQs and pages moved between sites after linking.
+ * The target page supplies the language. Only non-default locales get a prefix.
+ * Queries must pass `$site` and `$defaultLocale`.
  */
 export const localizedInternalHref = <const Ref extends string>(ref: Ref) =>
   `select(

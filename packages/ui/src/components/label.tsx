@@ -2,7 +2,7 @@ import { cn } from "cn";
 import * as React from "react";
 
 const Label = ({ className, ...props }: React.ComponentProps<"label">) => (
-  // oxlint-disable-next-line jsx-a11y/label-has-associated-control -- generic primitive; callers pass htmlFor or nest the control
+  // oxlint-disable-next-line jsx-a11y/label-has-associated-control -- callers associate the control with htmlFor or by nesting it
   <label
     data-slot="label"
     className={cn(

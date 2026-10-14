@@ -7,7 +7,7 @@ export const {{ camelCase name }}Schema = defineType({
   description: "{{ description }}",
   fields: [
     defineField({
-      description: "Short label shown above the title",
+      description: "Short label above the title.",
       name: "eyebrow",
       title: "Eyebrow",
       type: "string",
@@ -19,7 +19,7 @@ export const {{ camelCase name }}Schema = defineType({
       validation: (rule) => rule.required(),
     }),
     definePortableTextField(["block"], {
-      description: "Supporting copy shown beneath the title",
+      description: "Paragraph below the title.",
       name: "richText",
     }),
   ],

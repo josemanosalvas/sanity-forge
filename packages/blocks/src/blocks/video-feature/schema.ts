@@ -9,8 +9,7 @@ import {
 export const videoFeatureSchema = defineType({
   fields: [
     defineField({
-      description:
-        "The smaller text that sits above the title to provide context",
+      description: "Short label above the title.",
       name: "eyebrow",
       title: "Eyebrow",
       type: "string",

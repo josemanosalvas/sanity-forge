@@ -37,10 +37,8 @@ export const expectedSingletonId = (
 };
 
 /**
- * Document-level rule: the site reads a singleton from one fixed ID, so a
- * document under any other ID — an import, a copy — is never displayed, and
- * publishing it would change nothing. The message points editors to the
- * document that is.
+ * The site reads each singleton from a fixed ID. Reject other IDs and
+ * direct editors to the document the site uses.
  */
 export const singletonIdRule =
   (type: SingletonType) =>

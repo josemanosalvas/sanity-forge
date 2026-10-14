@@ -50,7 +50,7 @@ const socialLinks = defineField({
  * together with the rest of the site's settings.
  */
 export const settings = defineType({
-  description: "Global settings and configuration for one site",
+  description: "Settings for one site.",
   fields: [
     siteField,
     defineField({
@@ -99,11 +99,11 @@ export const settings = defineType({
     }),
     defineField({
       description:
-        "The small icon shown in browser tabs and bookmarks. Add both formats or neither — each browser reads only one of them.",
+        "Icon for browser tabs and bookmarks. Provide both SVG and ICO files, or leave both empty.",
       fields: [
         defineField({
           description:
-            "Stays sharp at every size and can adapt to dark mode. Chrome, Firefox and Edge use this; Safari ignores it.",
+            "SVG icon for browsers that support it. The image can include a dark mode variant.",
           name: "svg",
           options: { accept: "image/svg+xml" },
           title: "SVG",
@@ -112,7 +112,7 @@ export const settings = defineType({
         }),
         defineField({
           description:
-            "The universal fallback every browser reads, Safari included. Should hold 16, 32 and 48px icons.",
+            "ICO fallback for browsers without SVG favicon support. Include 16, 32, and 48px sizes.",
           name: "ico",
           options: { accept: "image/vnd.microsoft.icon,.ico" },
           title: "ICO",
@@ -135,8 +135,8 @@ export const settings = defineType({
             return true;
           }
           return hasSvg
-            ? "Add an ICO too — Safari cannot render an SVG favicon and would show none"
-            : "Add an SVG too — every other browser prefers it";
+            ? "Add an ICO file as the fallback for browsers without SVG favicon support."
+            : "Add an SVG file to complete the favicon pair.";
         }),
     }),
     defineField({

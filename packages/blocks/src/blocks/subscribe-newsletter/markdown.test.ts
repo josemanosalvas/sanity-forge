@@ -24,13 +24,13 @@ describe(subscribeNewsletterToMarkdown, () => {
   it("subscribeNewsletterToMarkdown renders title and subTitle, and omits the form's helperText like the page does", () => {
     const result = subscribeNewsletterToMarkdown(
       {
-        helperText: para("No spam, ever."),
+        helperText: para("Unsubscribe by email."),
         subTitle: para("Get weekly updates."),
-        title: "Stay in the loop",
+        title: "Release notes",
       },
       {}
     );
-    expect(result).toBe("## Stay in the loop\n\nGet weekly updates.");
+    expect(result).toBe("## Release notes\n\nGet weekly updates.");
   });
 
   it("subscribeNewsletterToMarkdown escapes markdown chars in title", () => {

@@ -17,8 +17,7 @@ const SOCIAL_PLATFORMS = [
 const socialGridItem = defineArrayMember({
   fields: [
     defineField({
-      description:
-        "Choose which social platform this card links to. It decides the logo shown in the centre of the card",
+      description: "Choose the platform icon displayed in the card.",
       name: "platform",
       options: {
         layout: "dropdown",
@@ -37,8 +36,7 @@ const socialGridItem = defineArrayMember({
       validation: (Rule) => Rule.required(),
     }),
     imageWithAltField({
-      description:
-        "Optional custom logo image for this card. When set, it replaces the built-in platform icon in the centre of the card.",
+      description: "Optional image that replaces the platform icon.",
       name: "logo",
       title: "Logo",
     }),
@@ -66,8 +64,7 @@ const socialGridItem = defineArrayMember({
 });
 
 export const socialGridSchema = defineType({
-  description:
-    "A community section with a heading and a row of large cards linking to your social platforms",
+  description: "A heading and a row of cards linking to social profiles.",
   fields: [
     defineField({
       description:
@@ -84,8 +81,7 @@ export const socialGridSchema = defineType({
       type: "string",
     }),
     defineField({
-      description:
-        "A short supporting sentence shown beneath the title to add context",
+      description: "Paragraph below the title.",
       name: "subtitle",
       rows: 2,
       title: "Subtitle",

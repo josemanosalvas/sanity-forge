@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import type { ReactNode } from "react";
 
-/** Hands the blocks the strings they render themselves, in the request's locale. */
+/** Supplies block interface text in the request's locale. */
 export const BlockLabels = ({ children }: { children: ReactNode }) => {
   const t = useTranslations("blocks");
   const labels = useMemo<Labels>(

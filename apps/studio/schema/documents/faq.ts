@@ -29,7 +29,7 @@ export const faq = defineType({
   preview: {
     prepare: ({ title, richText, language }) => ({
       subtitle: `${(language ?? "??").toUpperCase()} · ${parseRichTextToString(richText, 20)}`,
-      title: `❓ ${title || "Untitled Question"}`,
+      title: title || "Untitled question",
     }),
     select: {
       language: "language",

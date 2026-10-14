@@ -6,12 +6,9 @@ import { API_VERSION, SITE_SCOPED_TYPES } from "./constants";
 type DocumentLike = { _type?: string; site?: unknown } | undefined;
 
 /**
- * Where a link may point depends on who shows the document. A site-scoped
- * document (page, navigation, footer) is shown on one site and may reference
- * that site's pages. Shared content (FAQs) is shown on several sites, where a
- * page reference would resolve against whichever site renders it, so shared
- * content links by address instead: a path opens on the rendering site, a
- * full URL pins one site.
+ * Pages, navigation, and footers may reference pages on their own site.
+ * Shared FAQs use address links. A relative path opens on the site displaying
+ * the FAQ, while a full URL selects a specific domain.
  */
 export const isSiteScopedDocument = (document: DocumentLike): boolean =>
   (SITE_SCOPED_TYPES as readonly string[]).includes(document?._type ?? "");

@@ -61,7 +61,7 @@ describe(internalPathOnly, () => {
     "/blog/hello",
     "/",
     "/blog?page=2#top",
-    // Not off-origin, just similar-looking — the guard must not over-reject.
+    // These paths resemble external URLs but resolve on the current origin.
     "/vil.com",
     "/evil.com-review",
   ])("passes %j through", (path) => {
